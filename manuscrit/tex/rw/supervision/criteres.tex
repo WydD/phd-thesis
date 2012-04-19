@@ -22,8 +22,13 @@ La création des processus de traitements de données est assimilable à une int
 Il est important de noter que ces deux grands paradigmes d'interrogation peuvent se combiner. Par exemple, il est possible d'effectuer un appel à une interrogation instantanée à l'intérieur d'un processus continu. Il est donc nécessaire que le système d'observation soit capable de manipuler naturellement ces deux types d'interrogations pour manipuler correctement le dynamisme des données.
 
 \subsubsection{Intégration de sources}
+Pour permettre une grande compréhension du système et de ses interactions, il est nécessaire de corréler les différentes sources d'informations en une seule base d'information intégrée. En effet, chaque source de donnée peut-être considérée comme un fragment de cette ensemble intégré. Ainsi, il est nécessaire que le système possède des fonctionalités d'agrégations de plusieurs sources. Ces fonctionalités doivent être suffisamment génériques pour permettre de supporter toutes sources.
+
 \subsubsection{Langage et paradigme}
+L'expression des requêtes possibles se fait à travers d'un langage. Son paradigme sous-jacent définira la manière et la facilité d'adaptation à un système en particulier. Ce langage peut être dans le cas le plus extrême : un langage de programmation impératif bas niveau (comme le C par exemple). Dans ce cas, l'approche sera très algorithmique, permettant une meilleure gestion des performances, mais une utilisation plus difficile et technique par la suite. À l'autre extrême, le langage peut être issue de la programmation logique permettant une performance moins contrôlé mais une gestion des contraintes du modèle de donnée plus facile.
+
 \subsubsection{Pouvoir expressif}
+Le langage utilisé dans le système d'observation n'a pas forcément pour vocation a être un langage \textit{Turing-complet}. Ainsi, son expressivité sera peut-être limité. Il est important d'être capable d'énumérer ce qui pourra être, ou non, possible d'exprimer en terme de processus.
 
 \subsection{Adaptabilité}
 \subsubsection{Adaptation au système}
