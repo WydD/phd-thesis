@@ -1,1 +1,32 @@
 \section{Critères d'analyse}
+\TODO{Intro}
+\subsection{Structure des données}
+Cette thèse suppose que les données sont accessibles au dessus d'une couche d'abstraction. Cependant, aucune hypothèse n'a été formulée sur la structure de ces données ou leurs formats. Ce premier critère d'analyse se focalise donc sur le formalisme utilisé lors de l'acquisition des données. Trois sous-critères sont décrit : la structure abstraite, la gestion de l'hétérogénéité sémantique et enfin le support de l'évolution des données.
+
+\subsubsection{Structure abstraite}
+Un modèle de données abstrait permet de décrire une représentation d'un ensemble de données de façon abstrait. Des exemples classiques de ce type de modèles sont : relationnel, objet, sémantique, à dimension ou encore hiérarchique. Ce modèle abstrait permettra par la suite de définir tout autant la capacité de représentation des données que ses capacités intrinsèques en terme de traitement. Ainsi, le choix de cette structure sera central pour la gestion de l'hétérogénéité.
+\subsubsection{Sémantique}
+Une donnée est liée à différents concepts. La capacité à représenter ces liens sémantiques est primordiale afin de gérer un grand ensemble de données. Si une telle distinction est explicitement faite, il sera possible de différencier à quel(s) concept(s) appartient une donnée. Ceci permet de lever des ambiguïtés telle que l'attachement de la donnée \textit{Statut}. Ce paramètre a en effet un sens différent suivant son attachement : \textit{Équipement}, \textit{Application} ou \textit{Service}. Le lien entre les différents concepts permet aussi de pouvoir annoter les données avec des meta-informations qui permettrons d'adapter le traitement par la suite.
+\subsubsection{Dynamisme}
+La valeur obtenue à un instant particulier d'une donnée n'est pas toujours relevant. En effet, pour plusieurs types d'informations, la pertinence de la donnée va être accordé à son évolution au fur et à mesure du temps. Les différents types de dynamiques ont étés présentés en section~\ref{sec:intro:problematique:data}. La capacité à ce modèle d'être capable de représenter les différentes évolutions sera critique à l'intégration des différentes sources de données hétérogènes.
+
+\subsection{Traitement}
+Afin d'évaluer la capacité du système de supervision à fournir les réponses les plus précises à l'utilisateur, il faut établir des processus de traitements sur les données. Suivant les systèmes, cette capacité à collecter et transformer les données des sources n'a pas la même puissance. Ainsi, il est nécessaire d'analyser plus en profondeur les capacités de ce procédé. Nous détaillerons ceci en quatre critères principaux : les types d'interrogation possibles, l'intégration de sources, le langage d'expression et enfin le pouvoir expressif de ce langage.
+
+\subsubsection{Types d'interrogations}
+La création des processus de traitements de données est assimilable à une interrogation que pose l'utilisateur sur l'ensemble des données. Il existe différentes natures d'interrogations (ou requêtes). Celles-ci reflètent l'hétérogénéité de la dynamique des données.
+\begin{itemize}
+    \item \textbf{Interrogation instantanée} : il constitue le paradigme usuel d'interrogation utilisé notamment dans les applications de gestion de base de données. L'utilisateur pose une question sur un ensemble de données considérées figées du moins le temps du calcul de la réponse. Le système fournit une réponse figée elle aussi. Un exemple simple étant : ``quel est l'ensemble actuel des capteurs de température de mon système''. La réponse sera ``à cet instant, les capteurs 1, 4 et 42 sont des capteurs de température du système''. La mention ``à cet instant'' est très importante car si un nouveau capteur arrive dans le système, la réponse deviendra erronée. Il est bien évidemment possible d'imaginer revenir dans le passé et poser une question sur un état antérieur. La consultation ponctuelle de l'ensemble de données par l'utilisateur est donc une application de cette interrogation.
+    \item \textbf{Interrogation continue} : principal acteur des systèmes événementiels, ce paradigme considère que les données sont en constante évolution. L'utilisateur obtiendra ainsi une réponse qui évoluera au cours du temps, sous forme de flux ou de mise à jour d'état. Un exemple pouvant être : ``quel est la température moyenne sur une minute du capteur 42''. La réponse sera un flux continu d'information qui, toutes les minutes, reportera une nouvelle valeur moyenne pour ce capteur. Ainsi, la formation de processus de collecte ou de formation d'alerte sont des applications de ce type d'interrogation.
+\end{itemize}
+Il est important de noter que ces deux grands paradigmes d'interrogation peuvent se combiner. Par exemple, il est possible d'effectuer un appel à une interrogation instantanée à l'intérieur d'un processus continu. Il est donc nécessaire que le système d'observation soit capable de manipuler naturellement ces deux types d'interrogations pour manipuler correctement le dynamisme des données.
+
+\subsubsection{Intégration de sources}
+\subsubsection{Langage et paradigme}
+\subsubsection{Pouvoir expressif}
+
+\subsection{Adaptabilité}
+\subsubsection{Adaptation au système}
+\subsubsection{Gestion de perspectives}
+\subsubsection{Intégration de fonctions métiers}
+\subsubsection{Performances}
