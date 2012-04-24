@@ -1,7 +1,8 @@
 #!/bin/sh
-
-for i in `find . | grep "\.tex\$" | sed 's/\.tex//' | sed 's!^./!!'`; do
+pattern=$1.*
+for i in `find . | grep "\.tex\$" | sed 's/\.tex//' | sed 's!^./!!' | grep "$pattern"`; do
 	if [ -e $i ]; then
+		echo Generating inputs for directory: $i
 		grep -v '^\\input' $i.tex > tmp.tex
 		if [ -e $i/.order ]; then
 			for j in `cat $i/.order`; do
