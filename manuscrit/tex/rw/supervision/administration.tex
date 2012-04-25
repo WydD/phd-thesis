@@ -1,24 +1,41 @@
-\section{Systèmes d'administrations}
-\subsection{Présentation}
-\subsubsection{Gestion de dispositifs}
-\subsubsection{Modèle de données}
-\subsubsection{L'hétérogénéité par la standardisation}
+\section{Systèmes d'administrations}\label{sec:rw:supervision:administration}
+Les systèmes d'administrations informatiques permettent de gérer des parcs de ressources depuis le début des années 80 avec les premières mises en réseau d'équipements. Le principe étant de surveiller et surtout contrôler un système afin qu'il satisfasse les demandes des utilisateurs et les contraintes du propriétaire~\cite{Sloman:management}. Tant la supervision telle que nous l'entendons dans cette thèse se focalise sur le fait de traiter les données, ici le principe étant d'agir sur les équipements. Toutefois, les systèmes existant sont dotés d'une gestion de données, malheureusement trop ad-hoc la plupart du temps.
+
+Cette section présente les systèmes d'administrations qui se conçoivent encore aujourd'hui pour exploiter des parcs de dispositifs à grande échelle. Ces systèmes sont spécifiés au travers de divers consortiums ou forums tels que le \textit{BroadBand Forum} (portés par les opérateurs télécoms), le \textit{Forum UPnP} (portés par l'électronique grand publique), ou encore \textit{DMTF}, l'\textit{IEEE} et l'\textit{IETF} (organisations ouvertes avec entreprises, académiques et indépendants). Ces ententes permettent la spécification des standards autant au niveau des protocoles de communications que sur les modèles de données manipulés.
+
+Tout d'abord, cette section présente la structure et la gestion des données issues des ressources. Ensuite, nous présenterons l'ensemble des possibilités de traitement. Et enfin, nous synthétiserons cette présentation grâce à la grille d'analyse.
+\subsection{Architecture de gestion des données}
+L'architecture de la gestion des données dans les systèmes classiques d'administration est principalement fondé sur des gestionnaires agents~\cite{CCITT:X700} (voir fig.~\ref{fig:rw:supervision:administration}). Cette architecture est celle utilisée de nos jours dans les protocoles d'administrations tels que TR-069~\cite{BBF:tr069}, UPnP Device Management~\cite{UPnP:MD}, mais aussi sur des protocoles plus anciens tels que SNMP~\cite{IETF:SNMP}. Le principe étant que sur les dispositifs devant être administrés est présent un module logiciel. Celui-ci comporte un agent capable de maintenir une petite base de données sous un format particulier représentant les données et état du système. Un gestionnaire est capable par la suite de transmettre les informations de l'agent à un système d'administration global qui agrégera l'ensemble des dispositifs.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.75\textwidth]{fig/rw-supervision-administration}
+    \caption{Architecture d'un système classique d'administration}\label{fig:rw:supervision:administration}
+\end{figure}
+
+\subsubsection{Modèles de données}
+Il existe plusieurs structures abstraites de données dans le cadre des systèmes d'administrations. La structure la plus répandue reste en l'état la \textbf{structure hiérarchique}. La première apparition d'un tel modèle de donnée remonte à la spécification de SNMP qui prévoit le concept de \textit{Management Information Base} (MIB)~\cite{IETF:MIB}. Une \textit{MIB} est une base d'information où les données sont regroupées sous forme d'arbre. Chaque information possède à l'intérieur de ce arbre un chemin unique (l'\textit{object identifier}) décrit par une suite de chiffres séparés de points. Par exemple, \textit{1.3.6.1.2.1.2.2.1.2} est le chemin décrivant le nom d'une interface réseau sur un dispositif (par exemple \textit{eth0} sur un système Linux). Et le sous-arbre \textit{1.3.6.1.2} (MIB-II~\cite{IETF:MIB-II}) contient toutes les informations concernant les informations réseaux du dispositif.
+
+Par la suite, l'idée des structures hiérarchiques a été reprise pour créer les protocoles d'administrations plus récents comme la structure du modèle des dispositifs de TR-069 (décrit dans le TR-106~\cite{BBF:tr106}) et dans le service de gestion de configuration (CMS) de UPnP-DM~\cite{UPnP:DMCMS}. Dans ces derniers, le modèle de donnée est décrit comme un système de fichier.
+\subsubsection{Le gestionnaire global}
 \subsubsection{Dynamisme des données}
-\subsection{Particularités (trouver un autre titre)}
+\subsection{Possibles traitements de données}
+\subsubsection{L'hétérogénéité par la standardisation}
 \subsubsection{Intégration de sources}
 \subsubsection{Statistiques}
-\subsubsection{Extension du modèle et fonctions métiers}
+\subsubsection{Extension du modèle}
 \subsection{Synthèse}
-\noindent \begin{tabular}{|c|p{0.2\linewidth}|p{0.6\linewidth}|} \hline
- Structure & Meta-modèle & awepawkd \\ \cline{2-3}
- des & Sémantique & awepawkd \\ \cline{2-3}
- données & Dynamisme & awepawkd \\ \hline
- & Types d'interrogation & awepawkd \\ \cline{2-3}
- Traitement & Intégration & awepawkd \\ \cline{2-3}
- & Langage & awepawkd \\ \cline{2-3}
- & Pouvoir expressif & awepawkd \\ \hline
- & Adaptation au système & awepawkd \\ \cline{2-3}
- Adaptabilité & Perspectives & awepawkd \\ \cline{2-3}
- & Fonctions métiers & awepawkd \\ \cline{2-3}
- & Performances & awepawkd \\ \hline
-\end{tabular}
+
+\criteretabDonnee
+    {Principalement structure \textbf{hiérarchique} sous forme de système de fichier. Quelques systèmes d'administration utilisent des modèles objets avec CIM, mais reste difficile à maîtriser.}
+    {Une donnée est identifié par son chemin complet. La sémantique est décrite par ce chemin. Pas de contraintes ou inférences exprimées.}
+    {Le dynamisme est géré par le mode d'accès. Certains nœuds peuvent être notifiables. D'autres ne sont actualisés que par consultation.}
+\criteretabTraitement
+    {Instantané et continu sur certaines données. Pas d'hybride possible vu que les procédés sont très séparés.}
+    {Standardisation des modèles. Toutes les entités sont structurés dans le même formalisme. Intégration par union des résultats.}
+    {Appel de méthodes standardes pour récupérer un sous-arbre du modèle. Code impératif (scripting) pour manipuler les données au niveau du gestionnaire.}
+    {Projection simple sur les appels. Certains nœuds particuliers permettent de calculer des statistiques.}
+\criteretabAdaptabilite
+    {Pas d'adaptation car les dispositifs doivent implémenter des standards.}
+    {Pas de perspectives métiers en dehors de la sélection sur les branches du modèle.}
+    {Nœuds particuliers pour le calcul. Fonctions métiers intégrées dans le gestionnaire.}
+    {Très efficace et utilisé pour gérer des parcs de millions de dispositifs.}

@@ -1,0 +1,28 @@
+\def\criteretab#1#2{ 
+\begin{center}
+\textbf{#1} \vskip 8pt
+\begin{tabular}{rp{0.7\linewidth}}
+\toprule #2 \\ \bottomrule
+\end{tabular}
+\end{center}
+}
+\def\criteretabDonnee#1#2#3{
+\criteretab{Structure des données}{
+Meta-modèle & #1  \\ \midrule
+Sémantique & #2 \\ \midrule
+Dynamisme & #3}
+}
+\def\criteretabTraitement#1#2#3#4{
+\criteretab{Traitement}{
+Types d'interrogation & #1  \\ \midrule
+Intégration de sources & #2 \\ \midrule
+Langage et paradigme & #3 \\ \midrule
+Pouvoir expressif & #4}
+}
+\def\criteretabAdaptabilite#1#2#3#4{
+\criteretab{Adaptabilité}{
+Adaptation au système & #1  \\ \midrule
+Gestion de perspectives & #2 \\ \midrule
+Procédures métiers & #3 \\ \midrule
+Performances & #4}
+}
