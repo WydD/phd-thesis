@@ -1,7 +1,7 @@
 \section{Systèmes d'administrations}\label{sec:rw:supervision:administration}
 Les systèmes d'administrations informatiques permettent de gérer des parcs de ressources depuis le début des années 80 avec les premières mises en réseau d'équipements. Le principe étant de surveiller et surtout contrôler un système afin qu'il satisfasse les demandes des utilisateurs et les contraintes du propriétaire~\cite{Sloman:management}. Tant la supervision telle que nous l'entendons dans cette thèse se focalise sur le fait de traiter les données, ici le principe étant d'agir sur les équipements. Toutefois, les systèmes existant sont dotés d'une gestion de données, malheureusement trop ad-hoc la plupart du temps.
 
-Cette section présente les systèmes d'administrations qui se conçoivent encore aujourd'hui pour exploiter des parcs de dispositifs à grande échelle. Ces systèmes sont spécifiés au travers de divers consortiums ou forums tels que le \textit{BroadBand Forum} (portés par les opérateurs télécoms), le \textit{Forum UPnP} (portés par l'électronique grand publique), ou encore \textit{DMTF}, l'\textit{IEEE} et l'\textit{IETF} (organisations ouvertes avec entreprises, académiques et indépendants). Ces ententes permettent la spécification des standards autant au niveau des protocoles de communications que sur les modèles de données manipulés.
+Cette section présente les systèmes d'administrations qui se conçoivent encore aujourd'hui pour exploiter des parcs de dispositifs à grande échelle. Ces systèmes sont spécifiés au travers de divers consortiums ou forums tels que le \textit{BroadBand Forum} (BBF) (portés par les opérateurs télécoms), le \textit{Forum Universal Plug'n'Play} (UPnP) (portés par l'électronique grand publique), ou encore \textit{Distributed Management Task Force} (DMTF), l'\textit{Institute of Electrical and Electronics Engineers} (IEEE) et l'\textit{Internet Engineering Task Force} (IETF), organisations ouvertes où participent entreprises, laboratoires et indépendants. Ces ententes permettent la spécification des standards autant au niveau des protocoles de communications que sur les modèles de données manipulés.
 
 Tout d'abord, cette section présente la structure et la gestion des données issues des ressources. Ensuite, nous présenterons l'ensemble des possibilités de traitement. Et enfin, nous synthétiserons cette présentation grâce à la grille d'analyse.
 \subsection{Architecture de gestion des données}
@@ -13,10 +13,37 @@ L'architecture de la gestion des données dans les systèmes classiques d'admini
 \end{figure}
 
 \subsubsection{Modèles de données}
-Il existe plusieurs structures abstraites de données dans le cadre des systèmes d'administrations. La structure la plus répandue reste en l'état la \textbf{structure hiérarchique}. La première apparition d'un tel modèle de donnée remonte à la spécification de SNMP qui prévoit le concept de \textit{Management Information Base} (MIB)~\cite{IETF:MIB}. Une \textit{MIB} est une base d'information où les données sont regroupées sous forme d'arbre. Chaque information possède à l'intérieur de ce arbre un chemin unique (l'\textit{object identifier}) décrit par une suite de chiffres séparés de points. Par exemple, \textit{1.3.6.1.2.1.2.2.1.2} est le chemin décrivant le nom d'une interface réseau sur un dispositif (par exemple \textit{eth0} sur un système Linux). Et le sous-arbre \textit{1.3.6.1.2} (MIB-II~\cite{IETF:MIB-II}) contient toutes les informations concernant les informations réseaux du dispositif.
+Il existe plusieurs structures abstraites de données dans le cadre des systèmes d'administrations. La structure la plus répandue reste en l'état la \textbf{structure hiérarchique}. La première apparition d'un tel modèle de donnée remonte à la spécification de SNMP qui prévoit le concept de \textit{Management Information Base} (MIB)~\cite{IETF:MIB}. Une \textit{MIB} est une base d'information où les données sont regroupées sous forme d'arbre. Chaque information possède à l'intérieur de ce arbre un chemin unique (l'\textit{object identifier}) décrit par une suite de chiffres séparés de points. Par exemple, \verb|1.3.6.1.2.1.2.2.1.2| est le chemin décrivant le nom d'une interface réseau sur un dispositif (par exemple \textit{eth0} sur un système Linux). Et le sous-arbre \verb|1.3.6.1.2| (MIB-II~\cite{IETF:MIB-II}) contient toutes les informations concernant les informations réseaux du dispositif.
 
-Par la suite, l'idée des structures hiérarchiques a été reprise pour créer les protocoles d'administrations plus récents comme la structure du modèle des dispositifs de TR-069 (décrit dans le TR-106~\cite{BBF:tr106}) et dans le service de gestion de configuration (CMS) de UPnP-DM~\cite{UPnP:DMCMS}. Dans ces derniers, le modèle de donnée est décrit comme un système de fichier.
+Par la suite, l'idée des structures hiérarchiques a été reprise pour créer les protocoles d'administrations plus récents comme la structure du modèle des dispositifs de TR-069 (décrit dans le TR-106~\cite{BBF:tr106}) et dans le service de gestion de configuration (CMS) de UPnP-DM~\cite{UPnP:DMCMS}. Dans ces derniers, le modèle de donnée est décrit comme un système de fichier. Les \textit{instances} sont assimilables à des dossiers, et les \textit{feuilles} sont assimilables à des fichiers. Les nœuds ont ainsi un nom et un chemin unique vers la racine \enquote{/}. Tout comme leurs analogues, les \textit{instances} n'ont pas de valeurs associées alors que les \textit{feuilles} contiennent une donnée. Il existe plusieurs types d'\textit{instances} :
+\begin{itemize}
+    \item \textit{Unique} : Ce nœud peut contenir tout autre nœud. Il représente simplement un chemin intermédiaire un groupe de données.
+    \item \textit{Multiple} : Ce nœud peut contenir plusieurs nœuds de type \textit{Instance}. Il permet de représenter une liste de nœuds similaires.
+    \item \textit{Instance} : Il représente l'élement de la liste définie par l'instance multiple. Son nom sera toujours un entier pour l'identifier parmi les autres instances. Ces nœuds ont pour vocation à être créés ou supprimés en fonctionnement.
+\end{itemize}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.75\textwidth]{fig/rw-supervision-dmtree}
+    \caption{Structure hiérarchique du modèle de données d'UPnP-DM}\label{fig:rw:supervision:dmtree}
+\end{figure}
+
+
+Un exemple de modèle de données de ce type de structure est présenté en figure~\ref{fig:rw:supervision:dmtree}. Désormais, une donnée est définie de manière unique, tout comme dans la MIB, grâce à son chemin complet. Dans le vocabulaire du domaine de l'administration, cette donnée est appelé \textit{paramètre}. Le \textit{chemin} d'un paramètre est la concaténation des noms des nœuds qui le sépare de la racine, avec pour séparateur \enquote{/} dans UPnP ou \enquote{.} dans TR-069. Voici quelques exemples de paramètres :
+\begin{itemize}
+\item \verb|/UPnP/DM/DeviceInfo/PhysicalDevice/HardwareVersion| permet de connaître la version du matériel du dispositif administré. 
+\item \verb|/UPnP/DM/Configuration/Network/IPInterface/3/SystemName| est le nom d'une des interfaces réseaux (tout comme \verb|1.3.6.1.2.1.2.2.1.2| dans la MIB). En remplaçant \verb|/3/| par \verb|/5/|, cela concernera une autre interface réseau.
+\end{itemize}
+
+L'implémentation de l'agent permettra par la suite de pouvoir créer et remplir cette base d'information.
+
+Toutefois, tous les modèles ne sont pas tous orientés sur la hiérarchie. Il existe notamment l'approche objet adoptée dans les protocoles issues de la DMTF. En effet, dans les protocoles tels que WBEM~\cite{DMTF:WBEM} proposé par le DMTF, la fondation du modèle de données est décrit par un diagramme de classe UML comme présenté en figure~\ref{}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.75\textwidth]{fig/rw-supervision-cimcore}
+    \caption{Structure de classe de la partie \textit{Core} de \textit{CIM}}\label{fig:rw:supervision:cimcore}
+\end{figure}
 \subsubsection{Le gestionnaire global}
+Dans l'architecture présentée en figure~\ref{fig:rw:supervision:administration}, 
 \subsubsection{Dynamisme des données}
 \subsection{Possibles traitements de données}
 \subsubsection{L'hétérogénéité par la standardisation}
@@ -25,6 +52,7 @@ Par la suite, l'idée des structures hiérarchiques a été reprise pour créer 
 \subsubsection{Extension du modèle}
 \subsection{Synthèse}
 
+\begin{table}[ht]
 \criteretabDonnee
     {Principalement structure \textbf{hiérarchique} sous forme de système de fichier. Quelques systèmes d'administration utilisent des modèles objets avec CIM, mais reste difficile à maîtriser.}
     {Une donnée est identifié par son chemin complet. La sémantique est décrite par ce chemin. Pas de contraintes ou inférences exprimées.}
@@ -39,3 +67,4 @@ Par la suite, l'idée des structures hiérarchiques a été reprise pour créer 
     {Pas de perspectives métiers en dehors de la sélection sur les branches du modèle.}
     {Nœuds particuliers pour le calcul. Fonctions métiers intégrées dans le gestionnaire.}
     {Très efficace et utilisé pour gérer des parcs de millions de dispositifs.}
+\end{table}

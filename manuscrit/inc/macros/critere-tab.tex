@@ -1,11 +1,10 @@
 \def\criteretab#1#2{ 
 \begin{center}
-\textbf{#1} \vskip 8pt
-\begin{tabular}{rp{0.7\linewidth}}
+\noindent\textbf{#1} \vskip 8pt
+\noindent\begin{tabular}{>{\raggedleft}m{0.2\linewidth}|m{0.7\linewidth}}
 \toprule #2 \\ \bottomrule
 \end{tabular}
-\end{center}
-}
+\end{center}}
 \def\criteretabDonnee#1#2#3{
 \criteretab{Structure des données}{
 Meta-modèle & #1  \\ \midrule
