@@ -12,7 +12,7 @@ L'architecture de la gestion des données dans les systèmes classiques d'admini
     \caption{Architecture d'un système classique d'administration}\label{fig:rw:supervision:administration}
 \end{figure}
 
-\subsubsection{Modèles de données}
+\subsubsection{Les données fournies les agents}
 Il existe plusieurs structures abstraites de données dans le cadre des systèmes d'administrations. La structure la plus répandue reste en l'état la \textbf{structure hiérarchique}. La première apparition d'un tel modèle de donnée remonte à la spécification de SNMP qui prévoit le concept de \textit{Management Information Base} (MIB)~\cite{IETF:MIB}. Une \textit{MIB} est une base d'information où les données sont regroupées sous forme d'arbre. Chaque information possède à l'intérieur de ce arbre un chemin unique (l'\textit{object identifier}) décrit par une suite de chiffres séparés de points. Par exemple, \verb|1.3.6.1.2.1.2.2.1.2| est le chemin décrivant le nom d'une interface réseau sur un dispositif (par exemple \textit{eth0} sur un système Linux). Et le sous-arbre \verb|1.3.6.1.2| (MIB-II~\cite{IETF:MIB-II}) contient toutes les informations concernant les informations réseaux du dispositif.
 
 Par la suite, l'idée des structures hiérarchiques a été reprise pour créer les protocoles d'administrations plus récents comme la structure du modèle des dispositifs de TR-069 (décrit dans le TR-106~\cite{BBF:tr106}) et dans le service de gestion de configuration (CMS) de UPnP-DM~\cite{UPnP:DMCMS}. Dans ces derniers, le modèle de donnée est décrit comme un système de fichier. Les \textit{instances} sont assimilables à des dossiers, et les \textit{feuilles} sont assimilables à des fichiers. Les nœuds ont ainsi un nom et un chemin unique vers la racine \enquote{/}. Tout comme leurs analogues, les \textit{instances} n'ont pas de valeurs associées alors que les \textit{feuilles} contiennent une donnée. Il existe plusieurs types d'\textit{instances} :
@@ -35,16 +35,28 @@ Un exemple de modèle de données de ce type de structure est présenté en figu
 \end{itemize}
 
 L'implémentation de l'agent permettra par la suite de pouvoir créer et remplir cette base d'information.
-
-Toutefois, tous les modèles ne sont pas tous orientés sur la hiérarchie. Il existe notamment l'approche objet adoptée dans les protocoles issues de la DMTF. En effet, dans les protocoles tels que WBEM~\cite{DMTF:WBEM} proposé par le DMTF, la fondation du modèle de données est décrit par un diagramme de classe UML comme présenté en figure~\ref{}.
+ 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.75\textwidth]{fig/rw-supervision-cimcore}
-    \caption{Structure de classe de la partie \textit{Core} de \textit{CIM}}\label{fig:rw:supervision:cimcore}
+    \caption{Modèle de classe de la partie \textit{Core} de \textit{CIM}}\label{fig:rw:supervision:cimcore}
 \end{figure}
-\subsubsection{Le gestionnaire global}
-Dans l'architecture présentée en figure~\ref{fig:rw:supervision:administration}, 
+Toutefois, tous les modèles ne sont pas tous orientés sur la hiérarchie. Il existe notamment l'approche objet adoptée dans les protocoles issues de la DMTF. En effet, dans les protocoles tels que WBEM ou WS-MAN~\cite{DMTF:WS-MAN} proposés par le DMTF, la fondation du modèle de données est décrite par un diagramme de classe UML comme présenté en figure~\ref{fig:rw:supervision:cimcore}. Nous pouvons remarquer la présence des différents concepts des structures précédentes avec le concept de \textit{Settings}, de \textit{ManagedElement}, et de \textit{Collection}. Plusieurs extensions standardisées existent pour modéliser les différents aspects des systèmes : Base de données, Dispositifs, Réseau, Sécurité, Utilisateur, Applications\dots{} Ainsi, le modèle des données sera un modèle d'objet respectant l'ensemble des spécifications et des extensions. L'inconvénient majeur d'un tel choix de méta-modèle restant la complexité de CIM qui se trouve souvent réduite pour être applicable en pratique.
+
+Le système se compose ainsi de multiples agents qui seront une représentation de chacun des objets. Les objets du systèmes sont ainsi exposés à un service de gestion pour en fournir plusieurs propriétés. Nous pouvons noter que ce principe reste le même pour l'administration de modules Java dans le protocole JMX~\cite{Sun:JMX} où des objets particuliers (les \textit{MBean}) sont exposés et peuvent être consultés ou manipulés via ce protocole.
+
 \subsubsection{Dynamisme des données}
+
+
+\subsubsection{Le gestionnaire global}
+Dans l'architecture présentée en figure~\ref{fig:rw:supervision:administration}, de multiples agents fournissent différentes informations selon les modèles présentés dans la section précédente. Le système d'administration se connecte aux différents agents afin de les gérer. Il sert à la fois d'interface à l'utilisateur que d'infrastructure de collecte et de d'analyse. En effet, l'intégration des données ainsi que la vue globale du système se constituera à l'intérieur de celui-ci.
+
+Il est important de noter que ce système peut ne pas être centralisé pour mieux amortir la charge en la présence de grande quantités d'agents à administrer. Toutefois, il est important de voir que pour de l'administration de dispositifs des architectures centralisés peuvent suffir. Par exemple, pour l'administration de ses dispositifs, \textit{France Telecom} utilise un \textit{ACS} (serveur d'administration en TR-069) centralisé. En effet, la fréquence d'émission des données en fonctionnement normal se compte en jour pour chaque dispositif. Pour les 10 millions d'équipement à gérer, une capacité de 500 réceptions par seconde côté serveur est suffisante. Cette capacité est atteinte sur des \textit{ACS} récent tels que \textit{EDGE} de \textit{Motorola} sur des serveurs de capacité standardes.
+
+Toutefois, plus l'usage le requiert, plus ce type d'architecture ne pourra supporter la charge des informations remontées. Plusieurs systèmes d'administrations supportent des structures hiérarchiques pour la gestion à plus grande échelle~\cite{Kessis:management}. La hiérarchie peut se découper par lieu géographique, ou par domaine d'activité. Dans le cadre des gestions par objets, le découpage par domaine permettra de répartir l'ensemble des agents par unité de traitement.
+
+La section suivante présente les capacités de traitements de ce type de systèmes.
+
 \subsection{Possibles traitements de données}
 \subsubsection{L'hétérogénéité par la standardisation}
 \subsubsection{Intégration de sources}
