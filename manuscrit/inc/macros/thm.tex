@@ -1,0 +1,64 @@
+\usepackage[nocut,thickness=1pt]{thmbox}
+
+\def\chapterarabic#1{\thechapter.\arabic{#1}}
+%% THMBOX
+% Nouveau style thmbox
+% #1 = nom
+% #2 = label
+% #3 = style (S - M)
+\def\newthmtype#1#2#3{
+	\newcounter{#1ct}[chapter]
+	\expandafter\def\csname the#1ct\endcsname{\chapterarabic{#1ct}}
+	\newenvironment{#1}[1][]
+		{\vskip .4cm \refstepcounter{#1ct}\begin{thmbox}[#3]{\ifx#3S\it\else\bf\fi #2 \chapterarabic{#1ct}  ##1 :}
+	}
+		{\end{thmbox} \vskip .3cm}
+	\newenvironment{#1*}[1][]
+		{\vskip .4cm \begin{thmbox}[#3]{\ifx#3S\it\else\bf\fi #2 ##1 :}
+	}
+		{\end{thmbox} \vskip .3cm}
+}
+\newthmtype{defi}{Définition}{M}
+\newthmtype{lem}{Lemme}{S}
+\newthmtype{thm}{Théorème}{M}
+\newthmtype{axiom}{Axiome}{M}
+\newthmtype{prop}{Proposition}{S}
+\newthmtype{method}{Méthode}{S}
+\newthmtype{coro}{Corollaire}{S}
+\def\examplename{Exemple}
+
+\def\examplecounter{examplect}
+\newcounter{examplect}[chapter]
+\renewenvironment{example}[1][\examplename]{%
+	\renewcommand{\examplename}{Exemple \refstepcounter{examplect}\chapterarabic{examplect}}
+	\begin{absexample}}{\end{absexample}}
+\newenvironment{absexample}[1][\examplename]{%
+  \par\smallbreak%
+  \noindent\textbf{#1\, :} \relax}{}
+%  \let\demo=\comment
+%  \let\enddemo=\endcomment
+\newenvironment{demo}{
+	\renewcommand{\examplename}{D�monstration}
+	\begin{absexample} $\rhd$ }{ \hfill $\lhd$ \end{absexample}}
+
+\newenvironment{eqndemo}{\begin{displaymath}\begin{array}{rcll}}{\end{array}\end{displaymath}}
+\def\demodetail#1{& \;\text{#1}}
+%\newcount\democt
+%\newsavebox{\saveddemo}
+%\newsavebox{\tmpdemo}
+%\def\testsbox{\global\sbox}
+%\newcommand{\blabla}{\multido{0+1}{\the\democt}{\fbox{\usebox{\csname dembox\the\democt\endcsname}}}}
+%\renewenvironment{demo}{\begin{lrbox}{\tmpdemo}\begin{minipage}{\linewidth}}{\end{minipage}\end{lrbox}
+%	\noexpand\newsavebox\csname dembox\the\democt\endcsname\relax
+%	\expandafter\testsbox\noexpand\csname dembox\the\democt\endcsname{\usebox{\tmpdemo}}}
+
+\newcounter{rmqct}
+\def\rmq{}
+\renewenvironment{rmq}{%
+	\par\smallbreak
+	\list{\hspace\labelsep\underline{\textit{Remarque}}\,:}{%
+		\leftmargin=\parindent%
+		\labelwidth=\parindent}%
+		\item\relax}{%
+		\endlist}
+		

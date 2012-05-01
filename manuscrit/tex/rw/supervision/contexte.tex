@@ -1,1 +1,55 @@
 \section{Informatique contextuelle}
+Au centre des systèmes pervasifs et de l'informatique ubiquitaire, l'informatique contextuelle se fait une part de plus en plus grande. Encore une fois, sa définition a fait l'objet de plusieurs débats au sein de la communauté scientifique. Celle la plus couramment utilisé est : << L'informatique contextuelle (\textit{context-aware computing} a pour but de permettre les équipements de fournir de meilleurs services aux utilisateurs par l'utilisation d'information de contexte >>\cite{Han:contextaware}.
+
+\subsection{Définition et applications}
+La définition de contexte a été elle aussi au cœur de nombreux débats. Après analyse des travaux sur le sujet, le rapport de recherche \cite{Dey:context} propose la définition suivante :
+
+\begin{defi}[Contexte]
+Un contexte est toute information pouvant être utilisée pour caractériser la situation d'une entité. Cette entité pouvant être une personne, un lieu, ou un objet considéré comme pertinent à l'interaction entre l'utilisateur et l'application, incluant l'utilisateur et l'applications eux-mêmes.
+\end{defi}
+
+Il est important de noter sa définition est donc orientée par l'utilisation avant tout qui en est faite. Une donnée quelconque peut être un contexte s'il est utilisé comme tel. Ainsi, il nous faut voir l'ensemble des utilisations de ce contexte. Ces applications visent sept utilisations principales~\cite{Soylu:context} : 
+\begin{enumerate}
+	\item Sélection et recommandations d'informations ou de services.
+	\item Présentation et accès à l'information et aux services.
+	\item Recherche d'information ou de service.
+	\item Adaptation de l'exécution de processus séquentiels.
+	\item Modification et reconfiguration d'applications.
+	\item Conseil d'actions semi-automatique.
+	\item Allocations de ressources.
+\end{enumerate}
+\TODO{Est-il nécessaire de fournir des explications ?}
+
+Les thèmes de ces applications sont directement reliés à la supervision car c'est elle qui permet la construction de ce contexte pour ensuite fournir ces types de services de haut-niveau.
+
+\subsection{Modélisation et capture du contexte}
+Le modèle utilisé pour créer et manipuler le contexte peut être sous différentes formes : Basé sur des principes d'intelligence artificielle (ontologies, réseau bayésiens), sur le génie logiciel (UML), les bases de données (Entité-Relation) ou d'autres moyens applicatifs (entrées clefs-valeurs). L'UML et l'ER atteignent rapidement leurs limites d'expressivité. Il devient difficile de manipuler les données sémantiques dans le cadre de contextes larges et hétérogènes à cause de leur rigidité. Leurs fonctionnalités permettent d'abstraire une partie du monde ou de la logique pour un usage restreint. Par opposition, les ontologies n'ont pas ces limites par définition. Il est toutefois important de ne pas négliger ces autres modélisations dû à leur efficacité (comme vu dans la section~\ref{sec:rw:supervision:administration}.
+
+\subsubsection{Les ontologies}
+\TODO{Réécrire tout ça c'est horrible + Définition propre (c.f. thèse charbel ?)}
+Les méthodes d'intelligence artificielles sont capables de représenter des ontologies de haut niveau avec une formalisation et une représentation fondé sur le web sémantique (OWL). De plus, des techniques puissantes de raisonnements sur OWL ont étés élaborés ce qui nous permet de gérer l'ensemble des besoins que l'on a, ce que nous détaillons par la suite. Pour des points de vue de performances, il est préférable de séparer les connaissances par domaines afin d'avoir une base extensible à souhait.
+
+\subsubsection{Capture du contexte}
+\TODO{Réécrire tout ça c'est horrible}
+La capture du contexte est la manière de récupérer une information et de la représenter sous la forme choisie lors de la modélisation. Par exemple, un capteur de température pourra insérer un ensemble de triplets pour indiquer qu'à 10h25 le lundi 26 avril, il faisait 25.256ºC sur la source T75896. Cet ensemble de triplet dépendra de la modélisation abstraite du contexte. Plusieurs types de captures existent : la capture physique, où les informations sont extraites de l'environnement physique ; la capture virtuelle, où les informations sont issus de logs ou de services ; et enfin la capture virtuelle où les données sont extraites de multiples autres informations de contexte.
+
+La capture se fait par des serveurs centralisés sur des brokers/blackboards. Il est aussi possible de distribuer les informations, auquel cas la modélisation devra être faite en prenant en compte cet aspect car les appels externes devront être minimalisés et les problèmes de sémantiques distribués et d'alignement apparaissent.
+
+\subsection{Capacités de traitement}
+\TODO{Réécrire tout ça c'est horrible}
+Une des principales raisons du traitement sémantique est le pouvoir de raisonnement logique. Le but ici est de pouvoir inférer de nouveaux triplets à partir des connaissances que nous avons jusqu'ici. Les inférences sont de trois types : l'association directe, à une information bas-niveau on associe une information haut-niveau ; la fusion de contexte, à partir d'un ensemble de données, on infère un nouvel état ; la fission de contexte, à partir d'une donnée, on infère un ensemble d'informations.
+
+Trois espaces de données sont intéressants dans ce domaine de type de traitement. Les espaces de domaine de valeurs (pour l'âge d'une personne, un entier de 0 à 125), les espaces de contextes, et les espaces de situation. Selon certains auteurs (Padovitz et al.), chacun de ces espaces peut avoir plus ou moins d'importance, ainsi des informations de poids (dépendantes des contextes aussi) pourront être attribuées.
+
+L'inférence est en relation directe avec les critères de qualités évoqués précédemment. Les critères sur la précision / fiabilités / résolutions introduiront de l'aléa de mesure ainsi les situations inférées ne seront pas certaines. De même les critères sur la confiance et la fraîcheur introduiront des résultats qui devront refléter ces points de vue. Enfin, l'inférence se fait par des règles ou par raisonnements. Les règles définies par diagnostic ou par l'utilisateur ne sont pas tout le temps fiables (par exemple, un diagnostic de pixelisation TV est souvent dû à un problème de lenteur de réseau interne, mais ce peut être du à des dysfonctionnements plus rares du matériels (surchauffe)). Ainsi, nous introduisons une part de probabilités dans ces raisonnements pourtant déterministes a priori.
+
+\subsection{Analyse de systèmes pervasifs existants}
+Dans cette partie, nous analyserons des systèmes pervasifs existants. Ceux-ci sont en général très orientés sur la domotique (\textit{Home Automation}) qui est l'environnement de développement le plus courant dans le domaine de l'informatique ubiquitaire.
+
+\subsubsection{DogOnt}
+\subsubsection{Amigo}
+\subsubsection{MATCH}
+\subsubsection{SOCAM}
+\subsubsection{Gathor Tech House}
+\subsection{Synthèse}
+\TODO{Et c'est reparti pour le tableau}
