@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%      Fichier encodé au format ISO-8859-16          %%
 \NeedsTeXFormat{LaTeX2e}[2003/12/01]
-\ProvidesPackage{template/meta-donnees}[2011/02/25 v0.01]
+\ProvidesPackage{meta-donnees}[2011/02/25 v0.01]
 
 \DeclareOption{a4paper}
    {\setlength\paperheight {297mm}%
@@ -16,7 +16,7 @@
 \ifx\colorbox\undefined\RequirePackage{color}\fi}
 
 \long\def\Universite#1{\gdef\@Universite{#1}}
-\def\@Universite{\includegraphics[width=10cm,clip]{template/logo_first_ligne}}
+\def\@Universite{\includegraphics[width=10cm,clip]{logo_first_ligne}}
 \long\def\EcoleDoctorale#1{\gdef\@EcoleDoctorale{et de {\bfseries#1}}}
 \def\@EcoleDoctorale{}     
 \long\def\Grade#1{\gdef\@Grade{\uppercase{#1}}}
@@ -121,7 +121,7 @@
 
 \newcommand{\@ThesisJury}{\begin{tabular}{@{}p{12.5cm}@{}}\@Jury\end{tabular}}
 
-\newcommand{\@UniversityLogo}{\includegraphics[clip]{template/logo_Univ_Grenoble}}
+\newcommand{\@UniversityLogo}{\includegraphics[clip]{logo_Univ_Grenoble}}
 \newcommand\UniversityLogo[1]{\renewcommand{\@UniversityLogo}{{#1}}}
 
 \newcommand\@UGthesepage@height{28cm}

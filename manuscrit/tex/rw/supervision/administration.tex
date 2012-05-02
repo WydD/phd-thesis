@@ -37,7 +37,7 @@ L'implémentation de l'agent permettra par la suite de pouvoir créer et remplir
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.75\textwidth]{fig/rw-supervision-cimcore}
+    \includegraphics[width=.75\textwidth]{rw-supervision-cimcore}
     \caption{Modèle de classe de la partie \textit{Core} de \textit{CIM}}\label{fig:rw:supervision:cimcore}
 \end{figure}
 Toutefois, tous les modèles ne sont pas tous orientés sur la hiérarchie. Par exemple, la DMTF a adopté l'approche objet. En effet, dans les protocoles tels que WBEM~\cite{DMTF:WBEM} ou WS-MAN~\cite{DMTF:WS-MAN}, la fondation du modèle de données \textit{CIM} (\textit{Common Information Model})~\cite{DMTF:CIM} est décrite par un diagramme de classe UML comme présenté en figure~\ref{fig:rw:supervision:cimcore}. Ces protocoles sont notamment utilisé pour l'administration de web-services et applications entreprises. Nous pouvons remarquer la présence des différents concepts des structures précédentes avec le concept de \textit{Settings}, de \textit{ManagedElement}, et de \textit{Collection}. Plusieurs extensions standardisées existent pour modéliser les différents aspects des systèmes : Base de données, Dispositifs, Réseau, Sécurité, Utilisateur, Applications\dots{} Ainsi, le modèle des données sera un modèle d'objet respectant l'ensemble des spécifications et des extensions. L'inconvénient majeur d'un tel choix de méta-modèle restant la complexité de \textit{CIM} qui se trouve souvent réduite pour être applicable en pratique.
@@ -69,7 +69,7 @@ Que ce soit au niveau de l'agent comme au niveau du gestionnaire global, les don
 \subsubsection{L'hétérogénéité par la standardisation}
 La standardisation est l'argument majeur des systèmes à grande échelles. Comme présenté précédemment, les protocoles d'administrations et la spécification des agents se fait autour de consortiums. Ainsi l'hétérogénéité des systèmes est gérée par le fait qu'il est supposé acquis que les standards soient respectés. Suivant les dispositifs observés, différents profils existent. Que ce soit pour les profils hiérarchiques ou à objet, des spécifications sont écrites pour décrire le modèle de données.
 
-\begin{wraptable}{r}{7cm}
+\begin{wraptable}{R}{7cm}
 \centering
 {\scriptsize
 \begin{tabular}{cc}
@@ -84,8 +84,7 @@ composants logiciels & TR-157 \\ \midrule
 dispositifs génériques v.2 & TR-181 \\  \midrule
 politiques d'accès aux services &  TR-196 \\ \midrule
 femto cellule & TR-262 \\ \bottomrule
-\end{tabular}
-}
+\end{tabular}}
 \caption{Liste  des profils TR-069}\label{tab:rw:supervision:tr069dm}
 \end{wraptable}
 Il est notable que le nombre de spécification augmente énormément pour essayer d'amortir la grande hétérogénéité. Par exemple, dans le cadre de \textit{TR-069}, l'avantage étant que ce consortium couvre principalement l'usage des opérateurs télécoms, ainsi il existe seulement 9 profils principaux présentés en table~\ref{tab:rw:supervision:tr069dm}. Mais lorsque les domaines s'élargissent le nombre d'entités devient difficile à contrôler, comme dans CIM où le nombre de spécifications est de 16\footnote{Sachant que les spécifications CIM sont bien plus complexes et possèdent plus de classes.}, ou dans les MIB qui sont au nombre de 318 spécifiées par l'IETF.
