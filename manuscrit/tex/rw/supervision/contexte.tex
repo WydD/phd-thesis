@@ -26,6 +26,7 @@ Les thèmes de ces applications sont directement reliés à la supervision car c
 Le modèle utilisé pour créer et manipuler le contexte peut être sous différentes formes : Basé sur des principes d'intelligence artificielle (ontologies, réseau bayésiens), sur le génie logiciel (UML), les bases de données (Entité-Relation) ou d'autres moyens applicatifs (entrées clefs-valeurs). L'UML et l'ER atteignent rapidement leurs limites d'expressivité. Il devient difficile de manipuler les données sémantiques dans le cadre de contextes larges et hétérogènes à cause de leur rigidité. Leurs fonctionnalités permettent d'abstraire une partie du monde ou de la logique pour un usage restreint. Par opposition, les ontologies n'ont pas ces limites par définition. Il est toutefois important de ne pas négliger ces autres modélisations dû à leur efficacité (comme vu dans la section~\ref{sec:rw:supervision:administration}).
 
 \subsubsection{Les ontologies}
+\TODO{Présenter RDF avant les ontologies}
 Le terme ontologie a d'abord été introduit par la philosophie grecque. Il représente étymologiquement l'étude de l'être. En informatique, il prend cependant une autre dimension. Tel que l'a défini Kalfoglou~\cite{Kalfoglou:ontology}, une ontologie est \textit{une représentation explicite d'une compréhension commune de concepts importants appartenant à un domain d'intérêt}.
 Elle permettra donc de capturer et représenter une vue simplifiée d'un domaine à travers des concepts prédéfinis. Cela permet un langage commun et une taxonomie des concepts tout en étant capable de représenter leurs liaisons. Ainsi, il est possible de capturer la sémantique propre des différentes données.
 
@@ -68,17 +69,58 @@ A un instant donné, il est possible de définir un \textbf{état de contexte} e
     \caption{Structure abstraite du raisonnement sur contexte. À un élement du contexte $c_i$ est associé une valeur du domaine $V_i$. A partir de l'espace du contexte $C$, on effectue des associations, des fissions ou fusions pour inférer l'espace des situations $S$.}\label{rw-supervision-contextreasoning}
 \end{figure}
 
-
-
-L'inférence est en relation directe avec les critères de qualités évoqués précédemment. Les critères sur la précision / fiabilités / résolutions introduiront de l'aléa de mesure ainsi les situations inférées ne seront pas certaines. De même les critères sur la confiance et la fraîcheur introduiront des résultats qui devront refléter ces points de vue. Enfin, l'inférence se fait par des règles ou par raisonnements. Les règles définies par diagnostic ou par l'utilisateur ne sont pas tout le temps fiables (par exemple, un diagnostic de pixelisation TV est souvent dû à un problème de lenteur de réseau interne, mais ce peut être du à des dysfonctionnements plus rares du matériels (surchauffe)). Ainsi, nous introduisons une part de probabilités dans ces raisonnements pourtant déterministes a priori.
+\subsubsection{La qualité de contexte}
+Beaucoup de travaux se sont intéressés à la qualité des données dans le cadre de la gestion de contexte. En effet, l'inférence des situations se fera sur la qualité du contexte. Or si le contexte est de mauvaise qualité, en terme de précision ou de fiabilité par exemple, le raisonnement ne pourra pas être sûr. Enfin, l'inférence se fait par des règles ou par raisonnements. Ces règles sont elles aussi assujéties à la qualité car elles sont fournies par l'utilisateur qui peut ne pas être sûr de son raisonnement. Par exemple, un diagnostic de pixelisation TV est souvent dû à un problème de lenteur de réseau interne, mais ce peut être du à des dysfonctionnements plus rares du matériels (surchauffe). Ainsi, certaines recherches amènent une part de probabilités dans ces raisonnements pourtant déterministes a priori.
 
 \subsection{Analyse de systèmes pervasifs existants}
-Dans cette partie, nous analyserons des systèmes pervasifs existants. Ceux-ci sont en général très orientés sur la domotique (\textit{Home Automation}) qui est l'environnement de développement le plus courant dans le domaine de l'informatique ubiquitaire.
+Dans cette partie, nous analyserons des systèmes pervasifs existants. Ceux-ci sont en général très orientés sur la domotique (\textit{Home Automation}) qui est l'environnement de développement le plus courant dans le domaine de l'informatique ubiquitaire. Cette étude nous permettra de voir comment est mis en pratique l'approche présentée jusqu'ici.
 
-\subsubsection{DogOnt}
-\subsubsection{Amigo}
-\subsubsection{MATCH}
-\subsubsection{SOCAM}
-\subsubsection{Gathor Tech House}
+\subsubsection{De la représentation du système}
+Un premier travail étant \textit{DogOnt}\cite{Bonino:dogont}, dont l'objectif est de pouvoir modéliser les objets des environnements domotiques intelligents. Ainsi, en plongeant l'ensemble des équipements au niveau conceptuel des ontologies, il est possible de résoudre les problèmes d'interopérabilité et d'hétérogénéité des données. Comme le contexte d'exploitation relève plus de la domotique, \textit{DogOnt} est capable de répondre à des requêtes telles que : la position de l'équipement, ses capacités, ses moyens de communications, comment l'environnement est composé (notamment architecturellement parlant, ce qui permet de représenter la maison).
+
+Ainsi, une représentation de haut niveau permet de poser tous les concepts afin de représenter le réseau domestique au sens large. D'une manière plus concrête, un équipement est représenté en tant que \enquote{\it Controllable} (et ses sous-classes). La figure~\ref{fig:rw:supervision:dogont}. Par la suite, il est évident qu'il faut pouvoir rajouter des fonctionalités et des variables d'états sur ces entités afin de pouvoir les observer (et les contrôler). Cette modélisation se fait via des relations sémantiques telles que \textit{hasControl}, \textit{hasFunctionality}, et \textit{hasState}. En combinant ces associations ainsi que l'ensemble complet des instances, il est possible de représenter l'ensemble des périphériques et leurs capacités.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth, trim=4cm 15.5cm 4cm 4.6cm, clip]{rw-supervision-dogont}
+    \caption{L'ontologie de DogOnt}\label{fig:rw:supervision:dogont}
+\end{figure}
+
+Plusieurs autres projets ont permit ce type de modélisation pour des applications pervasives. Par exemple, Amigo~\cite{BenMokhtar:easy} se focalise plus sur la modélisation des services et des capacités. A contrario, \textit{MATCH}~\cite{Docherty:match} met l'accent sur la hiérarchie des ontologies pour que chaque domaine puisse apporter ses connaissances en se raccrochant à des concepts communs (\textit{dispositifs}, \textit{réseau},\dots).
+
+Ces projets appliquent les idées de \textit{CIM} (détaillé en section~\ref{sec:rw:supervision:administration}) en tentant de représenter toutes les possibilités de données dans leurs cadres applicatifs respectifs. Le concept le plus haut étant \textit{Controllable} pour ensuite en dériver les autres classes. Le point important étan que pour intégrer toutes les sources de données, elles doivent donc respecter ce grand ensemble de classes. Cependant, dans le domaine des ontologies, les standards de modélisations n'existent pas, notamment pour des domaines en particulier. Bien heureusement, 
+
+\subsubsection{SOCAM : De l'utilité du raisonnement logique}
+SOCAM (Service-Oriented Context-Aware Middleware)~\cite{Gu:socam} propose un intergiciel générique pour permettre aux développeurs de créer des applications pervasives par contexte. Cet intergiciel supporte l'acquisition, la découverte, l'interprétation et l'accès aux contextes. Comme les autres solutions présentés jusqu'ici, il s'appuie sur une ontologie conceptualisée comme celle de \textit{MATCH} afin de pouvoir être générique et y apporter les connaissances de chacun des domaines.
+
+L'architecture de SOCAM, représentée en figure~\ref{fig:rw:supervision:socam} qui se décrit en trois 4 composants principaux.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{rw-supervision-socam}
+    \caption{Architecture de SOCAM}\label{fig:rw:supervision:socam}
+\end{figure}
+\begin{itemize}
+	\item[\textbf{Fournisseurs de contexte}] Ceci permet d'abstraire l'hétérogénéité des données issues des différentes sources (internes, tels que les capteurs ou devices), ou externe (services méteo ou autres) pour les convertir en \textit{OWL}. Les données insérés doivent être du plus haut niveau possible. Par exemple, dans un fournisseur de données à partir de vidéo, il est plus pertinent d'insérer les données traités telles que \enquote{\it la personne est allongée sur le lit} ou \enquote{\it un intrus est dans la maison}. Ainsi, les définitions de règles et leurs inférences se concentrent sur le processus métier de l'analyse contextuelle et non sur l'abstraction sémantique des informations.
+    \item[\textbf{Interpréteur de contexte}] Fournit la logique de raisonnement sur le contexte.
+    \item[\textbf{Base de données de contexte}] Stocke les ontologies de contexte et l'historique des contextes pour chaque sous-domaine.
+    \item[\textbf{Service de localisation de services}] Sert de catalogue des services externes disponibles. Son filtrage peut se faire sur un type de service mais il peut aussi faire une comparaison sur le contexte que le service fournit. Par exemple, si l'application souhaite \verb|(John socam:locatedIn ?x)|, alors le localisateur va chercher sur les instances de contextes pour voir qui peut lui fournir ce genre de données~\cite{}.
+\end{itemize}
+Les services applicatifs utilisant la notion de contexte, vont ainsi utiliser les fonctionalitées que fournits SOCAM pour gérer cet ensemble de données. Une manière classique de construire ces services étant de spécifier des actions déclenchés par un ensemble de règles au moment où le contexte change.
+
+SOCAM implémente deux manières de faire de l'inférence logique de prédicats. La première étant l'inférence structurelle. En effet, l'application d'une propriété transitive à un concept nous donne plusieurs informations. 
+
+Par exemple si nous avons que \verb|(John socam:locatedIn socam:Kitchen)| et que \verb|(Kitchen socam:locatedIn socam:FirstFloor)|, alors étant donnée que \verb|(socam:locatedIn rdf:type owl:TransitiveProperty)|, le langage de l'ontologie sous-jacente (\textit{OWL/Lite}) indique que \verb|(John socam:locatedIn socam:FirstFloor)|.
+
+La deuxième manière, toutefois similaire, est un ensemble de règles utilisateurs. En utilisant un moteur similaire aux moteurs \textit{Prolog}, il est possible d'induire des prédicats applicatifs. En exemple, les auteurs nous donnent par exemple :
+\begin{verbatim}
+    (?user rdf:type socam:Person)
+    (?user socam:locatedIn socam:Bedroom)
+    (?user socam:hasPosture 'LIEDOWN')
+    (socam:Bedroom socam:lightLevel 'LOW')
+    (socam:Bedroom socam:doorStatus 'CLOSED')
+            => (?user socam:status 'SLEEPING')
+\end{verbatim}
+
+Il est important de noter que d'un point de vue performance, l'ordre de grandeur est au alentour de la seconde pour faire le traitement d'une règle sur une machine de faible performances. La complexité du traitement des requêtes d'inférence est \textit{PSPACE} et celle du langage de l'ontologie est de \textit{EXPTIME}. Ce qui fait que la montée en taille de la base de connaissance rendra plus difficile son exécution.
 \subsection{Synthèse}
 \TODO{Et c'est reparti pour le tableau}
