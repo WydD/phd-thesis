@@ -45,10 +45,30 @@ D'un point de vue expressivité, les ontologies jouissent d'un plus grand pouvoi
 La capture du contexte est la manière de récupérer une information et de la représenter sous la forme choisie lors de la modélisation. Par exemple, un capteur de température pourra insérer un ensemble de triplets pour indiquer qu'à 10h25 le lundi 26 avril, il faisait 25.256ºC sur la source T75896. Cet ensemble de triplet dépendra de la modélisation des concepts qui formeront le contexte. Plusieurs types de captures existent : la capture physique, où les informations sont extraites de l'environnement physique ; la capture logique, où les informations sont issus d'applications ou de services ; et enfin la capture virtuelle où les données sont extraites à partir d'autres informations de contexte.
 
 \subsection{Capacités de traitement}
-\TODO{Réécrire tout ça c'est horrible}
-Une des principales raisons du traitement sémantique est le pouvoir de raisonnement logique. Le but ici est de pouvoir inférer de nouveaux triplets à partir des connaissances que nous avons jusqu'ici. Les inférences sont de trois types : l'association directe, à une information bas-niveau on associe une information haut-niveau ; la fusion de contexte, à partir d'un ensemble de données, on infère un nouvel état ; la fission de contexte, à partir d'une donnée, on infère un ensemble d'informations.
+Un des principal intérêt des structures sémantiques est le pouvoir de raisonnement logique. Le but ici est de pouvoir inférer de nouveaux triplets à partir des connaissances accumulées. Pour cela, il existe plusieurs langages permettant de faire ce type d'inférence. Le plus courant est le langage associé à RDF : \textit{SPARQL}. Ce langage a la particularité d'être aussi expressif que l'algèbre relationnelle~\cite{Angles:sparql}\footnote{Plus exactement, SparQL est équivalent au datalog non-récursif avec négation, ce qui est équivalent à l'algèbre relationnelle.}. Ainsi, il est possible de faire des inférences du premier ordre sur ces données avec une é.
 
-Trois espaces de données sont intéressants dans ce domaine de type de traitement. Les espaces de domaine de valeurs (pour l'âge d'une personne, un entier de 0 à 125), les espaces de contextes, et les espaces de situation. Selon certains auteurs (Padovitz et al.), chacun de ces espaces peut avoir plus ou moins d'importance, ainsi des informations de poids (dépendantes des contextes aussi) pourront être attribuées.
+Ces inférences sont de trois types :
+\begin{itemize}
+ \item L'association directe, à une information bas-niveau est associé une information haut-niveau 
+ \item La fusion de contexte, à partir d'un ensemble de données est inféré un nouvel état 
+ \item La fission de contexte, à partir d'une donnée est inféré un ensemble d'informations
+\end{itemize}
+
+Dans l'informatique contextuelle, il est important de distinguer plusieurs espaces de données~\cite{Padovitz:agent}. 
+\begin{itemize}
+ \item[\textbf{L'espace de valeur}] Par exemple, pour une personne, son age sera compris entre 0 et 125.
+ \item[\textbf{L'espace applicatif}] L'ensemble des données atomiques qui représentent le contexte dit de bas-niveau.
+ \item[\textbf{L'espace de situation}] Reflète les situations pouvant être extraits de l'espace applicatif.
+\end{itemize}
+
+A un instant donné, il est possible de définir un \textbf{état de contexte} en tant que collection d'attributs de l'espace de contexte. Cet état pourra par la suite, grâce aux opérations présentées, inférer un ensemble de situations. La figure~\ref{rw-supervision-contextreasoning} montre la structure abstraite du raisonnement sur les contextes.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.50\textwidth]{rw-supervision-contextreasoning}
+    \caption{Structure abstraite du raisonnement sur contexte. À un élement du contexte $c_i$ est associé une valeur du domaine $V_i$. A partir de l'espace du contexte $C$, on effectue des associations, des fissions ou fusions pour inférer l'espace des situations $S$.}\label{rw-supervision-contextreasoning}
+\end{figure}
+
+
 
 L'inférence est en relation directe avec les critères de qualités évoqués précédemment. Les critères sur la précision / fiabilités / résolutions introduiront de l'aléa de mesure ainsi les situations inférées ne seront pas certaines. De même les critères sur la confiance et la fraîcheur introduiront des résultats qui devront refléter ces points de vue. Enfin, l'inférence se fait par des règles ou par raisonnements. Les règles définies par diagnostic ou par l'utilisateur ne sont pas tout le temps fiables (par exemple, un diagnostic de pixelisation TV est souvent dû à un problème de lenteur de réseau interne, mais ce peut être du à des dysfonctionnements plus rares du matériels (surchauffe)). Ainsi, nous introduisons une part de probabilités dans ces raisonnements pourtant déterministes a priori.
 
