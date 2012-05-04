@@ -108,7 +108,8 @@ Dans chacune des solutions présentés, il existe des parties du modèle de donn
 Tous les modèles présentés sont extensibles à volonté par les constructeurs des dispositifs. Par exemple sous UPnP-DM et TR-069, il est autorisé de rajouter des branches à l'arbre de données sous l'appellation \verb|X_{ORGANISATION}| (par exemple \verb|X_ORANGE_COM|). Ainsi, cela permet aux constructeurs de fournir des données non prévues dans les standards ou pour rajouter des fonctionalités de traitement.
 
 \subsection{Synthèse}
-\begin{table}[ht]
+
+\begin{table}[!ht]
 \criteretabDonnee
     {Principalement structure \textbf{hiérarchique} sous forme de système de fichier. Quelques systèmes d'administration utilisent des modèles objets avec \textit{CIM}, mais reste difficile à maîtriser.}
     {Une donnée est identifié par son chemin complet. La sémantique est décrite par ce chemin. Pas de contraintes ou inférences exprimables.}
@@ -125,4 +126,5 @@ Tous les modèles présentés sont extensibles à volonté par les constructeurs
     {Très efficace et utilisé pour gérer des parcs de millions de dispositifs.}
 \caption{Synthèse des systèmes d'administration}\label{tab:rw:supervision:administration:synthese}
 \end{table}
+
 Le tableau~\ref{tab:rw:supervision:administration:synthese} résume l'ensemble de l'analyse qui a été porté aux systèmes d'administrations. L'ensemble permet effectivement beaucoup de fonctionnalité pour les utilisateurs. Le choix d'approches principales à base de standard fait que ces systèmes sont actuellement très répandus pour gérer des systèmes. Toutefois, le point le plus critique étant la gestion du dynamisme des données est faite dans des processus très différents rendant une supervision intégré difficile.
