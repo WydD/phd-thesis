@@ -27,11 +27,11 @@ Le terme \textit{OLAP} a été d'abord défini en 1993 par le père du modèle r
 
 En 1995, les premiers concepts d'opérations multidimensionnelles arrivent avec le \textbf{cube}~\cite{Gray:cube}. Les dimensions doivent être définies de manière hiérarchique. Par exemple, un magasin (lieu) est située dans une ville, elle-même située dans un département, elle même située dans une région etc.. Par la suite, le traitement sur les données en elle-même va être centré sur la capacité à faire un agrégat. Dans notre cas, il est potentiellement intéressant de voir les résultats de vente par départements. Une somme est ainsi faite sur tous les résultats de chaque département.
 
-L'hypercube \textit{OLAP} est la représentation des données multidimensionnelles. Dans notre cas, cela va être un vrai cube à trois dimensions, les magasins, les produits, et le temps. Au début de l'analyse les dimensions sont discrétisé à leur plus haut niveau hiérarchique.
+L'hypercube \textit{OLAP} est la représentation des données multidimensionnelles. Dans notre cas, cela va être un vrai cube à trois dimensions, les magasins, les produits, et le temps comme représenté enfigure~\ref{fig:rw:supervision:warehouses:cube}. Au début de l'analyse les dimensions sont discrétisé à leur plus haut niveau hiérarchique.
 \begin{figure}[ht]
 	\centering
-	\TODO{}
-	\caption{Représentation d'un cube \textit{OLAP} de trois dimensions, $(Magasin, Produit, Temps)$}
+	\includegraphics[width=0.75\textwidth]{rw-supervision-warehouses-cube}
+	\caption{Représentation d'un cube \textit{OLAP} de trois dimensions, (\textit{Magasin}, \textit{Produit}, \textit{Temps}). Par exemple, en $2012$, le magasin \textit{Michel Musique} a vendu pour 156.6k\euro{} de batteries}\label{fig:rw:supervision:warehouses:cube}
 \end{figure}
 Cela forme un découpage du cube en autres cubies. Chacun de ces cubies contient la valeur d'un ou plusieurs agrégats choisis par l'utilisateur (ici, \textit{SUM}). Il est important de dire que l'utilisateur ne pourra pas que rarement exploiter correctement les $n$ dimensions de l'hypercube, car la représentation classique des données est sous forme de tableaux (donc 2 dimensions). Plusieurs opérations génériques existent sur ce cube pour que l'utilisateur puisse l'exploiter.
 
@@ -48,9 +48,38 @@ L'opération \textit{roll-up} permet de calculer tous les agrégats à partir d'
 D'un point de vue performance, les concepts de systèmes \textit{OLAP} optimisent les performances des manipulations sur le cube ainsi que les agrégats. Toutefois, si les requêtes sont trop complexes, les analyses peuvent prendre plusieurs minutes (ou pire, plusieurs heures).
 
 \subsubsection{La visualisation : un domaine à part entière}
+Permettre à l'utilisateur de pouvoir comprendre l'ensemble des données qui lui sont offerte est un domaine en soi~\cite{Maniatis:visualization}. En effet, être capable de rapporter correctement est technique car le nombre de dimensions manipulé peut être haut (bien au dessus de 10). Ce problème s'intensifie depuis l'avènement de la gestion des entrepôts spatio-temporels~\cite{Vaisman:spatiotemporal, Vaisman:continuous}. Dans ce type de systèmes, les données spatiales sont des polygones ou des lignes. La hiérarchie des dimensions est la partition des polygones. Les capacités d'analyses sont complexes car cela nécessite de faire des tests d'appartenances aux zones, ou pire, à des calculs d'intégrales sur les zones~\cite{Guting:movingobjects}.
 
+Lors de la manipulation de concepts aussi visuels que la géographie, des outils doivent être capable de tracer les résultats d'analyses de manière claire visuellement et aussi d'interagir avec cette visualisation. Des outils ont étés proposés récemment pour pouvoir tracer une carte interactive capable de représenter l'exploration de données d'un cube spatio-temporel~\cite{Rivest:solap}.
 
-\subsubsection{Data Mart}
+Toutefois, l'exploration d'un cube de données ne fait pas partie des seules dispositions d'un entrepôt de données.
+\subsubsection{La fouille}
+La fouille de données (\textit{Data Mining}) est le procédé permettant d'extraire de nouvelles connaissances à partir d'un grand ensemble de données. Les principes sont essentiellement dirigés par l'utilisation de nombreuses méthodes et algorithmes spécialisés. Deux grandes catégories se dessinent toutefois :
+\begin{itemize}
+    \item[\textit{Descriptif}] : Aussi connu en tant qu'analyse de données statistiques. Le but étant d'être capable de classer, et de simplifier des données multidimensionnelles afin d'aider la compréhension de l'information.
+    \item[\textit{Prédictif}] : Le but étant d'être capable d'expliquer ou de prévoir un phénomène qui a été mesuré.
+\end{itemize}
+Il est important de remarquer que ces approches sont d'excellents compléments à l'observation. L'entrepôt de données est en mesure de fournir suffisamment de données pour permettre ce genre d'analyse par la suite.
 
+Nous avons vu que les entrepôts permettent de stocker et d'analyser un grand ensemble de données. Toutefois, ces données doivent être chargées à l'intérieur de ce dépôt.
 \subsection{L'intégration par ETL}\label{sec:rw:supervision:warehouse:etl}
+Afin de charger les données provenants de sources hétérogènes dans un entrepôt, l'architecture la plus utilisée reste l'utilisation de processus \textit{ETL} (\textit{Extract}, \textit{Transform}, \textit{Load}). L'ensemble forme un ensemble de tâche à exécuter périodiquement où sur impulsion. Le développement de ces processus est une partie importante de la mise en œuvre d'un système à base d'entrepôt, généralement coûteuse en terme de mise en œuvre, à cause de sa complexité.
+\subsubsection{Extraction}
+Les données sont d'abord extraites des sources hétérogènes. L'extraction peut se faire sous différentes formes suivant les sources, ainsi il est souvent nécessaire d'aligner le format source à un format commun. L'utilisation de base de données intermédiaires (\textit{staging}) est une solution pour les importations complexes.
+
+\subsubsection{Transformation}
+Cette partie est sûrement la plus complexe de toutes. L'idée étant évidemment d'aligner les données d'entrée dans le schéma et la sémantique de (ou des) entrepôts. Les opérations courantes pouvant remplir différentes fonctions : nettoyage, applications de règles, vérification d'intégrité, jointure, agrégats, conversion de type. 
+
+Le principe global reste d'être axé sur la composition d'opérateurs. Toutefois, il n'existe pas de standard ou d'algèbre permettant de décrire ces différents opérateurs~\cite{Vassiliadis:taxonomy}. En effet, les opérateurs du modèle relationnel permettent de faire certaines des opérations. Seulement des opérations telles que l'alignement de valeurs (\textit{Homme} vers \textit{Masculin} par exemple), la génération de clé, la séparation de colonnes ou autre transformation de données complexes ne sont pas gérées par les primitives de ce modèle. Il faut rajouter des extensions. 
+
+\TODO{Petit graph de transformation}
+
+Ces opérateurs sont de cardinalité $1\!\!:\!\!1$, $n\!\!:\!\!1$, $1\!\!:\!\!n$ ou $n\!\!:\!\!n$, mais leur fonctionnalité est très dépendante des différents constructeurs de système ETL. Plusieurs travaux récents s'intéressent à dresser une taxonomie~\cite{Vassiliadis:taxonomy} de ces différents opérateurs. Des approches~\cite{Akkaoui:etl,Trujilo:uml-etl} s'intéressent ensuite à fournir des outils permettant de pouvoir développer des processus \textit{ETL} de façon indépendante au système. Ceci étant possible grâce aux techniques de transformations de modèles.
+
+\subsubsection{Chargement}
+Le chargement permet la publication des nouvelles données fraîchement traitées à l'intérieur de l'entrepôt. Plusieurs considérations de performances rentrent en compte pour savoir quand la publication sera effective. En effet, lors d'une mise à jour de base de donnée relationnelle, le système transactionnel requiert que les données soient à jour à la fin de la transaction. Ici, l'écriture effective peut-être retardée pour permettre un chargement des données moins coûteux~\cite{Petit:historical}.
+
+De plus, à cet étape, il est courant de générer des rapports compilant les données transformées vers un document qui sera transmit à l'utilisateur.
+
+\subsubsection{Le temps réel : un nouveau challenge}
 \subsection{Synthèse}
