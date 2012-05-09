@@ -19,12 +19,14 @@ Afin d'effectuer l'intégration des données à l'intérieur d'un (ou des) entre
 Par la suite, des outils d'analyses vont s'attacher aux entrepôts pour fournir les informations suffisantes à l'utilisateur pour qu'il puisse prendre une décision. Comme montré dans la définition des entrepôts, les bases de données sont conçus pour que ces outils d'analyses puissent effectuer leurs calculs nativement. La structure interne des entrepôts aura donc un impact sur la capacité des outils d'analyse.
 
 \subsection{L'entrepôt et ses capacités}\label{sec:rw:supervision:warehouse:warehouse}
-Les dépots de données ont pour but de stocker toutes les données relatives à un système. Son système de gestion est très souvent fait par un SGFD relationnel\footnote{Il est évident que des systèmes de gestion dédiés soient choisis pour des critères de performances}. C'est sa structure et ses opérations qui vont permettre une analyse pertinente.
+Les dépots de données ont pour but de stocker toutes les données relatives à un système. Son système de gestion est très souvent fait par un SGFD relationnel. C'est sa structure et ses opérations qui vont permettre une analyse pertinente.
 
 Le cadre le plus récurrent pour les entrepôts de données est le traitement OLAP (\textit{Online Analytical Processing}). 
-\subsubsection{OLAP}
-Le terme \textit{OLAP} a été d'abord défini en 1993 par le père du modèle relationnel, Edgar Codd, dans~\cite{Codd:olap}. Sa caractérisation est le fait de permettre le support \textit{d'analyse de données multidimensionnelles}. En effet, il apparait qu'une donnée représente un point dans un espace à plusieurs dimensions. L'exemple le plus standard dans ce domaine reste la gestion de vente pour une entreprise. La vente est un point dans l'espace $(Magasin, Produit, Temps)$ et sa valeur sera le prix (et/ou la quantité). L'analyse de ces données sur ces trois critères requiert des capacités spécifiques pour que l'analyse soit pertinente.
+\subsubsection{OLAP et structure}
+Le terme \textit{OLAP} a été d'abord défini en 1993 par le père du modèle relationnel, Edgar Codd, dans~\cite{Codd:olap}. Sa caractérisation est le fait de permettre le support \textit{d'analyse de données multidimensionnelles}. En effet, il apparait qu'une donnée représente un point dans un espace à plusieurs dimensions. L'exemple le plus standard dans ce domaine reste la gestion de vente pour une entreprise. La vente est un point dans l'espace $(Magasin, Produit, Temps)$ et sa valeur sera le prix (et/ou la quantité). 
 
+D'un point de vue modélisation, le modèle en étoile ou en flocon permettent de structurer correctement un ensemble de données multidimensionnel~\cite{Levene:snowflake}. Le principe étant qu'il existe une relation des \textit{faits}. Celle-ci contiendra l'ensemble des données brutes. Dans notre cas, ce sera le prix. Cette relation est ensuite liée à plusieurs autres relations qui décrivent les différentes dimensions. Dans la structure en étoile, chaque dimension correspond à une relation. Dans le cadre de la structure en flocon, chaque dimension est un modèle relationnel normé (en \textit{3NF}). 
+\subsubsection{Le cube}
 En 1995, les premiers concepts d'opérations multidimensionnelles arrivent avec le \textbf{cube}~\cite{Gray:cube}. Les dimensions doivent être définies de manière hiérarchique. Par exemple, un magasin (lieu) est située dans une ville, elle-même située dans un département, elle même située dans une région etc.. Par la suite, le traitement sur les données en elle-même va être centré sur la capacité à faire un agrégat. Dans notre cas, il est potentiellement intéressant de voir les résultats de vente par départements. Une somme est ainsi faite sur tous les résultats de chaque département.
 
 L'hypercube \textit{OLAP} est la représentation des données multidimensionnelles. Dans notre cas, cela va être un vrai cube à trois dimensions, les magasins, les produits, et le temps comme représenté enfigure~\ref{fig:rw:supervision:warehouses:cube}. Au début de l'analyse les dimensions sont discrétisé à leur plus haut niveau hiérarchique.
@@ -35,7 +37,7 @@ L'hypercube \textit{OLAP} est la représentation des données multidimensionnell
 \end{figure}
 Cela forme un découpage du cube en autres cubies. Chacun de ces cubies contient la valeur d'un ou plusieurs agrégats choisis par l'utilisateur (ici, \textit{SUM}). Il est important de dire que l'utilisateur ne pourra pas que rarement exploiter correctement les $n$ dimensions de l'hypercube, car la représentation classique des données est sous forme de tableaux (donc 2 dimensions). Plusieurs opérations génériques existent sur ce cube pour que l'utilisateur puisse l'exploiter.
 
-\subsubsection{Opérations du cube}
+\subsubsection{Opérations}
 \begin{itemize}
 	\item[\textbf{Slice}] : Découpage du cube selon une des dimensions. Cela permet de retirer la complexité de l'analyse et de ne sélectionner qu'une partie des données selon un critère dimensionnel. Exemple : \textit{slice} du cube sur \textit{temps = 2012}.
 	\item[\textbf{Dice}] : Extraction d'un sous-cube. Similaire à \textit{slice}, toutefois, la complexité n'est pas spécifiquement réduite car le nombre de dimension n'a pas changé. Exemple : extraction du cube pour les magasins \textit{La Boite à Musique} et \textit{Michel Musique}.
@@ -82,4 +84,28 @@ Le chargement permet la publication des nouvelles données fraîchement traitée
 De plus, à cet étape, il est courant de générer des rapports compilant les données transformées vers un document qui sera transmit à l'utilisateur.
 
 \subsubsection{Le temps réel : un nouveau challenge}
+La fraicheur des données à l'intérieur d'un entrepôt de donnée n'a pas été une contrainte critique jusqu'ici. Les latences usuellement visées par ce type d'approche sont au alentour de l'heure voire de jours~\cite{Oracle:realtimedw}. Récemment, des travaux se sont intéressés à améliorer la qualité du traitement en terme de fraicheur de données (pour passer à l'ordre de la minute voire de la seconde).
+
+Comme présenté en section~\ref{sec:intro:problematique:data}, la dynamique des données est important dans notre cadre. Ici, le dynamisme n'est pas explicite car il n'y a pas de mécanisme d'événement. Ainsi, il est nécessaire d'implémenter un \textit{CDC} (\textit{Change Data Capture}) capable de transmettre les nouvelles données via un canal de communication dédié.
+
+Plusieurs systèmes commencent à supporter la gestion en temps réel de l'import de données~\cite{Thomsen:rite, Oracle:ODI}. Toutefois, il n'y a pas de résultats concrêts concernant le traitement des données dynamiques en tant que tel. Par exemple, la définition d'agrégat sur une fenêtre de temps doit se faire à la main via une base de données intermédiaire.
+
 \subsection{Synthèse}
+\begin{table}[!ht]
+\criteretabDonnee
+    {Modèle relationnel, 3NF, Modèle en étoile.}
+    {Géré par le modèle relationnel.}
+    {Faible gestion du dynamisme en dehors des mécanismes CDC dans les entrepôts temps-réels.}
+\criteretabTraitement
+    {Instantané principalement. Les ETL peuvent être apparentés à des interrogations continues.}
+    {Intégration complexe via les ETL.}
+    {Paradigme déclaratif pour l'exploration de données. Algorithmique pour la fouille de données. Principalement procédural pour les ETL.}
+    {En dehors des algorithmes et des procédures de gestion de syntaxe ou de règles métiers, le traitement des données est dérivé de l'algèbre relationnel.}
+\criteretabAdaptabilite
+    {Spécification du schéma de l'entrepôt. Description des processus ETL. Si les besoins d'analyses sont poussés, il est nécessaire de concevoir les outils d'analyse aussi.}
+    {La gestion de données multidimensionnelles apporte cette gestion de perspective de façon native. Il est possible de créer différents sous-entrepôts pour chacun des métiers avec des données agrégées (alimentés par ETL).}
+    {Il est très souvent nécessaire de rajouter des opérateurs, ou des logiciels d'analyses plus poussés. Les implémentations permettent en général de rajouter des procédures personnalisés à tout les niveaux de la chaîne.}
+    {Les procédés sont lourds et complexes et la durée de réactivité peut se compter en minutes ou en heures. Toutefois, ces systèmes manipulent des Tera de données.}
+\caption{Synthèse des entrepôts de données}\label{tab:rw:supervision:warehouses:synthese}
+\end{table}
+En conclusion, les entrepôts de données représentent une grande capacité de traitement des données. Sa prise en charge de données historique et ses pouvoirs d'analyses sont précieux pour l'observation de système. Toutefois, le processus d'intégration est trop lent pour pouvoir gérer des alertes. De plus, il existe une ambiguïté sémantique sur les opérateurs disponibles qui dépendent du système.
