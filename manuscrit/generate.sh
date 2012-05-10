@@ -8,9 +8,16 @@ for i in `find . | grep "\.tex\$" | sed 's/\.tex//' | sed 's!^./!!' | grep "$pat
 			for j in `cat $i/.order`; do
 				echo "\input{$i/$j}"
 			done >> tmp.tex
+			for k in `ls $i/*.tex`; do
+				if grep `basename $k .tex` $i/.order > /dev/null; then
+					echo -n;
+				else
+					echo "\input{$k}"
+				fi;
+                        done >> tmp.tex
 		else
 			for j in `ls $i/*.tex`; do
-                                echo "\input{$j}" 
+                                echo "\input{$j}"
                         done >> tmp.tex
 		fi;
 		mv tmp.tex $i.tex

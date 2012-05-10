@@ -1,4 +1,4 @@
-\section{Critères d'analyse}
+\section{Critères d'analyse}\label{sec:rw:supervision:criteres}
 \TODO{Intro}
 \subsection{Structure des données}
 Cette thèse suppose que les données sont accessibles au dessus d'une couche d'abstraction. Cependant, aucune hypothèse n'a été formulée sur la structure de ces données ou leurs formats. Ce premier critère d'analyse se focalise donc sur le formalisme utilisé lors de l'acquisition des données. Trois sous-critères sont décrit : la structure abstraite, la gestion de l'hétérogénéité sémantique et enfin le support de l'évolution des données.
@@ -10,7 +10,7 @@ Une donnée est liée à différents concepts. La capacité à représenter ces 
 \subsubsection{Dynamisme}
 La valeur obtenue à un instant particulier d'une donnée n'est pas toujours relevant. En effet, pour plusieurs types d'informations, la pertinence de la donnée va être accordé à son évolution au fur et à mesure du temps. Les différents types de dynamiques ont étés présentés en section~\ref{sec:intro:problematique:data}. La capacité à ce modèle d'être capable de représenter les différentes évolutions sera critique à l'intégration des différentes sources de données hétérogènes.
 
-\subsection{Traitement}
+\subsection{Traitement}\label{sec:rw:supervision:criteres:traitement}
 Afin d'évaluer la capacité du système de supervision à fournir les réponses les plus précises à l'utilisateur, il faut établir des processus de traitements sur les données. Suivant les systèmes, cette capacité à collecter et transformer les données des sources n'a pas la même puissance. Ainsi, il est nécessaire d'analyser plus en profondeur les capacités de ce procédé. Nous détaillerons ceci en quatre critères principaux : les types d'interrogation possibles, l'intégration de sources, le langage d'expression et enfin le pouvoir expressif de ce langage.
 
 \subsubsection{Types d'interrogations}
