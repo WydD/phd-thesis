@@ -1,20 +1,37 @@
 \section{Gestion de flux de données}
-Devant la multiplication des applications à base de flux de données telles que : la gestion des données de capteurs ou la surveillance réseau, les systèmes de gestions de flux de données (\textit{SGFD}) ont étés conçus. L'idée principale de ce type de système étant de permettre une utilisation des flux de données de la même manière que les bases de données. L'interrogation des flux passerait donc par un langage déclaratif (tout comme le \textit{SQL}) avec un grand pouvoir d'expression.
+Devant la multiplication des applications à base de flux de données telles que : la gestion des données de capteurs ou la surveillance réseau, les systèmes de gestions de flux de données (\textit{SGFD}) ont étés conçus pour mieux maîtriser les données de ce types de systèmes~\cite{Madden:tag, Yao:cougar, Cranor:gigascope}. L'idée principale de ce type de système étant de permettre une utilisation des flux de données de la même manière que les bases de données. L'interrogation des flux passerait donc par un langage déclaratif (tout comme le \textit{SQL}) avec un grand pouvoir d'expression.
 \subsection{Approche des SGFD}
-Un flux de données est une série de données qui s'accumule au fur et à mesure du temps. De façon général, il n'est pas supposé une régularité temporelle sur l'arrivée des données dans le flux (tel que \enquote{\it une donnée toutes les 5 secondes}). L'idée de faire une interrogation sur ces flux de données au sens \enquote{gestion de base de données} du terme n'a pas de sens car il y aurait confusion entre les modes d'interrogations continues et instantanées présentés en section~\ref{sec:rw:supervision:criteres:traitement}. En effet, le paradigme des requêtes est fondamentalement différent~\cite{Gurgen:sstreamware}.
+Un flux de données est une série continue et ordonnée de données qui s'accumule au fur et à mesure du temps~\cite{Golab:issues}. De façon générale, il n'est pas supposé une régularité temporelle sur l'arrivée des données dans le flux (tel que \enquote{\it une donnée toutes les 5 secondes}). L'idée de faire une interrogation sur ces flux de données au sens \enquote{gestion de base de données} du terme n'a pas de sens car il y aurait confusion entre les modes d'interrogations continues et instantanées présentés en section~\ref{sec:rw:supervision:criteres:traitement}. En effet, le paradigme des requêtes est fondamentalement différent car les requêtes sont de longue durée et persistantes~\cite{Chen:niagaracq}.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.75\textwidth]{rw-supervision-sgbd-sgfd}
-    \caption{SGBD : Requêtes transitoires, Données persistantes vs SGFD : Données transitoires, Requêtes persistantes}
+    \caption{SGBD : Requêtes transitoires, Données persistantes vs SGFD : Données transitoires, Requêtes persistantes~\cite{Gurgen:sstreamware}}
 \end{figure}
 
 \begin{itemize}
     \item[\textbf{Base de données}] : Une requête est une question posée sur un ensemble de relations figées et persistants (principe transactionnel). La réponse est un ensemble de n-uplets. Une fois la requête traitée elle n'existe plus.
-    \item[\textbf{Flux de données}] : Une requête un ensemble d'opérateurs et est considéré comme persistant. Le ou les flux de données sont appliqués sur cet ensemble d'opérateurs pour en produire un nouveau flux.
+    \item[\textbf{Flux de données}] : Une requête un ensemble d'opérateurs et est considéré comme persistant. Le ou les flux de données sont appliqués sur cet ensemble d'opérateurs pour en produire un nouveau flux. La particularité d'un flux de données étant qu'une fois la donnée \textit{consommée}, elle n'est plus considéré comme présente dans le flux d'entrée. Les données fournies en entrée de la requête sont donc transitoires.
 \end{itemize}
 
+Ainsi, le terme \textit{requête} a un tout autre sens. Toutefois, beaucoup de concepts sont applicables dans ce contexte. En effet, plusieurs éléments de modélisation issues du relationnel sont appliqués dans ce domaine~\cite{Arasu:semantic}. Historiquement, les premières requêtes continues~\cite{Terry:tapestry} étaient une exécution périodique de requêtes \textit{SQL}. Le traitement était entièrement basé sur les opérateurs du modèle relationnel standard. Par la suite, les modèles ont évolués pour supporter nativement le dynamisme des données.
+
 \subsection{Principes architecturaux}
+L'architecture abstraite d'une solution de gestion de flux de données est composés de trois parties principales~\cite{Duller:virtualdsms}.
+\begin{itemize}
+ \item[\textbf{Les sources}] : Ces composants permettent d'abstraire une source de données dans le formalisme du système de gestion. Ce composant produit donc un \textit{flux} ou tout autre entité dynamique du système. Par exemple, ceci peut être un composant capable de dialoguer dans un protocole donnée pour aller collecter des informations brutes sur un équipement. Il est important de noter que \textbf{la source contrôle le dynamisme} a priori. En effet, dans un \textit{SGFD} la source de données décide du moment où va être envoyée une donnée. Donc, si une information n'est accessible que par une sonde dont le mécanisme est en \textit{pull} par exemple, la source devra interroger cette sonde périodiquement (ou à date fixé). Le choix de cette période (ou de cet instant) dépendra de son implémentation.
+ \item[\textbf{Le processeur}] : Cet ensemble est le cœur du \textit{SGFD}. Il va traiter les entités fournies par les différentes sources de données qui lui sont données. En sortie, il produit une nouvelle entité. Le processeur est composés d'opérateurs ainsi que de composants pour gérer son cycle de vie et son exécution (\textit{planificateurs}, \textit{gestionnaires de ressources}).
+ \item[\textbf{Le puit}] : Ce composant fait l'interface entre l'application utilisatrice du \textit{SGFD} et le résultat de requête. Il permet de transférer les résultats selon un format ou un mécanisme en particulier.
+\end{itemize}
+Bien évidemment, des gestionnaires globaux permettant de répertorier les sources, lister les différentes requêtes déployées, et évidemment de contrôler les requêtes peuvent être définis pour interagir avec le système. Il est important de noter que l'approche initiale des \textit{SGFD} étant de pouvoir interagir avec le système dans un langage déclaratif. Des extensions de \textit{SQL} ont vu le jour~\cite{Arasu:cql, Chandrasekaran:telegraphcq} pour remplir cette tâche. Toutefois, devant la large complexité des requêtes, certains travaux ont préféré définir des langages procéduraux où la composition des opérateurs doit se faire à la main~\cite{Abadi:aurora, Gurgen:sstreamware}, de façon graphique ou textuelle.
+
+Comme présenté, le processeur est composé de multiples opérateurs. De la même façon qu'en gestion de base de données, une requête est au final un arbre d'opérateur\footnote{Dans la pratique, dans un SGFD, il est courant de plutôt trouver des graphes directs acycliques dû à la mutualisation de sous-parties de requêtes. La mise à l'échelle des requêtes de longévité indéterminé fait qu'il est important de ne pas dupliquer les sous-résultats. Toutefois, d'une manière conceptuelle, il reste juste de dire qu'une requête est formé d'un arbre.}.
+Afin de supporter le dynamisme inhérent aux entités, plusieurs nouveaux opérateurs ont étés développés.
+
 \subsection{Les opérateurs}
+\subsubsection{La fenêtre}
+\subsubsection{Les jointures de flux}
+\subsubsection{Les streamers}
+
 \subsection{Synthèse}
 \begin{table}[!ht]
 \criteretabDonnee

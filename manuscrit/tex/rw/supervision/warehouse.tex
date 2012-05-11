@@ -25,7 +25,7 @@ Le cadre le plus récurrent pour les entrepôts de données est le traitement OL
 \subsubsection{OLAP et structure}
 Le terme \textit{OLAP} a été d'abord défini en 1993 par le père du modèle relationnel, Edgar Codd, dans~\cite{Codd:olap}. Sa caractérisation est le fait de permettre le support \textit{d'analyse de données multidimensionnelles}. En effet, il apparait qu'une donnée représente un point dans un espace à plusieurs dimensions. L'exemple le plus standard dans ce domaine reste la gestion de vente pour une entreprise. La vente est un point dans l'espace $(Magasin, Produit, Temps)$ et sa valeur sera le prix (et/ou la quantité). 
 
-D'un point de vue modélisation, le modèle en étoile ou en flocon permettent de structurer correctement un ensemble de données multidimensionnel~\cite{Levene:snowflake}. Le principe étant qu'il existe une relation des \textit{faits}. Celle-ci contiendra l'ensemble des données brutes. Dans notre cas, ce sera le prix. Cette relation est ensuite liée à plusieurs autres relations qui décrivent les différentes dimensions. Dans la structure en étoile, chaque dimension correspond à une relation. Dans le cadre de la structure en flocon, chaque dimension est un modèle relationnel normé (en \textit{3NF}). 
+D'un point de vue modélisation, le modèle en étoile ou en flocon permettent de structurer correctement un ensemble de données multidimensionnel~\cite{Levene:snowflake}. Le principe étant qu'il existe une relation des \textit{faits}. Celle-ci contiendra l'ensemble des données brutes. Dans notre cas, ce sera le prix. Cette relation est ensuite liée à plusieurs autres relations qui décrivent les différentes dimensions. Dans la structure en étoile, chaque dimension correspond à une relation. Dans le cadre de la structure en flocon, chaque dimension est un modèle relationnel normé (en \textit{BCNF}). 
 \subsubsection{Le cube}
 En 1995, les premiers concepts d'opérations multidimensionnelles arrivent avec le \textbf{cube}~\cite{Gray:cube}. Les dimensions doivent être définies de manière hiérarchique. Par exemple, un magasin (lieu) est située dans une ville, elle-même située dans un département, elle même située dans une région etc.. Par la suite, le traitement sur les données en elle-même va être centré sur la capacité à faire un agrégat. Dans notre cas, il est potentiellement intéressant de voir les résultats de vente par départements. Une somme est ainsi faite sur tous les résultats de chaque département.
 
@@ -93,7 +93,7 @@ Plusieurs systèmes commencent à supporter la gestion en temps réel de l'impor
 \subsection{Synthèse}
 \begin{table}[!ht]
 \criteretabDonnee
-    {Modèle relationnel, 3NF, Modèle en étoile.}
+    {Modèle relationnel, Modélisation en étoile et BCNF}
     {Géré par le modèle relationnel.}
     {Faible gestion du dynamisme en dehors des mécanismes CDC dans les entrepôts temps-réels.}
 \criteretabTraitement
