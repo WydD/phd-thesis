@@ -1,12 +1,11 @@
 \chapter{Gestion de données pour l'observation}
 \minitoc
 
-La supervision est un domaine très actif du fait de ses implications concrètes. Plusieures solutions ont déjà été proposées pour résoudre les différentes problématiques détaillées en section~\ref{sec:intro:problematique}. En dehors des systèmes d'observations ad-hoc qui ne peuvent pas répondre à l'hétérogénéité conséquente à laquelle cette thèse fait face, plusieurs approches ont étés développées. Ce chapitre présente les quatre grandes familles que nous avons pu identifier.
+La supervision est un domaine très actif du fait de ses implications concrètes. Plusieures solutions ont déjà été proposées pour résoudre les différentes problématiques détaillées en section~\ref{sec:intro:problematique}. En dehors des systèmes d'observations ad-hoc qui ne peuvent pas répondre à l'hétérogénéité conséquente à laquelle cette thèse fait face, plusieurs approches ont étés développées. Ce chapitre présente les quatre grandes familles que nous avons pu identifier. Toutes ces approches sont capables de gérer les données issues d'un système générique.
 
-L'analyse se fera sur les trois critères qui ont une importance cruciale pour l'établissement d'une solution générique, à savoir : les structures de données utilisé, la capacité de traitement et enfin l'adaptation à l'application finale.
+Les critères qui nous permettrons de qualifié les différentes approches selon notre problématique seront développés dans la première section. Puis nous décrirons les quatres approches que nous avons analysées. Tout d'abord, en section~\ref{sec:rw:supervision:administration}, nous présenterons les systèmes d'administrations. Ceux-ci sont déployés depuis plusieurs années pour permettre de gérer des parcs de dispositifs à grandes échelles. Puis nous détaillerons la gestion de contexte en section~\ref{sec:rw:supervision:contexte}. Ces systèmes permettent de fournir à une architecture logicielle des informations de contexte pour qu'elle puisse s'adapter en conséquence. Les moyens pour représenter et manipuler les données sont très génériques. Puis nous développerons l'approche par entrepôts de données en section~\ref{sec:rw:supervision:warehouse}. Les entrepôts sont maintenant largement répandus et réputés pour avoir de grandes capacités d'analyses sur un ensemble de données intégré de manière hétérogène. Enfin, nous présenterons les systèmes de gestions de flux de données en section~\ref{sec:rw:supervision:datastream}. Ces systèmes permettent eux de manipuler des flux de données très dynamiques de manière déclarative.
 
-
-\TODO{plan}
+Ces systèmes sont donc candidats pour permettre de créer un système d'observation générique.
 
 \input{tex/rw/supervision/criteres}
 \input{tex/rw/supervision/administration}

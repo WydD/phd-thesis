@@ -1,6 +1,7 @@
 \section{Critères d'analyse}\label{sec:rw:supervision:criteres}
-\TODO{Intro}
-\subsection{Structure des données}
+L'analyse se fera sur les trois critères qui ont une importance cruciale pour l'établissement d'une solution générique. Les critères sur les structures de données utilisées seront détaillées en section~\ref{sec:rw:supervision:criteres:structure}. Par la suite, les différents points sur la capacité de traitement des approches seront présentés en section~\ref{sec:rw:supervision:criteres:traitement}. Enfin, les critères sur l'adaptation à l'application finale seront développés en section~\ref{sec:rw:supervision:criteres:adaptation}.
+
+\subsection{Structure des données}\label{sec:rw:supervision:criteres:structure}
 Cette thèse suppose que les données sont accessibles au dessus d'une couche d'abstraction. Cependant, aucune hypothèse n'a été formulée sur la structure de ces données ou leurs formats. Ce premier critère d'analyse se focalise donc sur le formalisme utilisé lors de l'acquisition des données. Trois sous-critères sont décrit : la structure abstraite, la gestion de l'hétérogénéité sémantique et enfin le support de l'évolution des données.
 
 \subsubsection{Structure abstraite}
@@ -33,7 +34,7 @@ Le langage utilisé dans le système d'observation n'a pas forcément pour vocat
 \subsection{Adaptabilité}
 Un critère de qualité d'un système d'observation est sa capacité à se modeler à l'application finale. Au plus la portée de l'observation sera générique au plus ce critère sera important. Cette section décrit les différentes facettes de l'adaptabilité. Tout d'abord d'un point de vue de gestion de l'hétérogénéité décrite précédemment avec l'adaptation au système et la gestion des différentes perspectives. Ensuite, nous présenterons des critères permettant l'adaptabilité aux plus stricts besoins tels que l'intégration de fonctions métiers et la gestion de performances.
 
-\subsubsection{Adaptation au système}
+\subsubsection{Adaptation au système}\label{sec:rw:supervision:criteres:adaptation}
 Comme décrit précédemment, la gestion de l'hétérogénéité des différents type de systèmes est central pour l'établissement d'une solution générique. Ce critère devra décrire comment la supervision spécifie sa représentation du système. Cela pourra être mis en avant par les spécificités des modèles de données choisis ou par un point de vue architectural particulier.
 
 \subsubsection{Gestion de perspectives}
