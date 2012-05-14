@@ -72,9 +72,14 @@ Les données sont d'abord extraites des sources hétérogènes. L'extraction peu
 \subsubsection{Transformation}
 Cette partie est sûrement la plus complexe de toutes. L'idée étant évidemment d'aligner les données d'entrée dans le schéma et la sémantique de (ou des) entrepôts. Les opérations courantes pouvant remplir différentes fonctions : nettoyage, applications de règles, vérification d'intégrité, jointure, agrégats, conversion de type. 
 
-Le principe global reste d'être axé sur la composition d'opérateurs. Toutefois, il n'existe pas de standard ou d'algèbre permettant de décrire ces différents opérateurs~\cite{Vassiliadis:taxonomy}. En effet, les opérateurs du modèle relationnel permettent de faire certaines des opérations. Seulement des opérations telles que l'alignement de valeurs (\textit{Homme} vers \textit{Masculin} par exemple), la génération de clé, la séparation de colonnes ou autre transformation de données complexes ne sont pas gérées par les primitives de ce modèle. Il faut rajouter des extensions. 
+Le principe global reste d'être axé sur la composition d'opérateurs comme montré dans la figure~\ref{fig:rw:supervision:warehouses:etl}. Toutefois, il n'existe pas de standard ou d'algèbre permettant de décrire ces différents opérateurs~\cite{Vassiliadis:taxonomy}. En effet, les opérateurs du modèle relationnel permettent de faire certaines des opérations. Seulement des opérations telles que l'alignement de valeurs (\textit{Homme} vers \textit{Masculin} par exemple), la génération de clé, la séparation de colonnes ou autre transformation de données complexes ne sont pas gérées par les primitives de ce modèle. Il faut rajouter des extensions. 
 
-\TODO{Petit graph de transformation}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{rw-supervision-warehouses-etl}
+    \caption{Exemple de processus ETL}\label{fig:rw:supervision:warehouses:etl}
+\end{figure}
+
 
 Ces opérateurs sont de cardinalité $1\!\!:\!\!1$, $n\!\!:\!\!1$, $1\!\!:\!\!n$ ou $n\!\!:\!\!n$, mais leur fonctionnalité est très dépendante des différents constructeurs de système ETL. Plusieurs travaux récents s'intéressent à dresser une taxonomie~\cite{Vassiliadis:taxonomy} de ces différents opérateurs. Des approches~\cite{Akkaoui:etl,Trujilo:uml-etl} s'intéressent ensuite à fournir des outils permettant de pouvoir développer des processus \textit{ETL} de façon indépendante au système. Ceci étant possible grâce aux techniques de transformations de modèles.
 
