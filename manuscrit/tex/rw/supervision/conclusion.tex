@@ -3,11 +3,11 @@ Ce chapitre a dressé un état de l'art des différents systèmes capables d'off
 
 \begin{sidewaystable}[ht]
 \centering
-\begin{tabular}{@{{\vrule width 1pt}}>{\raggedleft}m{3cm}@{\ \ {\vrule width 1pt}\ \ }M{4.2cm}|M{4.2cm}|M{4.2cm}|M{4.2cm}@{\ \ {\vrule width 1pt}}} \bottomrule
-Critère & Système d'administration & Gestion de contexte & Entrepôts de données & Gestion de flux de données \\  \toprule \bottomrule
+\begin{tabular}{@{{\vrule width 1pt}\ \ }>{\raggedleft}m{3cm}@{\ \ {\vrule width 1pt}\ \ }M{4.2cm}|M{4.2cm}|M{4.2cm}|M{4.2cm}@{\ \ {\vrule width 1pt}}} \bottomrule
+\head Critère & \head Système d'administration & \head Gestion de contexte & \head Entrepôts de données & \head Gestion de flux de données \\  \toprule \bottomrule
 \critereAA & Hiérarchique & Triplets & Relationnel & Relationnel dérivé \\ \hline
-\critereAB & \meh Structure hiérarchique  & \good Ontologies & \good Modèle normalisé & \bad Pas de structure \\ \hline
-\critereAC & \meh Notifications & \bad Très peu & \meh ETL avec CDC & \good Flux natif \\ \toprule \bottomrule
+\critereAB & \meh Structure hiérarchique sans contraintes & \good Ontologies & \good Modèle relationnel normalisé & \bad Pas de structure \\ \hline
+\critereAC & \meh Notifications & \bad Ajout du temps en propriété & \meh CDC & \good Flux natif \\ \toprule \bottomrule
 \critereBA & \meh Instantanée, continu en ad-hoc & \bad Instantané principalement & \meh Instantané. ETL en pseudo-continu & \bad Continu uniquement \\ \hline
 \critereBB & \good Standardisation, union de modèles & \meh Fusion d'ontologies non standardes & \good Processus ETL (complexe) & \good Union et jointures de flux \\ \hline
 \critereBC & \bad Impératif principalement & \good Logique & \meh Déclaratif (SQL) et Procédural (ETL) & \good Déclaratif principalement\\ \hline
