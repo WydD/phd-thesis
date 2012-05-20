@@ -1,2 +1,13 @@
 \chapter{Systèmes de Gestion de Flux de Données}
+Nous avons présenté dans le chapitre précédent les grands concepts de la gestion de flux de données. Celle-ci permet de répondre de manière intégré à l'interrogation continue sur des données dynamiques. Dans ce chapitre, nous allons donc explorer ce domaine d'un point de vue plus technique afin d'analyser les points clés manquants dans cette approche.
+
+Afin de rendre les SGFD viables dans notre contexte. Après la présentation de l'approche, nous avons noté plusieurs faiblesses. Notre analyse portera donc particulièrement son attention sur les points clés suivants : 
+\begin{itemize}
+	\item[\textbf{Le langage}] : L'expressivité des langages manipulants les flux de données est bien plus complexe que le simple modèle relationnel. Le fait d'écrire des requêtes dont l'exécution ne s'arrête pas fait qu'il est nécessaire de prendre en compte l'évolution de son exécution. Afin qu'il soit possible d'exprimer les requêtes de façon claire, il est nécessaire d'avoir un langage et un modèle sous-jacent sans ambiguïté.
+	\item[\textbf{Modes d'interrogations}] : Les SGFD sont capable uniquement d'exécuter des requêtes continues par nature. Toutefois, dans notre cadre, il est important d'être capable d'exprimer des requêtes instantanées ou mixtes. 
+	\item[\textbf{Le support persistent}] : Dans le chapitre précédent, nous avons vu que le support de base de données permettait des analyses plus poussées. En effet, un flux est une entité transitoire, la durée de vie des données est par définition limité dans le temps. Or pour permettre des besoins d'analyse plus évoluées, il faut considérer le flux comme une entité complete. La capacité à archiver ces flux et à pouvoir l'interroger (de manière instantanée ou continue) sera primordial.
+	\item[\textbf{Optimisation}] : Afin de s'adapter à tout type de systèmes, y compris à grande échelle. Il est nécessaire que l'exécution des requêtes soit efficace. En effet, cet aspect a des impacts prononcés au niveau de l'architecture ainsi que sur les algorithmes d'exécution des opérateurs.
+\end{itemize}
+
+\TODO{plan}
 \input{tex/rw/sgfd/modeles}

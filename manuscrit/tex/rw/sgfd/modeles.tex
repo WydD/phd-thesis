@@ -3,9 +3,7 @@ Nous avons présenté brièvement dans le chapitre~\ref{chap:rw:supervision} que
 
 \TODO{plan}
 
-\subsection{Les premiers modèles}
-
-\subsubsection{La genèse de la gestion de flux}
+\subsection{La genèse de la gestion de flux}
 L'idée de créer des requêtes continues a été présenté en 1992 dans le système Tapestry~\cite{Terry:tapestry}. Dans ce système une requête continue est avant tout une requête instantanée, mais la sémantique étant que celle-ci sera exécuté périodiquement. Ces requêtes s'appliquent sur un ensemble de données sans suppression ou mise à jour (\textit{append-only}). Le résultat de cette requête sera représenté par le flux des nouvelles données calculés de manière incrémental. Pour cela, les relations sont réellement considérés comme des variables et elles deviennent donc dépendantes du temps.
 
 En 1995, les flux de données ont été explorés tout d'abord par le modèle séquentiel $\mathcal{SEQ}$~\cite{Seshadri:seq}. Dans ce modèle, une \enquote{\it séquence} est un ensemble d'enregistrements (n-uplets relationnels) avec un ordre positionnel. Dans le modèle relationnel originel~\cite{Codd:model}, ceci n'est pas autorisé car l'ordre des n-uplets est dit \enquote{\it irrelevant}. La sémantique de spécification des opérateurs relationnels utilise cet liberté d'ordre pour être consistent et obtenir des propriétés intéressantes (voir chapitre~\ref{chap:contrib:astral}). Ici, le formalisme de $\mathcal{SEQ}$ montre qu'il est toujours possible d'exploiter les opérateurs algébriques classiques et que de nouveaux peuvent être créés comme les premières notions de regroupements d'n-uplets appelées \textit{collapse}\footnote{Cette primitive représente ce qui deviendra l'opérateur de fenêtrage plus tard}. Ce formalisme a été fondateur pour plusieurs travaux futurs qui s'inspirent explicitement de ce modèle~\cite{Gurgen:sens,Babcock:issues}.
@@ -42,9 +40,29 @@ Le point crucial de cette approche est le fait que les opérateurs sont capables
     \includegraphics[width=0.75\textwidth]{rw-sgfd-streamrelation}
     \caption{Associations utilisés dans la sémantique abstraite de STREAM}
 \end{figure}
-\TODO{Exemple de requête}
-Le point clé et novateur de cette approche étant que les opérateurs de flux vers flux \textbf{n'existe pas}. Les auteurs ont justifié cette approche car l'écriture de requête était plus intuitive et que cela permettait de généraliser l'utilisation des vues matérialisés dans le traitement des flux (introduit auparavant dans Chronicle). La spécification de cette sémantique a permit par la suite de décrire le langage associé CQL~\cite{Arasu:cql} qui est désormais utilisé dans de nombreux produits académiques et commerciaux~\cite{Witkowski:oraclecq,url:sqlstream}.
 
+Afin de mieux illustrer la sémantique abstraite utilisée, nous allons détailler un exemple plus concrêt.
+\begin{example}
+Soit $S$ un flux de capteurs $(\mathrm{temperature}, \textbf{T})$ avec \textbf{T} pour \textit{timestamp} et temperature pour sa mesure. Nous souhaitons faire un agrégat sur 5 min. La composition d'opérateur sera la suivante :
+\begin{itemize}
+\item D'abord un opérateur de fenêtrage $[5min]$ sera appliqué. Il transformera le flux en la relation \textit{groupement des 5 dernières minutes}. Cette relation évolue évidemment au cours du temps.
+\item Ensuite un opérateur d'agrégation $AVG_{temp}$\footnote{notation simplifiée de l'opérateur d'agrégation sans groupement dont le résultat est une relation avec un seul attribut \textit{avg}}. Nous obtenons ainsi une relation avec un seul n-uplet.
+\item Enfin, un opérateur de \textit{streaming} est appliqué. Celui-ci peut avoir plusieurs sémantique. Prenons le plus simple $ISTREAM$ qui permet de créer un flux à partir des insertions dans la relation (une mise à jour est considéré comme une suppression puis insertion).
+\end{itemize}
+Nous aurons donc au final la requête suivante : $$ISTREAM(AVG_{temp}(S[5min]))$$
+\end{example}
+
+Le point clé et novateur de cette approche étant que les opérateurs de flux vers flux \textbf{n'existe pas}. Ce point est important car jusqu'à présent tous les opérateurs étaient de cette forme. Les auteurs ont justifié cette approche car l'écriture de requête était plus intuitive et que cela permettait de généraliser l'utilisation des vues matérialisés dans le traitement des flux (introduit auparavant dans Chronicle). La spécification de cette sémantique a permit par la suite de décrire le langage associé CQL~\cite{Arasu:cql} (\textit{Continuous Query Language}) dérivé du \textit{SQL} qui est désormais utilisé dans de nombreux produits académiques et commerciaux~\cite{Witkowski:oraclecq,url:sqlstream}.
+
+\begin{example}
+La requête \textit{CQL} de l'exemple précédent aura la forme suivante : 
+\begin{center}
+\it SELECT ISTREAM(AVG(temp) as avg) FROM S [RANGE 5min]
+\end{center}
+\end{example}
+
+\subsection{La reformalisation}
+Plus récemment, il a été prouvé que les modèles 
 % \textbf{Rethinking formal models. }
 % Recently, the core basis of  the aforementioned  models has been proven to be semantically ambiguous. Therefore, standardization and clarification of the core semantics of some operators have been proposed~\cite{Jain:spread}.  The concept of {\bf batch} as a set of tuples having the same timestamp, has been introduced. 
 % A new wave of formalization arises subsequently  to fill the lack of mathematical models. Some works contribute to more complete  formalization of windows~\cite{Patroumpas:window,Botan:secret,Petit:window} as they are  the aspect  of stream processing which has led to the most different interpretations.
