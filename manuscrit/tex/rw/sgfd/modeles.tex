@@ -38,7 +38,7 @@ Le point crucial de cette approche est le fait que les opérateurs sont capables
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.75\textwidth]{rw-sgfd-streamrelation}
-    \caption{Associations utilisés dans la sémantique abstraite de STREAM}
+    \caption{Associations utilisés dans la sémantique abstraite de STREAM}\label{fig:rw:sgfd:streamrelation}
 \end{figure}
 
 Afin de mieux illustrer la sémantique abstraite utilisée, nous allons détailler un exemple plus concrêt.
@@ -46,23 +46,74 @@ Afin de mieux illustrer la sémantique abstraite utilisée, nous allons détaill
 Soit $S$ un flux de capteurs $(\mathrm{temperature}, \textbf{T})$ avec \textbf{T} pour \textit{timestamp} et temperature pour sa mesure. Nous souhaitons faire un agrégat sur 5 min. La composition d'opérateur sera la suivante :
 \begin{itemize}
 \item D'abord un opérateur de fenêtrage $[5min]$ sera appliqué. Il transformera le flux en la relation \textit{groupement des 5 dernières minutes}. Cette relation évolue évidemment au cours du temps.
-\item Ensuite un opérateur d'agrégation $AVG_{temp}$\footnote{notation simplifiée de l'opérateur d'agrégation sans groupement dont le résultat est une relation avec un seul attribut \textit{avg}}. Nous obtenons ainsi une relation avec un seul n-uplet.
+\item Ensuite un opérateur d'agrégation\footnote{notation simplifiée de l'opérateur d'agrégation sans groupement dont le résultat est une relation avec un seul attribut \textit{avg}} $\mathcal G_{avg(temp)}$. Nous obtenons ainsi une relation avec un seul n-uplet.
 \item Enfin, un opérateur de \textit{streaming} est appliqué. Celui-ci peut avoir plusieurs sémantique. Prenons le plus simple $ISTREAM$ qui permet de créer un flux à partir des insertions dans la relation (une mise à jour est considéré comme une suppression puis insertion).
 \end{itemize}
-Nous aurons donc au final la requête suivante : $$ISTREAM(AVG_{temp}(S[5min]))$$
+Nous aurons donc au final la requête suivante : $$ISTREAM(\mathcal G_{avg(temp)}(S[5min]))$$
 \end{example}
 
-Le point clé et novateur de cette approche étant que les opérateurs de flux vers flux \textbf{n'existe pas}. Ce point est important car jusqu'à présent tous les opérateurs étaient de cette forme. Les auteurs ont justifié cette approche car l'écriture de requête était plus intuitive et que cela permettait de généraliser l'utilisation des vues matérialisés dans le traitement des flux (introduit auparavant dans Chronicle). La spécification de cette sémantique a permit par la suite de décrire le langage associé CQL~\cite{Arasu:cql} (\textit{Continuous Query Language}) dérivé du \textit{SQL} qui est désormais utilisé dans de nombreux produits académiques et commerciaux~\cite{Witkowski:oraclecq,url:sqlstream}.
+Le point clé et novateur de cette approche étant que les opérateurs de flux vers flux \textbf{n'existe pas}. Ce point est important car jusqu'à présent tous les opérateurs étaient de cette forme. Par exemple, la jointure de deux flux n'existe pas par essence. Seule la jointure de relations est possible, et il est possible de créer des relations à partir de fenêtrages sur flux. Les auteurs ont justifié cette approche car l'écriture de requête était plus intuitive et que cela permettait de généraliser l'utilisation des vues matérialisés dans le traitement des flux (introduit auparavant dans Chronicle). La spécification de cette sémantique a permit par la suite de décrire le langage associé CQL~\cite{Arasu:cql} (\textit{Continuous Query Language}) dérivé du \textit{SQL} qui est désormais utilisé dans de nombreux produits académiques et commerciaux~\cite{Witkowski:oraclecq,url:sqlstream}.
 
 \begin{example}
 La requête \textit{CQL} de l'exemple précédent aura la forme suivante : 
 \begin{center}
-\it SELECT ISTREAM(AVG(temp) as avg) FROM S [RANGE 5min]
+\it ISTREAM(SELECT AVG(temp) as avg FROM S [RANGE 5min])
 \end{center}
 \end{example}
 
+La sémantique formelle du langage CQL est présenté au complet dans la thèse d'Arvind Arasu~\cite{Arasu:queries}. L'algèbre \textit{ACO} (\textit{Algebra of Continuous Operators}) y est décrite. Les définitions élémentaires sont les suivantes : 
+\begin{itemize}
+ \item[\textbf{Instant} ($\tau$)] : élément de l'ensemble $\mathcal T$, discret et ordonné\footnote{Il est en réalité définit comme un ensemble satisfaisant les axiomes de Peano. En particulier la présence d'un unique successeur. L'instant de départ de l'exécution est le plus petit instant observé, donc $0$.} et représenté par $\N$.
+ \item[\textbf{Relation}] : Fonction associant un instant à un multi-ensemble de n-uplets avec un schéma commun.
+ \item[\textbf{Flux}] : Multi-ensemble d'éléments $\left<s,\tau\right>$ où $s$ est un n-uplet respectant un schéma commun et $\tau \in \mathcal T$ son \textit{timestamp}. Pour un $\tau$ donné, il doit y avoir un nombre fini (mais non borné) d'éléments.
+\end{itemize}
+Par la suite, il est possible de définir des opérateurs sur ces éléments. Les opérateurs relationnels sont simple car pour une \textit{relation} $R$, et un instant $\tau$ : la \textit{relation instantanée} $R(\tau)$ est une relation au sens SGBD du terme\footnote{D'un point de vue strict, les multi-ensembles sont utilisés dans les SGBD mais ne sont pas originellement utilisé dans le modèle relationnel.}. Il est donc possible d'y appliquer les opérateurs classiques. Ainsi nous avons les équivalences suivante : $\forall \tau\in\mathcal T,$ 
+\begin{eqnarray*}
+    (\sigma_c R)(\tau) & = & \sigma_c(R(\tau))\\
+    (R_1 \Join R_2)(\tau) & = & R_1(\tau) \Join R_2(\tau)
+\end{eqnarray*}
+
+Les opérateurs les plus importants sont ceux de classe $S2R$ (\textit{stream-to-relation}) et $R2S$ (\textit{relation-to-stream}). La table~\ref{tab:rw:sgfd:acostream} liste les opérateurs présentés.
+ 
+\begin{table}[ht]
+ \centering
+\begin{tabular}{|c|c|l|}\bottomrule
+Opérateur & Classe & Description \\\toprule \bottomrule
+$S[N]$ & $S2R$ & Fenêtre positionnelle glissante de taille $N$ n-uplets \\ \hline
+$S[W]_T$ & $S2R$ & Fenêtre temporelle glissante de taille $W$ unités de temps \\\hline
+$S[1]_T$ & $S2R$ & Fenêtre représentant l'instant présent\\\hline
+$S[\infty]$ & $S2R$ & Fenêtre accumulative\\ \toprule \bottomrule
+$\mathcal{IS}(R)$ & $R2S$ & Flux d'insertion \\ \hline
+$\mathcal{DS}(R)$ & $R2S$ & Flux de suppression \\ \hline
+$\mathcal{RS}(R)$ & $R2S$ & Flux de présence \\ \toprule
+\end{tabular}
+\caption{Opérateurs de flux de l'algèbre \textit{ACO}}\label{tab:rw:sgfd:acostream}
+\end{table}
+
+Pour les \textit{streamers}, leurs définitions sont dérivées de l'état de la relation à l'instant présent ainsi que à l'instant précédent. Leurs définitions sont donc dépendant de la discrétisation du temps. Soit $R$ une relation, 
+\begin{eqnarray*}
+    \mathcal{IS}(R) & = & \bigcup_{\tau\geq 0} ((R(\tau) - R(\tau-1))\times \{\tau\})\\
+    \mathcal{DS}(R) & = & \bigcup_{\tau>0} ((R(\tau-1) - R(\tau))\times \{\tau\})\\
+    \mathcal{RS}(R) & = & \bigcup_{\tau\geq 0} (R(\tau)\times \{\tau\})
+\end{eqnarray*}
+La définition des fenêtres est quant à elle plus technique. L'idée étant de regrouper les n-uplets selon un critère particulier. Soit $S$ un flux,
+\begin{eqnarray*}
+    S[W]_T & = & \left\{s | \left<s,\tau'\right>\in S \wedge (\tau' \leq \tau) \wedge (\tau' \geq \max\{\tau - W +1,0\})   \right\}\\
+    S[N] & = & \left\{s_i \in S | \max\{1,n(\tau)-N+1\} \leq i \leq n(\tau)\right\}
+\end{eqnarray*}
+où la suite $(s_n)$ correspond à la suite des n-uplets ordonnées par \textit{timestamp} et $n(\tau)$ le nombre d'éléments de $S$ possédant un \textit{timestamp} $\leq \tau$.
+
+Le langage \textit{CQL} et cette algèbre \textit{ACO} ont été démontré comme plus expressifs~\cite{Arasu:cql} que les autres solutions que nous avons mentionné précédemment (Chronicles, Tribeca, Tapestry, Gigascope, Aurora et TelegraphCQ).
+
 \subsection{La reformalisation}
-Plus récemment, il a été prouvé que les modèles 
+En 2008, les auteurs à l'origine de \textit{STREAM}, d'\textit{Aurora}, de \textit{StreamBase} et d'\textit{Oracle CQ} ont présenté~\cite{Jain:spread} pour dénoncer l'ambiguïté sémantique du langage \textit{CQL}~\cite{Jain:spread}. En effet, l'exécution des opérateurs complexes tels que les fenêtres n'étaient pas identique entre l'interprétation de \textit{StreamBase} et l'interprétation d'\textit{Oracle}. Le point clé étant le modèle d'exécution. 
+
+........
+
+De plus, nous pouvons effectivement remarquer que dans l'algèbre \textit{ACO} la gestion de l'ordre positionnel est flou. Le flux est ordonné par \textit{timestamp}, mais en cas de n-uplets dits \textit{simultanés}, aucun ordre strict n'est définit. Par exemple, dans la définition de la fenêtre positionnelle, \textit{ACO} introduit la définition d'une suite $(s_n)$ strictement ordonnée. A. Arasu a dit sur ce point dans son manuscrit de thèse : \enquote{\it Comme nous ordonnons arbitrairement la séquence $s_1$, $s_2$,..., les fenêtres positionnelles sont non-déterministes lorsque les \textit{timestamps} ne sont pas uniques, ce qui peut ne pas être approprié}.
+
+
+
 % \textbf{Rethinking formal models. }
 % Recently, the core basis of  the aforementioned  models has been proven to be semantically ambiguous. Therefore, standardization and clarification of the core semantics of some operators have been proposed~\cite{Jain:spread}.  The concept of {\bf batch} as a set of tuples having the same timestamp, has been introduced. 
 % A new wave of formalization arises subsequently  to fill the lack of mathematical models. Some works contribute to more complete  formalization of windows~\cite{Patroumpas:window,Botan:secret,Petit:window} as they are  the aspect  of stream processing which has led to the most different interpretations.
