@@ -108,7 +108,7 @@ Le langage \textit{CQL} et cette algèbre \textit{ACO} ont été démontré comm
 \subsection{La reformalisation}
 En 2008, les auteurs à l'origine de \textit{STREAM}, d'\textit{Aurora}, de \textit{StreamBase} et d'\textit{Oracle CQ} ont présenté~\cite{Jain:spread} pour dénoncer l'ambiguïté sémantique des langages de gestion de flux. En effet, l'exécution des opérateurs complexes tels que les fenêtres n'étaient pas identique entre l'interprétation de \textit{StreamBase} et l'interprétation d'\textit{Oracle}. Le point clé étant le modèle d'exécution. Afin d'illustrer le phénomène, voici un exemple.
 
-\begin{example}
+\begin{example}\label{ex:rw:sgfd:batches}
  Soit $S$ un flux dont le contenu est, dans le formalisme \textit{ACO}, $\{\left<s_1,0\right>, \left<s_2,0\right>, \left<s_3,1\right>\}$. Nous souhaitons observer le résultat de la requête $S[1]$ (fenêtre de 1-tuple).
 
 Si le modèle d'exécution est basé sur l'arrivée des n-uplets. Alors lorsque le n-uplet $s_1$ entre dans le système. Le système remplit une nouvelle fenêtre, ce qui donne $S[1](0)=\{s_1\}$. Puis viens le n-uplet $s_2$ et le système produit une nouvelle fenêtre : $S[1](0)=\{s_2\}$. L'avantage étant que les n-uplets sont tous considérés, toutefois au même instant, la fenêtre a deux états différents, ce qui n'est pas correct.
@@ -116,21 +116,21 @@ Si le modèle d'exécution est basé sur l'arrivée des n-uplets. Alors lorsque 
 Si le modèle d'exécution est basé sur les \textit{timestamps}. Alors à l'instant 0, l'opérateur va obtenir les deux n-uplets. Puis, conformément à sa spécification algébrique, va sélectionner l'un d'eux, pour produire $S[1](0) = \{s_1\}$ ou $\{s_2\}$. Le point de vue formel est cette fois correct, toutefois cet opérateur va perdre des données, ce qui peut être problématique.
 \end{example}
 
-Le problème étant que les deux sémantiques ont du sens a priori. Pour clarifier, les auteurs introduisent la notion de \textit{batch}. 
+Le problème étant que les deux sémantiques ont du sens a priori. Pour clarifier, les auteurs introduisent la notion de \textit{batch}. La figure~\ref{fig:rw:sgfd:modes} présente les différents modes d'exécutions. Le mode basé sur le temps groupe tous les n-uplets qui possèdent le même \textit{timestamp}. Le mode basé sur les n-uplets au contraire se base sur chaque n-uplet. Le batch est une généralisation de ces modes puisqu'il considère que l'ensemble des n-uplets simultanés est partitionné en un sous ensemble ordonné.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.75\textwidth]{rw-sgfd-modes}
-    \caption{Représentation des différents modes d'exécution des SGFD}
+    \caption{Représentation des différents modes d'exécution des SGFD}\label{fig:rw:sgfd:modes}
 \end{figure}
+L'unité de temps n'est donc pas le \textit{timestamp} ou l'n-uplet, ce sont les batchs. D'un point de vue physique, cela correspond à un \textit{envoi groupé} de la part de la source.
+\begin{example}
+ Une source d'événement produit un flux d'information. Si deux événements se produisent au même \textit{instant} (à l'unité de temps près)\footnote{Ces cas apparaissent facilement dans les cadres de grande échelle ou lorsqu'un événement est cause d'un autre}, la source effectuera quand même deux actions de production de la source, ces productions correspondent aux batchs.
+\end{example}
 
+Par la suite, des opérateurs sont développés pour manipuler les batchs pour passer d'un mode d'exécution à l'autre. Par exemple, il est possible de structurer les batchs d'un \textit{timestamp} donné à partir d'un autre attribut (identifiant par exemple).
 
-Nous pouvons effectivement remarquer que dans l'algèbre \textit{ACO} la gestion de l'ordre positionnel est flou. Le flux est ordonné par \textit{timestamp}, mais en cas de n-uplets dits \textit{simultanés}, aucun ordre strict n'est définit. Dans la définition de la fenêtre positionnelle, \textit{ACO} introduit la définition d'une suite $(s_n)$ strictement ordonnée. A. Arasu a dit sur ce point dans son manuscrit de thèse : \enquote{\it Comme nous ordonnons arbitrairement la séquence $s_1$, $s_2$,..., les fenêtres positionnelles sont non-déterministes lorsque les \textit{timestamps} ne sont pas uniques, ce qui peut ne pas être approprié}.
+De façon similaire, nous pouvons effectivement remarquer que dans l'algèbre \textit{ACO} la gestion de l'ordre positionnel est flou Le flux est ordonné par \textit{timestamp}, mais en cas de n-uplets dits \textit{simultanés}, aucun ordre strict n'est définit. Dans la définition de la fenêtre positionnelle, \textit{ACO} introduit la définition d'une suite $(s_n)$ strictement ordonnée. A. Arasu a dit sur ce point dans son manuscrit de thèse : \enquote{\it Comme nous ordonnons arbitrairement la séquence $s_1$, $s_2$,..., les fenêtres positionnelles sont non-déterministes lorsque les \textit{timestamps} ne sont pas uniques, ce qui peut ne pas être approprié}. L'introduction apporte donc une généralisation de l'ordre temporel, ce qui peut permettre d'empêcher certains cas. Toutefois, s'il est nécessaire de sélectionner un nombre limité comme dans l'exemple~\ref{ex:rw:sgfd:batches}, le choix reste non-déterministe.
 
+D'autres travaux se sont intéressé à la formalisation de la sémantique des opérateurs. Le plus étudié reste l'opérateur de fenêtrage qui est une des principales raisons de la complexité des systèmes de gestion de flux de données. Afin de gérer l'hétérogénéité des traitements de systèmes, le modèle \textit{SECRET} permet de mieux comprendre la sémantique d'exécution des SGFD. Le principe étant de décomposer l'opérateur en trois parties. Tout d'abord, le modèle décrit sa portée et son contenu (\textit{scope \& content}) pour savoir quels n-uplets seront inclus dans les fenêtres. Ensuite, les auteurs détaillent son mode de consommation d'n-uplet (\textit{tick}), et enfin son mode de notification à l'utilisateur. Cette séparation claire des concepts permet d'avoir une meilleur compréhension des sémantiques possibles sur les fenêtres. Plusieurs autres travaux se sont intéressé particulièrement à cet opérateur~\cite{Patroumpas:window,Patroumpas:subsumewindows,Maier:semantics}. Les conséquences d'une meilleure compréhension de cet opérateur sont certains sur l'interprétation de sa sémantique mais aussi pour permettre des procédés d'optimisations (voir section~\ref{sec:rw:sgfd:optim}).
 
-
-% \textbf{Rethinking formal models. }
-% Recently, the core basis of  the aforementioned  models has been proven to be semantically ambiguous. Therefore, standardization and clarification of the core semantics of some operators have been proposed~\cite{Jain:spread}.  The concept of {\bf batch} as a set of tuples having the same timestamp, has been introduced. 
-% A new wave of formalization arises subsequently  to fill the lack of mathematical models. Some works contribute to more complete  formalization of windows~\cite{Patroumpas:window,Botan:secret,Petit:window} as they are  the aspect  of stream processing which has led to the most different interpretations.
-
-
-\subsection{Nouvelles formalisations}
+Enfin, les travaux de Krämer~\cite{Kramer:semantics} détaillent une algèbre de manipulation des flux. Le point novateur est le fait de séparer l'aspect brut, logique et physique. Les flux tels que nous les avons décrit dans cette section sont des flux bruts composés de couples $(\textrm{n-uplet},\textit{timestamp})$. Les flux logiques sont quant à eux un ensemble de triplets $(\textrm{n-uplet}, \textit{timestamp}, n)$. La multiplicité $n$ permet de compter le nombre d'occurences du n-uplet a été observée dans le flux originel. Les flux physiques utilisent eux une définition très similaire à ce qui peut se trouver dans les bases de données temporelle avec un interval de validité. Ses élements sont donc des couples $(\textrm{n-uplet},[t_s, t_e[)$. Deux algèbres sont ainsi décrites, l'une pour les flux logiques (manipulés pour la sémantique) et l'autres pour les flux physiques (manipulés par l'implémentation).
