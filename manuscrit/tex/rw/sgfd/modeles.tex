@@ -106,11 +106,25 @@ où la suite $(s_n)$ correspond à la suite des n-uplets ordonnées par \textit{
 Le langage \textit{CQL} et cette algèbre \textit{ACO} ont été démontré comme plus expressifs~\cite{Arasu:cql} que les autres solutions que nous avons mentionné précédemment (Chronicles, Tribeca, Tapestry, Gigascope, Aurora et TelegraphCQ).
 
 \subsection{La reformalisation}
-En 2008, les auteurs à l'origine de \textit{STREAM}, d'\textit{Aurora}, de \textit{StreamBase} et d'\textit{Oracle CQ} ont présenté~\cite{Jain:spread} pour dénoncer l'ambiguïté sémantique du langage \textit{CQL}~\cite{Jain:spread}. En effet, l'exécution des opérateurs complexes tels que les fenêtres n'étaient pas identique entre l'interprétation de \textit{StreamBase} et l'interprétation d'\textit{Oracle}. Le point clé étant le modèle d'exécution. 
+En 2008, les auteurs à l'origine de \textit{STREAM}, d'\textit{Aurora}, de \textit{StreamBase} et d'\textit{Oracle CQ} ont présenté~\cite{Jain:spread} pour dénoncer l'ambiguïté sémantique des langages de gestion de flux. En effet, l'exécution des opérateurs complexes tels que les fenêtres n'étaient pas identique entre l'interprétation de \textit{StreamBase} et l'interprétation d'\textit{Oracle}. Le point clé étant le modèle d'exécution. Afin d'illustrer le phénomène, voici un exemple.
 
-........
+\begin{example}
+ Soit $S$ un flux dont le contenu est, dans le formalisme \textit{ACO}, $\{\left<s_1,0\right>, \left<s_2,0\right>, \left<s_3,1\right>\}$. Nous souhaitons observer le résultat de la requête $S[1]$ (fenêtre de 1-tuple).
 
-De plus, nous pouvons effectivement remarquer que dans l'algèbre \textit{ACO} la gestion de l'ordre positionnel est flou. Le flux est ordonné par \textit{timestamp}, mais en cas de n-uplets dits \textit{simultanés}, aucun ordre strict n'est définit. Par exemple, dans la définition de la fenêtre positionnelle, \textit{ACO} introduit la définition d'une suite $(s_n)$ strictement ordonnée. A. Arasu a dit sur ce point dans son manuscrit de thèse : \enquote{\it Comme nous ordonnons arbitrairement la séquence $s_1$, $s_2$,..., les fenêtres positionnelles sont non-déterministes lorsque les \textit{timestamps} ne sont pas uniques, ce qui peut ne pas être approprié}.
+Si le modèle d'exécution est basé sur l'arrivée des n-uplets. Alors lorsque le n-uplet $s_1$ entre dans le système. Le système remplit une nouvelle fenêtre, ce qui donne $S[1](0)=\{s_1\}$. Puis viens le n-uplet $s_2$ et le système produit une nouvelle fenêtre : $S[1](0)=\{s_2\}$. L'avantage étant que les n-uplets sont tous considérés, toutefois au même instant, la fenêtre a deux états différents, ce qui n'est pas correct.
+
+Si le modèle d'exécution est basé sur les \textit{timestamps}. Alors à l'instant 0, l'opérateur va obtenir les deux n-uplets. Puis, conformément à sa spécification algébrique, va sélectionner l'un d'eux, pour produire $S[1](0) = \{s_1\}$ ou $\{s_2\}$. Le point de vue formel est cette fois correct, toutefois cet opérateur va perdre des données, ce qui peut être problématique.
+\end{example}
+
+Le problème étant que les deux sémantiques ont du sens a priori. Pour clarifier, les auteurs introduisent la notion de \textit{batch}. 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{rw-sgfd-modes}
+    \caption{Représentation des différents modes d'exécution des SGFD}
+\end{figure}
+
+
+Nous pouvons effectivement remarquer que dans l'algèbre \textit{ACO} la gestion de l'ordre positionnel est flou. Le flux est ordonné par \textit{timestamp}, mais en cas de n-uplets dits \textit{simultanés}, aucun ordre strict n'est définit. Dans la définition de la fenêtre positionnelle, \textit{ACO} introduit la définition d'une suite $(s_n)$ strictement ordonnée. A. Arasu a dit sur ce point dans son manuscrit de thèse : \enquote{\it Comme nous ordonnons arbitrairement la séquence $s_1$, $s_2$,..., les fenêtres positionnelles sont non-déterministes lorsque les \textit{timestamps} ne sont pas uniques, ce qui peut ne pas être approprié}.
 
 
 
