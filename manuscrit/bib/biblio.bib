@@ -202,12 +202,12 @@ title = {{Linear road: a stream data management benchmark}},
 url = {http://portal.acm.org/citation.cfm?id=1316732},
 year = {2004}
 }
-@techreport{ilprints624,
+@techreport{Arasu:window,
 abstract = {We consider the problem of maintaining approximate counts and quantiles over fixed- and variable-size sliding windows in limited space. For quantiles, we present deterministic algorithms whose space requirements are O(1/e log(1/e)log N) and O(1/e log(1/e) log(eN) log N) in the worst-case for fixed- and variable-size windows, respectively, where N denotes the current number of elements in the window and e, the relative error. Our space bounds improve upon the previous best bounds of O(1/e\^{}2 polylog (1/e,N)). For counts, we present both deterministic and randomized algorithms. The deterministic algorithms require O(1/e log\^{}2 (1/e)) and O(1/e log\^{}2 (1/e) log eN) for worst-case space for fixed- and variable-size windows, respectively, while the randomized ones require O(1/e log (1/(e d))) and O(1/e log(1/(ed)) log eN) worst-case space, where d denotes the probability of failure. We believe no previous work on space-efficient approximate counts for sliding windows exists.},
 author = {Arasu, Arvind and Manku, Gurmeet},
 booktitle = {Technical Report},
 file = {:home/laup8311/Documents/Mendeley Desktop//Arasu, Manku - 2003 - Approximate Counts and Quantiles over Sliding Windows.pdf:pdf},
-keywords = { Approximation, Counts, Data Streams, Limited Space, Quantiles,Sliding Windows},
+keywords = {Approximation,Counts,Data Streams,Limited Space,Quantiles,Sliding Windows},
 number = {2003-72},
 title = {{Approximate Counts and Quantiles over Sliding Windows}},
 url = {http://ilpubs.stanford.edu:8090/624/1/2003-72.pdf},
@@ -224,7 +224,7 @@ title = {{A Denotational Semantics for Continuous Queries over Streams and Relat
 url = {http://ilpubs.stanford.edu:8090/639/1/2004-19.pdf},
 year = {2004}
 }
-@techreport{Arasu:sharing,
+@techreport{Arasu:resource,
 abstract = {We consider the problem of resource sharing when processing large numbers of continuous queries. We specifically address sliding-window aggregates over data streams, an important class of continuous operators for which sharing has not been addressed. We present a suite of sharing techniques that cover a wide range of possible scenarios: different classes of aggregation functions (algebraic, distributive, holistic), different window types (time-based, tuple-based, suffix, historical), and different input models (single stream, multiple substreams). We provide precise theoretical performance guarantees for our techniques, and show their practical effectiveness through a thorough experimental study.},
 author = {Arasu, Arvind and Widom, Jennifer},
 booktitle = {Technical Report},
@@ -235,12 +235,24 @@ title = {{Resource Sharing in Continuous Sliding-Window Aggregates}},
 url = {http://ilpubs.stanford.edu:8090/637/1/2004-15.pdf},
 year = {2004}
 }
-@inproceedings{ilprints580,
+@article{IBM:systemr,
+author = {Astrahan, MM and Blasgen, MW and Chamberlin, DD},
+file = {:home/laup8311/Documents/Mendeley Desktop/system-R.pdf:pdf},
+journal = {ACM Transactions on Database Systems (TODS)},
+keywords = {22,3,33,35,4,74,and phrases,authorization,cr categories,data structures,database,index structures,locking,nonprocedural language,recovery,relational model},
+number = {2},
+pages = {97--137},
+title = {{System R: Relational Management Approach to Database}},
+url = {http://www.mendeley.com/research/system-r-relational-approach-to-database-management/},
+volume = {1},
+year = {1976}
+}
+@inproceedings{Babcock:chain,
 annote = {An extended version of this paper titled "Operator Scheduling in Data Stream Systems" appears on this publications server as technical report 2003-68 at http://dbpubs.stanford.edu/pub/2003-68. This technical report proves an NP-completeness result showing the intractability of the problem of minimizing memory. The report also contains theoretical results and experiments for miminizing run-time memory requirements subject to user-specified latency constraints.},
 author = {Babcock, Brian and Babu, Shivnath and Datar, Mayur and Motwani, Rajeev},
 booktitle = {SIGMOD '03: Proceedings of the 2003 ACM SIGMOD international conference on Management of data},
 file = {:home/laup8311/Documents/Mendeley Desktop//Babcock et al. - 2003 - Chain Operator Scheduling for Memory Minimization in Data Stream Systems.pdf:pdf},
-keywords = { scheduling,Data Streams},
+keywords = {Data Streams,scheduling},
 title = {{Chain: Operator Scheduling for Memory Minimization in Data Stream Systems}},
 url = {http://ilpubs.stanford.edu:8090/580/},
 year = {2003}
@@ -441,9 +453,11 @@ abstract = {[PDF]},
 author = {Bhattacharya, Arnab and Meka, Anand and Singh, Ambuj K},
 file = {:home/laup8311/Documents/Mendeley Desktop//Bhattacharya, Meka, Singh - 2007 - MIST distributed indexing and querying in sensor networks using statistical models.pdf:pdf},
 journal = {VLDB '07: Proceedings of the 33rd international conference on Very Large Data bases},
-keywords = { data streams, markov, sensors,semantic},
+keywords = {data streams,markov,semantic,sensors},
 month = jan,
+pages = {854----865},
 pmid = {9223372036854775808},
+publisher = {VLDB Endowment},
 title = {{MIST: distributed indexing and querying in sensor networks using statistical models}},
 url = {http://portal.acm.org/citation.cfm?id=1325948},
 year = {2007}
@@ -772,7 +786,7 @@ title = {{Gigascope: a stream database for network applications}},
 url = {http://portal.acm.org.gate6.inist.fr/citation.cfm?id=872757.872838},
 year = {2003}
 }
-@inproceedings{ilprints504,
+@inproceedings{Datar:stats,
 abstract = {We consider the problem of maintaining statistics over sliding windows. We design data structures with small memory requirements and provide matching lower bounds.},
 author = {Datar, Mayur and Gionis, Aristides and Indyk, Piotr and Motwani, Rajeev},
 booktitle = {SODA '02: 2002 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA 2002)},
@@ -1035,6 +1049,16 @@ title = {{Design considerations for high fan-in systems: The HiFi approach}},
 url = {http://www.cs.berkeley.edu/~franklin/Papers/hifiCIDR05.pdf},
 year = {2005}
 }
+@article{Galpin:snee,
+author = {Galpin, Ixent and Brenninkmeijer, Christian Y A and Jabeen, Farhana and Fernandes, Alvaro A A and Paton, Norman W},
+doi = {10.1007/978-3-642-02279-1\_26},
+file = {:home/laup8311/Documents/Mendeley Desktop/fulltext-3.pdf:pdf},
+journal = {Scientific and Statistical Database Management},
+pages = {339--360},
+series = {Lecture Notes in Computer Science},
+title = {{Comprehensive Optimization of Declarative Sensor Network Queries}},
+year = {2009}
+}
 @inproceedings{Gasevic2004,
 author = {Gasevic, D. and Djuric, D. and Devedzic, V. and Damjanovi, V.},
 booktitle = {Proceedings of the 13th international World Wide Web conference on Alternate track papers \& posters},
@@ -1155,10 +1179,10 @@ title = {{Data Cube : A Relational Aggregation Operator}},
 volume = {53},
 year = {1997}
 }
-@inproceedings{Greenstein2003,
+@article{Greenstein:difs,
 author = {Greenstein, Benjamin and Ratnasamy, Sylvia and Shenker, Scott and Govindan, Ramesh and Estrin, Deborah},
-booktitle = {Ad Hoc Networks},
 file = {:home/laup8311/Documents/Mendeley Desktop//Greenstein et al. - 2003 - DIFS A distributed index for features in sensor networks.pdf:pdf},
+journal = {Ad Hoc Networks},
 number = {2-3},
 pages = {333--349},
 publisher = {Elsevier},
@@ -1317,15 +1341,18 @@ title = {{Efficient execution of sliding window queries over data streams}},
 url = {http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.5.1780\&amp;rep=rep1\&amp;type=pdf},
 year = {2003}
 }
-@inproceedings{Han:load-shedding,
-abstract = {Page 1. \{\AA\}\{\"{O}\}º ¾¼¼¸ \{\^{I}\}\{\'{O}\}Ðº¾¾¸ \{\AE\}\{\'{O}\}º¾¸ \{\^{O}\}\{\^{O}\}º½¾\{\ss\}½ \{\^{A}\}º \{\'{O}\}\{\~{N}\}\{\^{O}\}\{\`{U}\}\{\O\}º \{\"{E}\}º ² \{\`{I}\} \{\`{O}\}\{\'{O}\}Ðº \{\"{A}\}\{\'{O}\} \{\"{E}\}\{\`{O}\} \{\'{O}\}\{\"{O}\} \{\"{I}\}\{\`{O}\}\{\'{O}\}\{\^{U}\} \{\^{A}\}\{\'{O}\}\{\`{O}\}× \{\'{O}\}\{\'{U}\} \{\"{O}\} \{\"{E}\}\{\O\}\{\"{O}\}\{\~{N}\}× },
-author = {Han, Donghong and Wang, Guoren and Xiao, Chuan and Zhou, Rui},
-booktitle = {Journal of Computer Science and Technology},
-keywords = {Data Streams,load shedding},
-month = jan,
-pmid = {9223372036854775808},
+@article{Han:join,
+author = {Han, Dong-Hong and Wang, Guo-Ren and Xiao, Chuan and Zhou, Rui},
+doi = {10.1007/s11390-007-9024-8},
+file = {:home/laup8311/Documents/Mendeley Desktop/7202.pdf:pdf},
+issn = {1000-9000},
+journal = {Journal of Computer Science and Technology},
+month = apr,
+number = {2},
+pages = {182--189},
 title = {{Load Shedding for Window Joins over Streams}},
-url = {http://www.springerlink.com/index/1376223474106480.pdf},
+url = {http://www.springerlink.com/index/10.1007/s11390-007-9024-8},
+volume = {22},
 year = {2007}
 }
 @article{Han:contextaware,
@@ -1424,6 +1451,20 @@ title = {{An OSGI-Based Model for Remote Management of Residential Gateways}},
 url = {http://www.springerlink.com/index/L5X85P621R6557T6.pdf},
 year = {2007}
 }
+@article{Ibaraki:join,
+author = {Ibaraki, Toshihide and Kameda, Tiko},
+doi = {10.1145/1270.1498},
+file = {:home/laup8311/Documents/Mendeley Desktop/p482-ibaraki.pdf:pdf},
+issn = {03625915},
+journal = {ACM Transactions on Database Systems},
+month = aug,
+number = {3},
+pages = {482--502},
+title = {{On the optimal nesting order for computing N-relational joins}},
+url = {http://portal.acm.org/citation.cfm?doid=1270.1498},
+volume = {9},
+year = {1984}
+}
 @article{Coral8:ccl,
 author = {Inc., Coral8},
 file = {:home/laup8311/Documents/Mendeley Desktop//Inc. - Unknown - Coral8 CCL Reference.pdf:pdf},
@@ -1438,6 +1479,16 @@ publisher = {Wiley},
 title = {{Building the data warehouse (3rd Edition)}},
 url = {http://scholar.google.com/scholar?hl=en\&btnG=Search\&q=intitle:Building+the+Data+Warehouse\#0},
 year = {2002}
+}
+@techreport{Ioannidis:optimization,
+author = {Ioannidis, Yannis E},
+file = {:home/laup8311/Documents/Mendeley Desktop/ioannidis.pdf:pdf},
+institution = {University of Wisconsin},
+issn = {03600300},
+month = mar,
+pages = {1--38},
+title = {{Query optimization}},
+year = {1996}
 }
 @article{Jagadish:chronicle,
 author = {Jagadish, H and Mumick, Inderpal and Silberschatz, Abraham},
@@ -1457,6 +1508,16 @@ pages = {1379--1390},
 title = {{Towards a streaming SQL standard}},
 volume = {1},
 year = {2008}
+}
+@article{Jiang:scheduling,
+author = {Jiang, Qingchun and Chakravarthy, Sharma},
+file = {:home/laup8311/Documents/Mendeley Desktop/fulltext-4.pdf:pdf},
+journal = {Key Technologies for Data Management},
+pages = {16--30},
+series = {Lecture Notes in Computer Science},
+title = {{Scheduling strategies for processing continuous queries over streams}},
+url = {http://www.springerlink.com/index/GL55L1A9EC4J3A34.pdf},
+year = {2004}
 }
 @inproceedings{Johnson2005,
 address = {New York, New York, USA},
@@ -1620,6 +1681,19 @@ title = {{Performances et r\'{e}sistance au facteur d’\'{e}chelle d’un agent
 url = {http://hal.inria.fr/INRIA-LORRAINE/inria-00000346/en/},
 volume = {6},
 year = {2005}
+}
+@inproceedings{Law:join,
+author = {Law, Yan-nei and Zaniolo, Carlo},
+booktitle = {ICDEW '07: IEEE 23rd International Conference on Data Engineering Workshop},
+doi = {10.1109/ICDEW.2007.4401054},
+file = {:home/laup8311/Documents/Mendeley Desktop/04401054.pdf:pdf},
+isbn = {978-1-4244-0831-3},
+month = apr,
+pages = {674--683},
+publisher = {IEEE},
+title = {{Load Shedding for Window Joins on Multiple Data Streams}},
+url = {http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=4401054},
+year = {2007}
 }
 @mastersthesis{Lazaro:isolation,
 author = {Laz\'{a}ro, Diego Moreno},
@@ -1935,7 +2009,8 @@ url = {http://ieeexplore.ieee.org/xpls/abs\_all.jsp?arnumber=4538275},
 volume = {38},
 year = {2008}
 }
-@inproceedings{Palma2009,
+@inproceedings{Palma:p2p,
+address = {Namur, Belgium},
 author = {Palma, Wenceslao and Akbarinia, Reza and Pacitti, Esther and Valduriez, Patrick},
 booktitle = {BDA '09: Proceedings of the 13th East European Conference on Advances in Databases and Information Systems},
 file = {:home/laup8311/Documents/Mendeley Desktop//Palma et al. - 2009 - P2P Join Query Processing over Data Streams.pdf:pdf},
@@ -2202,6 +2277,19 @@ journal = {Data Processing},
 pages = {114--121},
 title = {{The Integration of Data Streams with Probabilities and Relational Database using Bayesian Networks}}
 }
+@inproceedings{Selinger:selectivity,
+address = {New York, New York, USA},
+author = {Selinger, P. Griffiths and Astrahan, M. M. and Chamberlin, D. D. and Lorie, R. A. and Price, T. G.},
+booktitle = {Proceedings of the 1979 ACM SIGMOD international conference on Management of data - SIGMOD '79},
+doi = {10.1145/582095.582099},
+file = {:home/laup8311/Documents/Mendeley Desktop/p23-selinger.pdf:pdf},
+isbn = {089791001X},
+pages = {23},
+publisher = {ACM Press},
+title = {{Access path selection in a relational database management system}},
+url = {http://portal.acm.org/citation.cfm?doid=582095.582099},
+year = {1979}
+}
 @article{Sellis:mqo,
 address = {New York, NY, USA},
 author = {Sellis, Timos K},
@@ -2341,6 +2429,15 @@ month = mar,
 number = {2004-13},
 title = {{Memory-Limited Execution of Windowed Stream Joins}},
 url = {http://ilpubs.stanford.edu:8090/866/1/2004-13.pdf},
+year = {2004}
+}
+@inproceedings{Srivastava:join,
+author = {Srivastava, Utkarsh and Widom, Jennifer},
+booktitle = {VLDB '04: Proceedings of the Thirtieth international conference on Very large data bases},
+file = {:home/laup8311/Documents/Mendeley Desktop/memory-limited.pdf:pdf},
+pages = {324--335},
+publisher = {VLDB Endowment},
+title = {{Memory-Limited Execution of Windowed Stream Joins}},
 year = {2004}
 }
 @article{Stonebraker:load-shedding,
@@ -2775,6 +2872,22 @@ journal = {Data Engineering: Bulletin of the Technical Committe on Data Engineer
 pmid = {4774530073429590835},
 title = {{The Aurora and Medusa Projects}},
 url = {http://www.cs.auc.dk/~tbp/BIT/moede10/A03MAR-CD.pdf\#page=5}
+}
+@article{Zhou:pmjoin,
+address = {Berlin, Heidelberg},
+author = {Zhou, Yongluan and Yan, Ying and Yu, Feng and Zhou, Aoying},
+doi = {10.1007/11733836\_24},
+editor = {Lee, Mong and Tan, Kian-Lee and Wuwongse, Vilas},
+file = {:home/laup8311/Documents/Mendeley Desktop/fulltext-2.pdf:pdf},
+isbn = {978-3-540-33337-1},
+journal = {Database Systems for Advanced Applications},
+pages = {325--341},
+publisher = {Springer Berlin Heidelberg},
+series = {Lecture Notes in Computer Science},
+title = {{Database Systems for Advanced Applications}},
+url = {http://www.springerlink.com/index/10.1007/11733836\_24},
+volume = {3886},
+year = {2006}
 }
 @article{url:coral8,
 journal = {http://www.coral8.com},
