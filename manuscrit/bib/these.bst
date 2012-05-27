@@ -225,7 +225,7 @@ FUNCTION {format.names}
 	      if$
 	      t "others" =
 		{ " et~al." emphasize * }
-		{ " \& " * t * }
+		{ " et " * t * }
 	      if$
 	    }
 	  if$
@@ -332,12 +332,12 @@ FUNCTION {either.or.check}
 FUNCTION {format.bvolume}
 { volume empty$
     { "" }
-    { "volume" volume tie.or.space.connect
-      series empty$
-	'skip$
-	{ " of " * series emphasize * }
-      if$
-      "volume and number" number either.or.check
+    {
+    	series empty$
+			{ "volume " volume * }
+			{ "" * series volume tie.or.space.connect emphasize }
+      	if$      	
+        "volume and number" number either.or.check
     }
   if$
 }
@@ -346,15 +346,12 @@ FUNCTION {format.number.series}
 { volume empty$
     { number empty$
 	{ series field.or.null }
-	{ output.state mid.sentence =
-	    { "num\'ero" }
-	    { "Nume\'ero" }
-	  if$
-	  number tie.or.space.connect
+	{ 
 	  series empty$
-	    { "there's a number but no series in " cite$ * warning$ }
-	    { " in " * series * }
-	  if$
+			{ "" "there's a number but no series in " cite$ * warning$ }
+			{ series number tie.or.space.connect emphasize }
+      	if$      	
+	  
 	}
       if$
     }
@@ -441,8 +438,8 @@ FUNCTION {format.in.ed.booktitle}
 { booktitle empty$
     { "" }
     { editor empty$
-	{ "In " booktitle * }
-	{ "In " format.editors * ", " * booktitle * }
+	{ "Dans " booktitle * }
+	{ "Dans " format.editors * ", " * booktitle * }
       if$
     }
   if$
@@ -485,10 +482,10 @@ FUNCTION {format.article.crossref}
 	  warning$
 	  ""
 	}
-	{ "In {\em " journal * "\/}" * }
+	{ "Dans {\em " journal * "\/}" * }
       if$
     }
-    { "In " key * }
+    { "Dans " key * }
   if$
   " \cite{" * crossref * "}" *
 }
@@ -513,7 +510,7 @@ FUNCTION {format.crossref.editor}
 FUNCTION {format.book.crossref}
 { volume empty$
     { "empty volume in " cite$ * "'s crossref of " * crossref * warning$
-      "In "
+      "Dans "
     }
     { "Volume" volume tie.or.space.connect
       " of " *
@@ -549,13 +546,13 @@ FUNCTION {format.incoll.inproc.crossref}
 	      crossref * warning$
 	      ""
 	    }
-	    { "In " key * }
+	    { "Dans " key * }
 	  if$
 	}
-	{ "In " booktitle * }
+	{ "Dans " booktitle * }
       if$
     }
-    { "In " format.crossref.editor * }
+    { "Dans " format.crossref.editor * }
   if$
   " \cite{" * crossref * "}" *
 }
@@ -865,29 +862,29 @@ FUNCTION {unpublished}
  
 FUNCTION {default.type} { misc }
  
-MACRO {jan} {"January"}
+MACRO {jan} {"Janvier"}
  
-MACRO {feb} {"February"}
+MACRO {feb} {"Février"}
  
-MACRO {mar} {"March"}
+MACRO {mar} {"Mars"}
  
-MACRO {apr} {"April"}
+MACRO {apr} {"Avril"}
  
-MACRO {may} {"May"}
+MACRO {may} {"Mai"}
  
-MACRO {jun} {"June"}
+MACRO {jun} {"Juin"}
  
-MACRO {jul} {"July"}
+MACRO {jul} {"Juillet"}
  
-MACRO {aug} {"August"}
+MACRO {aug} {"Août"}
  
-MACRO {sep} {"September"}
+MACRO {sep} {"Septembre"}
  
-MACRO {oct} {"October"}
+MACRO {oct} {"Octobre"}
  
-MACRO {nov} {"November"}
+MACRO {nov} {"Novembre"}
  
-MACRO {dec} {"December"}
+MACRO {dec} {"Decembre"}
  
 MACRO {acmcs} {"ACM Computing Surveys"}
  
