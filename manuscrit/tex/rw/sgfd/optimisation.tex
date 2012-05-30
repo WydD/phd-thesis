@@ -55,9 +55,8 @@ Ainsi, il est possible de faire des boucles imbriqués suffisamment performantes
 
 L'évaluation de chacune de ces méthodes passe par un coût global de l'exécution basé sur des statistiques. Ces statistiques aideront à quantifier la taille des résultats intermédiaires. Pour cela, il est nécessaire de faire des calculs de sélectivité~\cite{Selinger:selectivity}. Ces calculs permettent d'évaluer le ratio d'n-uplet qui valident une sélection. Par exemple, en l'absence d'information complémentaire, une sélectivité de 10\% est appliquée par défaut. Par la suite chaque algorithme est capable de quantifier son coût en fonction de ces sélectivités et des cardinalités des entités manipulées.
 
-Suivant les capacités du système et la taille de la requête, le système pourra réordonner les jointures pour optimiser les algorithmes. La recherche dans cet espace de méthode se base sur la programmation dynamique. Elle permet de faire une recherche exhaustive sans être extrèmement coûteuse (par des procédures de \textit{branch \& bound} usuelles).
+Suivant les capacités du système et la taille de la requête, le système pourra réordonner les jointures pour optimiser les algorithmes. La recherche dans cet espace de méthode se base sur la programmation dynamique. Elle permet de faire une recherche exhaustive sans être extrêmement coûteuse (par des procédures de \textit{branch \& bound} usuelles).
 
-\subsubsection{Autres principes d'optimisation}
 \paragraph*{Optimisation de la recherche}
 La recherche exhaustive peut être très coûteuse si les jointures sont nombreuses car l'espace des stratégies devient large, ce qui peut être long à calculer. Une approche heuristique est nécessaire pour avoir un temps de calcul qui permette un lancement rapide de la requête. 
 
@@ -79,7 +78,7 @@ Supposons la présence d'une base de connaissance en parallèle de la base de do
 \subsubsection{Calcul incrémental}
 Le principe fondateur de la gestion de flux étant que les données arrivent de manière continue. Comme présenté dans la section~\ref{sec:rw:sgfd:modeles}, les premiers traitement de flux~\cite{Terry:tapestry} étaient considérés comme des traitements particuliers sur des relations sans suppression ou mise à jour.
 
-De façon plus générale, en se plaçant dans l'algèbre \textit{ACO} : Soit $R$ une relation, au lieu de calculer une requête sur $R(\tau)$, il est possible de considérer les \textit{delta} de cette relation : $\delta_R^+(\tau) = R(\tau)-R(\tau-1)$ et $\delta_R^-(\tau) = R(\tau-1)-R(\tau)$. Comme le traitement des fenêtres, par exemple, peut fournir directement ces différences : il n'y a donc pas de surcoût à l'utilisation d'un tel procédé. Comme la cardinalité des $\delta$ est souvent minime face à celle de la relation totale. Il devient intéressant de travailler avec ces données.
+De façon plus générale, en se plaçant dans l'algèbre \textit{ACO} : Soit $R$ une relation, au lieu de calculer une requête sur $R(\tau)$, il est possible de considérer les \textit{delta} de cette relation : $\Delta_R^+(\tau) = R(\tau)-R(\tau-1)$ et $\Delta_R^-(\tau) = R(\tau-1)-R(\tau)$. Comme le traitement des fenêtres, par exemple, peut fournir directement ces différences : il n'y a donc pas de surcoût à l'utilisation d'un tel procédé. Comme la cardinalité des $\Delta$ est souvent minime face à celle de la relation totale. Il devient intéressant de travailler avec ces données.
 \subsubsection{Load-shedding}
 Contrairement aux approches classiques de gestion de base de données, il est important de voir que l'optimisation n'est pas toujours de pouvoir fournir les résultats exacts aux requêtes. L'objectif étant de fournir les résultats les plus pertinents possibles avec des contraintes d'espace mémoire, de temps de réponse ainsi que de charge réseau. En effet, comme la gestion de flux fonctionne de manière continue, une congestion dans le processus de traitement impliquera des retards et des complications pouvant aller jusqu'à une saturation du moteur.
 
@@ -135,7 +134,14 @@ Nous nous intéressons maintenant particulièrement aux traitements de requêtes
 
 L'approche est principalement mathématique et probabiliste. Par exemple, en se fixant une tolérance $\eps$, il est possible d'obtenir un résultat dans une quantité de mémoire prévisible.
 
-\subsubsection{Synthèse}
+\subsection{Synthèse}
+Profitant des caractéristiques particulières en terme de contraintes de rapidité d'exécution, il y a eu de nombreux développement concernant l'optimisation dans les SGFD. Les plus gros efforts se sont concentrés sur le calcul d'algorithmes incrémentaux, ainsi que sur l'utilisation de réponses approximatives. Seulement quelques approches comme~\cite{Galpin:snee,Kramer:semantics} s'intéressent au fait de faire une optimisation de plan de requête (logique puis physique). Toutefois, le manque de connaissance dans le domaine théorique de la gestion de flux de données fait que les équivalences de requêtes sont peu nombreuses en dehors des usuelles~\cite{Slivinskas:temporal,Arasu:stream}.
+
+Ainsi, comparé à l'optimisation des SGBD, seules les règles évidentes telles que l'application de projections au plus près des sources sont faites dans l'optimisation logique. Peu de parcours de plans de requêtes et de stratégies d'exécutions équivalentes n'est appliqué. De même, la prise en considération des autres requêtes pour le partage de résultat intermédiaire est une stratégie efficace. Toutefois, cette opération est principalement faite de façon manuelle à l'installation d'une nouvelle requête. Seul des travaux comme RUMOR~\cite{Hong:mqo} recherchent à fusionner le nouveau plan de requête avec un autre (sous condition strictes).
+
+Nous pouvons donc conclure que l'optimisation en gestion de flux de données a été grandement recherchée et a produit de multiples techniques. Toutefois, une utilisation de ces techniques pour faire une \textbf{recherche d'optimisation globale} sans intervention de l'utilisateur est encore limitée notamment du au manque de connaissance théorique.
+
+
 
 %
 %\subsubsection{Désignation}
