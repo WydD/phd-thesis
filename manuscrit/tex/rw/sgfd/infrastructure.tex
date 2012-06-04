@@ -1,4 +1,4 @@
-\section{Infrastructure de traitement}
+\section{Infrastructure de traitement}\label{sec:rw:sgfd:infra}
 La structure interne des systèmes de gestions de flux de données diffère entre les implémentations. Toutefois, plusieurs concepts fondateurs sont couramment utilisés pour permettre l'exécution correcte des requêtes ou pour permettre la gestion des multi-échelles.
 \TODO{PLAN}
 \subsection{Du modèle vers l'implémentation}
@@ -6,7 +6,7 @@ Le modèle théorique permet de savoir la sémantique exacte des expressions de 
 
 \subsubsection{Les résultats intermédiaires}
 Comme présenté précédemment en section~\ref{sec:rw:supervision:datastream}, la gestion de flux de données se décompose en trois composants principaux : les sources, les opérateurs et les puits. Les opérateurs consomment une ou plusieurs entités (un flux par exemple) et produisent une nouvelle entité. Ces entités sont matérialisés par des résultats intermédiaires en implémentation comme présenté dans la figure~\ref{fig:rw:sgfd:modeleimplem}.
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{rw-sgfd-modeleimplem}
     \caption{Implémentation d'un opérateur avec les résultats intermédiaires}\label{fig:rw:sgfd:modeleimplem}
@@ -26,7 +26,7 @@ Par exemple, le moteur MXQuery~\cite{Botan:MXQuery} est un SGFD dont la particul
 \subsubsection{Intégration de systèmes}
 Comme nous l'avons présenté, les implémentations de SGFD diffèrent en terme d'architecture, de modèle de requête ou de données, de langage d'implémentation et même de paradigmes d'exécutions. En ce sens, le système Exoengine~\cite{Duller:virtualdsms} virtualise les éléments qui composent un SGFD quelconque. L'implémentation de celui-ci se fait dans le paradigme de programmation à service. Ainsi, les divers canaux exposent deux interfaces de services, l'entrée et la sortie. Il devient désormais possible de relier naturellement des canaux entre eux afin de gérer le flot des données pour les unir ou les disperser vers plusieurs unités de traitement.
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{rw-sgfd-virtualslet}
     \caption{Un \textit{slet} virtuel permettant d'abstraire le fonctionnement d'un SGFD}\label{fig:rw:sgfd:virtualslet}
@@ -60,7 +60,7 @@ L'approche hiérarchique permet de faire du traitement à plusieurs niveaux. Ces
 
 Cette approche a été généralisé dans \textit{SStreamWare}~\cite{Gurgen:sstreamware} avec les \textit{sites de contrôles} (plus haut niveau hiérarchique) et les \textit{passerelles}. Ces dernières sont capables d'accueillir des capteurs (virtuels ou non), ainsi que d'exécuter une requête de flux sur les capteurs accueillis ou sur des flux externes venant d'une autre passerelle. Le site de contrôle est celui qui distribuera la requête sur les différentes passerelles.
 
-\subsubsection{Désignation}
+\subsubsection{Désignation}\label{sec:rw:sgfd:infra:designation}
 Plus le nombre de sources augmente, plus il devient difficile de maîtriser lesquels sont concernés par la requête que l'utilisateur souhaite déployer. Une requête par désignation est une requête utilisant une autre requête pour désigner les sources de données à lire. Par exemple : \enquote{\it Le flux des mesures des capteurs de température du batiment A}. Dans cette requête, il est nécessaire de d'abord faire une interrogation sur l'expression \enquote{\it Quels sont les capteurs situés dans le batiment \textit{A} et de type \textit{température}} avant de déployer la requête.
 
 Ce procédé est naturellement implanté dans notamment SStreamWare, HiFi et GSN~\cite{Aberer:gsn}. L’objectif à long terme de ce dernier est de former un internet de capteur. Son architecture est donc naturellement pair-à-pair. L’interrogation continue sur ce système peut se faire par le déploiement d’un nouveau capteur virtuel. La désignation est donc centrale, car la formation d’un capteur virtuel à partir d’autres sources est possible. Toutefois, du fait de l’absence de méta-données la puissance d'expression de cette requête de désignation est limité. Dans SStreamWare et HiFi, au contraire, le support des méta-données telles que son lieu, son type ou sa fréquence d'émission permet de correctement sélectionner les sources concernés.
