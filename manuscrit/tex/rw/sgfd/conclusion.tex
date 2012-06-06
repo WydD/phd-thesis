@@ -1,2 +1,30 @@
 \section{Conclusion}
-L
+Après 20 années de recherche, la gestion de flux de données devient désormais suffisamment mature pour être appliqué massivement. Plusieurs produits commerciaux sont d'ailleurs maintenant utilisés en production. Toutefois, nous pouvons nous rendre compte que la complexité théorique de ces systèmes a été sous-estimé. De nombreux modèles ont été décrit pour représentés les flux de données et leurs traitements. Ces modèles sont encore remis en questions aujourd'hui au fur et à mesure des applications concrètes. 
+
+Nous avons vu que le problème d'avoir une bonne connaissance du modèle et du comportement théorique des SGFD est crucial. En effet, en l'état l'intégration des supports persistants reste ad-hoc et assisté par l'utilisateur. Un fonctionnement intégré avec une modélisation générique capable de gérer les deux modes d'interrogations de façon unifiée est donc indispensable pour manipuler correctement flux et relations persistantes. Similairement, les contributions sur l'optimisation de traitement des requêtes sont encore principalement ponctuelles. Afin d'appliquer un traitement efficace pour toute requête, il est nécessaire d'avoir une bonne connaissance théorique du traitement.
+
+Notre contribution technique se concentrera sur trois points principaux :
+\begin{itemize}
+ \item[\textbf{Modélisation}] : Création d'Astral, algèbre de traitement des requêtes continues sur flux et relations temporelles. Nous accorderons de l'importance sur la prise en compte des problèmes relevés en section~\ref{sec:rw:sgfd:modeles:synthese}. Cette algèbre sera présenté dans le chapitre~\ref{chap:contrib:astral}
+ \item[\textbf{Persistance}] : Intégration théorique des requêtes continues sur flux et des requêtes sur support persistant. La persistance permettra de gérer la représentation du système observé ainsi que l'historisation des données dynamiques. Le support mathématique de cette intégration sera faite avec Astral. Cette intégration sera effectuée dans le chapitre~\ref{chap:contrib:persistance}.
+ \item[\textbf{Exécution}] : Mise en œuvre d'un processus pour exécuter efficacement une requête exprimée avec l'algèbre Astral. Ainsi, à partir d'une requête Astral applicable sur tout type de sources, il est possible de sélectionner le plan de requête qui semble le plus efficace grâce aux connaissances accumulés avec le modèle. Cette mise en œuvre sera développée dans le chapitre~\ref{chap:contrib:execution}.
+\end{itemize}
+
+Grâce à ces contributions, il deviendra possible de mettre en œuvre un système d'observation générique applicable sur tout type de données. L'utilisateur devra exprimer des requêtes dans le langage algébrique Astral. Une fois que ces requêtes sont écrites, nous serons garanti de leur mise en œuvre. Le tableau~\ref{tab:rw:contrib} résume l'ensemble des points d'analyse que nous nous étions fixés en section~\ref{sec:rw:supervision:criteres}.
+\begin{table}[!ht]
+\criteretabDonnee
+    {Relationnel dérivé. Nous réutilisons les principes utilisés dans la gestion de flux et des bases de données.}
+    {\good Modèle entité-relation augmenté pour supporter les flux.}
+    {\good Requêtes continues sur tout type de données (flux, relations).}
+\criteretabTraitement
+    {\good Continue, Instantannée, Mixte}
+    {\good Utilisation des requêtes continues des SGFD en tant qu'intégrateur.}
+    {\meh Astral: langage de requête algébrique. Un langage purement déclaratif reste toutefois dérivable de ces fondations théoriques.}
+    {\good Relationnel avec support \textbf{intégré} du dynamisme des données.}
+\criteretabAdaptabilite
+    {\good Spécification du modèle du système ainsi que des requêtes d'intégration (algébriques).}
+    {\meh Pour l'analyse, la gestion de données multi-dimensionnelles des entrepôts utilisés est utilisé. Pour l'interrogation continue, utilisation d'un opérateur de préférences sur les flux.}
+    {\good Infrastructure générique capable de supporter l'ajout d'opérateurs avec plusieurs implémentations.}
+    {\good Héritage de l'efficacité des flux de données. Sélection du meilleur plan d'exécution pour chaque requête. Héritage des supports de grands volumes grâce aux entrepôts.}
+\caption{Résumé de notre contribution selon nos critères}\label{tab:rw:contrib}
+\end{table}
