@@ -256,7 +256,7 @@
 <node COLOR="#0033ff" CREATED="1329475839767" ID="ID_1504358535" MODIFIED="1338292351313" POSITION="right" TEXT="Contribution">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1329498989754" ID="ID_1145809493" MODIFIED="1338292377132" TEXT="Astral : Mod&#xe8;le th&#xe9;orique de requ&#xea;tes continues">
+<node COLOR="#00b439" CREATED="1329498989754" ID="ID_1145809493" MODIFIED="1338738007618" TEXT="Astral : Mod&#xe8;le th&#xe9;orique de requ&#xea;tes continues">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1329499096025" ID="ID_1857439476" MODIFIED="1338292377235" TEXT="D&#xe9;finitions g&#xe9;n&#xe9;rales">
