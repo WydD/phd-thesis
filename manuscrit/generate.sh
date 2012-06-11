@@ -12,7 +12,7 @@ for i in `find . | grep "\.tex\$" | sed 's/\.tex//' | sed 's!^./!!' | grep "$pat
 					echo "\input{$k}"
 				fi;
                         done >> tmp.tex
-			for j in `cat $i/.order`; do
+			for j in `grep -v "#" $i/.order`; do
 				echo "\input{$i/$j}"
 			done >> tmp.tex
 		else

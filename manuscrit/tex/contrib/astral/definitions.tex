@@ -1,0 +1,40 @@
+\section{Définitions générales}
+\subsection{N-uplets et identifiants}
+\begin{defi}[n-uplet]
+    Un n-uplet est une fonction partielle de l'ensemble des attributs vers l'espace des valeurs. Le domaine de cette fonction est appellé le schéma du n-uplet.
+\end{defi}
+
+\begin{defi}[Identifiant physique]
+    L'identifiant physique d'un n-uplet $s$ est un élément de l'espace des identifiants $\I$ isomorphe à $\N$. Le nom d'attribut de cet identifiant sera noté $\varphi$ et $s(\varphi)$ désigne la valeur de l'identifiant de $s$.
+\end{defi}
+
+\begin{defi}[Séquence d'n-uplet]
+    Un ensemble dénombrable d'n-uplets $TS$ est une séquence si et seulement si : 
+    \begin{itemize}
+     \item Tout n-uplet de $TS$ partage le même schéma $A$ contenant $\varphi$.
+     \item $\forall s,s' \in TS^2$, $s\neq s' \equ s(\varphi) \neq s'(\varphi)$
+    \end{itemize}
+
+    Une séquence est donc naturellement totalement ordonné par son identifiant physique.
+\end{defi}
+
+
+\begin{defi}[Timestamp]
+    L'espace temps $\T$ est un corps totalement ordonné et isomorphique à $\R$. 
+
+    Un \textit{timestamp} est un élément de $\T$.
+\end{defi}
+
+
+\begin{defi}[Identifiant de batch]
+    Un identifiant de batch est un élément de l'ensemble $\TN$ totalement ordonné par lexicographie.
+\end{defi}
+
+\begin{defi}[Flux]
+    Un flux est un couple $(S,\BS)$ tel que :
+    \begin{itemize}
+        \item $S$ est une séquence d'n-uplet potentiellement infinie possédant un schéma contenant l'attribut spécial $\t$.
+        \item $\BS$ est une fonction $S\mapsto \TN$ définissant le batch d'appartenance d'un n-uplet
+    \end{itemize}
+\end{defi}
+

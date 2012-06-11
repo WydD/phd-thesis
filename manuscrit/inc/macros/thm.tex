@@ -1,5 +1,6 @@
-\usepackage[nocut,thickness=1pt]{thmbox}
+\usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
 
+\newlength{\thmsize}
 \def\chapterarabic#1{\thechapter.\arabic{#1}}
 %% THMBOX
 % Nouveau style thmbox
@@ -10,15 +11,25 @@
 	\newcounter{#1ct}[chapter]
 	\expandafter\def\csname the#1ct\endcsname{\chapterarabic{#1ct}}
 	\newenvironment{#1}[1][]
-		{\vskip .4cm \refstepcounter{#1ct}\begin{thmbox}[#3]{\ifx#3S\it\else\bf\fi #2 \chapterarabic{#1ct}  ##1 :}
+		{\vskip .4cm \refstepcounter{#1ct}\begin{thmbox}[#3]{\ifx#3S\it\else\fi #2 \chapterarabic{#1ct}\phantom{y} ( {\bf ##1} )} 
+    \let\BODY\undefined
+    \setlength{\thmsize}{\linewidth}
+    \addtolength{\thmsize}{-5em}
+    \addtolength{\thmsize}{-0.3em}
+    \newsavebox{\BODY} % Box storage
+    \begin{lrbox}{\BODY} % Start capturing the input 
+\hskip 1em \begin{minipage}{\thmsize}
+\vskip 1em
 	}
-		{\end{thmbox} \vskip .3cm}
+		{\par \quad
+\end{minipage} \end{lrbox}\colorbox{good}{\usebox{\BODY}\hskip 1em} 
+\end{thmbox} \vskip .3cm}
 	\newenvironment{#1*}[1][]
 		{\vskip .4cm \begin{thmbox}[#3]{\ifx#3S\it\else\bf\fi #2 ##1 :}
 	}
-		{\end{thmbox} \vskip .3cm}
+		{ \end{thmbox} \vskip .3cm}
 }
-\newthmtype{defi}{Définition}{M}
+\newthmtype{defi}{Définition}{L}
 \newthmtype{lem}{Lemme}{S}
 \newthmtype{thm}{Théorème}{M}
 \newthmtype{axiom}{Axiome}{M}
