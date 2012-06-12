@@ -1,12 +1,18 @@
 \section{Définitions générales}
-\subsection{N-uplets et identifiants}
+\subsection{N-uplets et identifiants}Aliquam dictum risus ac nulla rutrum molestie. Proin at erat urna, nec dignissim velit. Nullam fringilla augue at est vulputate tincidunt. Nam non condimentum tellus. Aenean orci magna, accumsan rutrum faucibus eget, pretium adipiscing justo. Donec dignissim faucibus scelerisque. Aenean adipiscing tellus sed nulla euismod tempus eleifend justo molestie. Quisque in ligula quis velit condimentum pharetra.
+
+Ut et est arcu. Fusce at dapibus augue. Vestibulum porta pretium vestibulum. Duis aliquam aliquam mattis. Praesent dapibus sem vel tellus rhoncus non posuere nunc egestas. Ut sit amet mauris tortor, sit amet tristique lacus. Pellentesque porta faucibus vestibulum. Curabitur non quam urna, et vulputate eros. 
 \begin{defi}[n-uplet]
     Un n-uplet est une fonction partielle de l'ensemble des attributs vers l'espace des valeurs. Le domaine de cette fonction est appellé le schéma du n-uplet.
 \end{defi}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nulla arcu, ullamcorper quis malesuada et, vestibulum sed lectus. Cras volutpat, nulla eu consectetur adipiscing, leo ligula feugiat sem, eget suscipit lacus nunc eget mauris. Aenean posuere lobortis augue sit amet elementum. Integer arcu leo, varius et elementum eu, vehicula sed turpis. Donec et quam quam, sit amet lobortis orci. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam eu lorem erat, at ornare diam.
 
+Donec porttitor commodo consequat. Curabitur pharetra purus ac tellus viverra varius. Vivamus tincidunt, quam at adipiscing pharetra, nunc mi blandit nulla, quis porttitor tellus ligula in erat. Donec auctor enim vel lorem aliquam vestibulum. Phasellus sit amet sollicitudin arcu. Etiam interdum dictum leo, ac malesuada lorem ultricies id. Nam sit amet orci sed mauris lobortis vestibulum. Quisque lobortis, erat at venenatis scelerisque, orci lectus gravida massa, id laoreet dolor augue a metus. 
 \begin{defi}[Identifiant physique]
     L'identifiant physique d'un n-uplet $s$ est un élément de l'espace des identifiants $\I$ isomorphe à $\N$. Le nom d'attribut de cet identifiant sera noté $\varphi$ et $s(\varphi)$ désigne la valeur de l'identifiant de $s$.
 \end{defi}
+
+    L'identifiant physique d'un n-uplet $s$ est un élément de l'espace des identifiants $\I$ isomorphe à $\N$. Le nom d'attribut de cet identifiant sera noté $\varphi$ et $s(\varphi)$ désigne la valeur de l'identifiant de $s$.
 
 \begin{defi}[Séquence d'n-uplet]
     Un ensemble dénombrable d'n-uplets $TS$ est une séquence si et seulement si : 
@@ -17,24 +23,26 @@
 
     Une séquence est donc naturellement totalement ordonné par son identifiant physique.
 \end{defi}
+Aliquam dictum risus ac nulla rutrum molestie. Proin at erat urna, nec dignissim velit. Nullam fringilla augue at est vulputate tincidunt. Nam non condimentum tellus. Aenean orci magna, accumsan rutrum faucibus eget, pretium adipiscing justo. Donec dignissim faucibus scelerisque. Aenean adipiscing tellus sed nulla euismod tempus eleifend justo molestie. Quisque in ligula quis velit condimentum pharetra.
 
+Ut et est arcu. Fusce at dapibus augue. Vestibulum porta pretium vestibulum. Duis aliquam aliquam mattis. Praesent dapibus sem vel tellus rhoncus non posuere nunc egestas. Ut sit amet mauris tortor, sit amet tristique lacus. Pellentesque porta faucibus vestibulum. Curabitur non quam urna, et vulputate eros. 
 
-\begin{defi}[Timestamp]
+\begin{prop}[Timestamp]
     L'espace temps $\T$ est un corps totalement ordonné et isomorphique à $\R$. 
 
     Un \textit{timestamp} est un élément de $\T$.
-\end{defi}
+\end{prop}
 
 
-\begin{defi}[Identifiant de batch]
+\begin{thm}[Identifiant de batch]
     Un identifiant de batch est un élément de l'ensemble $\TN$ totalement ordonné par lexicographie.
-\end{defi}
+\end{thm}
 
-\begin{defi}[Flux]
+\begin{coro}[Flux]
     Un flux est un couple $(S,\BS)$ tel que :
     \begin{itemize}
         \item $S$ est une séquence d'n-uplet potentiellement infinie possédant un schéma contenant l'attribut spécial $\t$.
         \item $\BS$ est une fonction $S\mapsto \TN$ définissant le batch d'appartenance d'un n-uplet
     \end{itemize}
-\end{defi}
+\end{coro}
 

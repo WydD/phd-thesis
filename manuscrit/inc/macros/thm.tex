@@ -1,4 +1,10 @@
 \usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
+\usepackage{caption}
+
+\definecolor{deficolor}{RGB}{234,255,234}
+\definecolor{propcolor}{RGB}{234,244,255}
+\definecolor{thmcolor}{RGB}{255,234,234}
+\definecolor{corocolor}{RGB}{255,250,224}
 
 \newlength{\thmsize}
 \def\chapterarabic#1{\thechapter.\arabic{#1}}
@@ -8,26 +14,29 @@
 % #2 = label
 % #3 = style (S - M)
 \def\newthmtype#1#2#3{
-	\newcounter{#1ct}[chapter]
-	\expandafter\def\csname the#1ct\endcsname{\chapterarabic{#1ct}}
+        \DeclareCaptionFormat{#1label}{{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3} \phantom{M}}
+        \newfloat{#1float}{ht}{#1hf}[chapter]\floatname{#1float}{#2}
+        \captionsetup[#1float]{position=above,skip=0pt,format=#1label}
+	\expandafter\def\csname the#1float\endcsname{\chapterarabic{#1float}}
 	\newenvironment{#1}[1][]
-		{\vskip .4cm \refstepcounter{#1ct}\begin{thmbox}[#3]{\ifx#3S\it\else\fi #2 \chapterarabic{#1ct}\phantom{y} ( {\bf ##1} )} 
-    \let\BODY\undefined
-    \setlength{\thmsize}{\linewidth}
-    \addtolength{\thmsize}{-5em}
-    \addtolength{\thmsize}{-0.3em}
-    \newsavebox{\BODY} % Box storage
-    \begin{lrbox}{\BODY} % Start capturing the input 
-\hskip 1em \begin{minipage}{\thmsize}
-\vskip 1em
-	}
-		{\par \quad
-\end{minipage} \end{lrbox}\colorbox{good}{\usebox{\BODY}\hskip 1em} 
-\end{thmbox} \vskip .3cm}
+		{ \begin{#1float}[ht]\caption{##1}  \begin{center} 
+                    \let\BODY\undefined
+                    \setlength{\thmsize}{\linewidth}
+                    \addtolength{\thmsize}{-5em}
+                    \newsavebox{\BODY} % Box storage
+                    \begin{lrbox}{\BODY} % Start capturing the input 
+                        \hskip 1em \noindent\begin{minipage}{\thmsize}
+                        \vskip 1em
+                }
+		{
+                        \par \quad \end{minipage}
+                    \end{lrbox}
+                    \fcolorbox{black}{#1color}{\usebox{\BODY}\hskip 1em} \end{center}
+                \end{#1float}}
 	\newenvironment{#1*}[1][]
 		{\vskip .4cm \begin{thmbox}[#3]{\ifx#3S\it\else\bf\fi #2 ##1 :}
 	}
-		{ \end{thmbox} \vskip .3cm}
+		{ \end{thmbox}}
 }
 \newthmtype{defi}{Définition}{L}
 \newthmtype{lem}{Lemme}{S}
