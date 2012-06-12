@@ -1,11 +1,13 @@
-\usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
+%\usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
 \usepackage{caption}
 
-\definecolor{deficolor}{RGB}{234,255,234}
+\definecolor{deficolor}{RGB}{224,255,224}
 \definecolor{propcolor}{RGB}{234,244,255}
-\definecolor{thmcolor}{RGB}{255,234,234}
+\definecolor{thmcolor}{RGB}{255,224,224}
 \definecolor{corocolor}{RGB}{255,250,224}
+\definecolor{hypcolor}{RGB}{224,224,224}
 
+\DeclareCaptionTextFormat{spaced}{#1}
 \newlength{\thmsize}
 \def\chapterarabic#1{\thechapter.\arabic{#1}}
 %% THMBOX
@@ -14,34 +16,31 @@
 % #2 = label
 % #3 = style (S - M)
 \def\newthmtype#1#2#3{
-        \DeclareCaptionFormat{#1label}{{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3} \phantom{M}}
-        \newfloat{#1float}{ht}{#1hf}[chapter]\floatname{#1float}{#2}
-        \captionsetup[#1float]{position=above,skip=0pt,format=#1label}
+        \DeclareCaptionFormat*{#1label}{\hspace{2em}{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3}}\floatstyle{plaintop}
+        \newfloat{#1float}{ht}{#1toc}[chapter]\floatname{#1float}{#2}
 	\expandafter\def\csname the#1float\endcsname{\chapterarabic{#1float}}
+        \captionsetup[#1float]{position=top,aboveskip=0pt,format=#1label,textformat=spaced}
 	\newenvironment{#1}[1][]
-		{ \begin{#1float}[ht]\caption{##1}  \begin{center} 
-                    \let\BODY\undefined
-                    \setlength{\thmsize}{\linewidth}
-                    \addtolength{\thmsize}{-5em}
-                    \newsavebox{\BODY} % Box storage
-                    \begin{lrbox}{\BODY} % Start capturing the input 
-                        \hskip 1em \noindent\begin{minipage}{\thmsize}
-                        \vskip 1em
+		{ 
+        \begin{#1float}[!ht]%
+  \caption{##1}\vspace{-0.7em}\raggedleft%
+                    \let\BODY\undefined%
+                    \setlength{\thmsize}{\linewidth}%
+                    \addtolength{\thmsize}{-6em}%
+                    \newsavebox{\BODY}% Box storage
+                    \begin{lrbox}{\BODY}% Start capturing the input 
+                        \phantom{m}\par \begin{minipage}{\thmsize}%
+                        \vskip 1em%
                 }
-		{
-                        \par \quad \end{minipage}
-                    \end{lrbox}
-                    \fcolorbox{black}{#1color}{\usebox{\BODY}\hskip 1em} \end{center}
+		{\par\phantom{m} \end{minipage}%
+                    \end{lrbox}%
+                    \noindent\fcolorbox{black}{#1color}{\usebox{\BODY}\hspace{1em}}%
                 \end{#1float}}
-	\newenvironment{#1*}[1][]
-		{\vskip .4cm \begin{thmbox}[#3]{\ifx#3S\it\else\bf\fi #2 ##1 :}
-	}
-		{ \end{thmbox}}
 }
 \newthmtype{defi}{Définition}{L}
 \newthmtype{lem}{Lemme}{S}
 \newthmtype{thm}{Théorème}{M}
-\newthmtype{axiom}{Axiome}{M}
+\newthmtype{hyp}{Hypothèse}{M}
 \newthmtype{prop}{Proposition}{S}
 \newthmtype{method}{Méthode}{S}
 \newthmtype{coro}{Corollaire}{S}
@@ -49,16 +48,16 @@
 
 \def\examplecounter{examplect}
 \newcounter{examplect}[chapter]
-\renewenvironment{example}[1][\examplename]{%
+\newenvironment{example}[1][\examplename]{%
 	\renewcommand{\examplename}{Exemple \refstepcounter{examplect}\chapterarabic{examplect}}
 	\begin{absexample}}{\end{absexample}}
-\newenvironment{absexample}[1][\examplename]{%
+\newenvironment{absexample}[1][\examplename]{\vspace{1em}%
   \par\smallbreak%
-  \noindent\textbf{#1\, :} \relax}{}
+  \noindent\textbf{#1\, :} \relax}{\vspace{1em}}
 %  \let\demo=\comment
 %  \let\enddemo=\endcomment
 \newenvironment{demo}{
-	\renewcommand{\examplename}{D�monstration}
+	\renewcommand{\examplename}{Démonstration}
 	\begin{absexample} $\rhd$ }{ \hfill $\lhd$ \end{absexample}}
 
 \newenvironment{eqndemo}{\begin{displaymath}\begin{array}{rcll}}{\end{array}\end{displaymath}}

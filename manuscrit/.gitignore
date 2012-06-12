@@ -6,7 +6,7 @@
 *.dvi
 *.ps
 *.pdf
-*.toc
+*.*toc
 *.kilepr
 *.backup
 *.maf

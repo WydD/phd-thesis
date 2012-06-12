@@ -1,48 +1,115 @@
 \section{Définitions générales}
-\subsection{N-uplets et identifiants}Aliquam dictum risus ac nulla rutrum molestie. Proin at erat urna, nec dignissim velit. Nullam fringilla augue at est vulputate tincidunt. Nam non condimentum tellus. Aenean orci magna, accumsan rutrum faucibus eget, pretium adipiscing justo. Donec dignissim faucibus scelerisque. Aenean adipiscing tellus sed nulla euismod tempus eleifend justo molestie. Quisque in ligula quis velit condimentum pharetra.
-
-Ut et est arcu. Fusce at dapibus augue. Vestibulum porta pretium vestibulum. Duis aliquam aliquam mattis. Praesent dapibus sem vel tellus rhoncus non posuere nunc egestas. Ut sit amet mauris tortor, sit amet tristique lacus. Pellentesque porta faucibus vestibulum. Curabitur non quam urna, et vulputate eros. 
-\begin{defi}[n-uplet]
+\TODO{plan}
+\subsection{N-uplets et identifiants}
+Avant de présenter les définitions plus spécifiques à la gestion des flux de données. Définissons les notions les plus élémentaires de notre algèbre. Tout d'abord, la notion d'n-uplet (def~\ref{def:tuple}) extraite du modèle relationnel est définie comme une fonction partielle.
+\begin{defi}[n-uplet]\label{def:tuple}
     Un n-uplet est une fonction partielle de l'ensemble des attributs vers l'espace des valeurs. Le domaine de cette fonction est appellé le schéma du n-uplet.
 \end{defi}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nulla arcu, ullamcorper quis malesuada et, vestibulum sed lectus. Cras volutpat, nulla eu consectetur adipiscing, leo ligula feugiat sem, eget suscipit lacus nunc eget mauris. Aenean posuere lobortis augue sit amet elementum. Integer arcu leo, varius et elementum eu, vehicula sed turpis. Donec et quam quam, sit amet lobortis orci. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam eu lorem erat, at ornare diam.
 
-Donec porttitor commodo consequat. Curabitur pharetra purus ac tellus viverra varius. Vivamus tincidunt, quam at adipiscing pharetra, nunc mi blandit nulla, quis porttitor tellus ligula in erat. Donec auctor enim vel lorem aliquam vestibulum. Phasellus sit amet sollicitudin arcu. Etiam interdum dictum leo, ac malesuada lorem ultricies id. Nam sit amet orci sed mauris lobortis vestibulum. Quisque lobortis, erat at venenatis scelerisque, orci lectus gravida massa, id laoreet dolor augue a metus. 
-\begin{defi}[Identifiant physique]
+De par sa nature, il est donc possible de représenter un n-uplet en tant qu'ensemble de couples $Attribut\times Valeur$ (avec une contrainte unique sur l'attribut). Nous aurons recourt à cette représentation pour les opérations sur les n-uplets.
+
+Ajoutons désormais la notion d'identifiant physique (def~\ref{def:phy}) au n-uplet. Cet attribut particulier a deux buts : tout d'abord permettre les duplicats, mais aussi définir la position (def~\ref{def:pos}) dans une séquence d'n-uplet (def~\ref{def:seq}). Naturellement, son rôle d'identifiant définit aussi l'égalité d'un n-uplet.
+\begin{defi}[Identifiant physique]\label{def:phy}
     L'identifiant physique d'un n-uplet $s$ est un élément de l'espace des identifiants $\I$ isomorphe à $\N$. Le nom d'attribut de cet identifiant sera noté $\varphi$ et $s(\varphi)$ désigne la valeur de l'identifiant de $s$.
 \end{defi}
-
-    L'identifiant physique d'un n-uplet $s$ est un élément de l'espace des identifiants $\I$ isomorphe à $\N$. Le nom d'attribut de cet identifiant sera noté $\varphi$ et $s(\varphi)$ désigne la valeur de l'identifiant de $s$.
-
-\begin{defi}[Séquence d'n-uplet]
+\begin{defi}[Séquence d'n-uplet]\label{def:seq}
     Un ensemble dénombrable d'n-uplets $TS$ est une séquence si et seulement si : 
     \begin{itemize}
      \item Tout n-uplet de $TS$ partage le même schéma $A$ contenant $\varphi$.
-     \item $\forall s,s' \in TS^2$, $s\neq s' \equ s(\varphi) \neq s'(\varphi)$
+     \item $\forall s,s' \in TS^2$, $s = s' \equ s(\varphi) = s'(\varphi)$
     \end{itemize}
 
     Une séquence est donc naturellement totalement ordonné par son identifiant physique.
 \end{defi}
-Aliquam dictum risus ac nulla rutrum molestie. Proin at erat urna, nec dignissim velit. Nullam fringilla augue at est vulputate tincidunt. Nam non condimentum tellus. Aenean orci magna, accumsan rutrum faucibus eget, pretium adipiscing justo. Donec dignissim faucibus scelerisque. Aenean adipiscing tellus sed nulla euismod tempus eleifend justo molestie. Quisque in ligula quis velit condimentum pharetra.
+\begin{defi}[Position d'un n-uplet]\label{def:pos}
+    La position d'un n-uplet $s$ dans une séquence $TS$ correspond au nombre d'n-uplet ayant un identifiant physique plus petit que $s$.
+    $$\pos_{TS}(s) = \#\{s'\in TS,\ s'(\varphi) < s(\varphi) \}$$
+\end{defi}
 
-Ut et est arcu. Fusce at dapibus augue. Vestibulum porta pretium vestibulum. Duis aliquam aliquam mattis. Praesent dapibus sem vel tellus rhoncus non posuere nunc egestas. Ut sit amet mauris tortor, sit amet tristique lacus. Pellentesque porta faucibus vestibulum. Curabitur non quam urna, et vulputate eros. 
-
-\begin{prop}[Timestamp]
+La gestion des flux de données nécessite de plus le concept de \textit{timestamp} (def~\ref{def:timestamp}) qui sera par la suite associé aux n-uplets d'un flux. Nous adoptons un modèle continu pour le temps car cela nous permet de ne pas faire d'hypothèse sur la plus courte distance entre deux \textit{timestamps} consécutifs.
+\begin{defi}[Timestamp]\label{def:timestamp}
     L'espace temps $\T$ est un corps totalement ordonné et isomorphique à $\R$. 
 
     Un \textit{timestamp} est un élément de $\T$.
-\end{prop}
+\end{defi}
 
-
-\begin{thm}[Identifiant de batch]
+\subsection{Flux et relations}
+Comme présenté dans le chapitre~\ref{chap:rw:sgfd}, la notion de batch a été introduite pour gérer les n-uplets simultanés (égalité de timestamp). Un flux de donnée (def~\ref{def:flux}) n'est donc pas simplement une séquence d'n-uplet, c'est une séquence de batch. Tous les n-uplets simultanés  sont donc partitionnés en batch. Ceux-ci sont identifiés (def~\ref{def:batch}) par un entier en plus du \textit{timestamp}.
+\begin{defi}[Identifiant de batch]\label{def:batch}
     Un identifiant de batch est un élément de l'ensemble $\TN$ totalement ordonné par lexicographie.
-\end{thm}
-
-\begin{coro}[Flux]
+\end{defi}
+\begin{defi}[Flux]\label{def:flux}
     Un flux est un couple $(S,\BS)$ tel que :
     \begin{itemize}
         \item $S$ est une séquence d'n-uplet potentiellement infinie possédant un schéma contenant l'attribut spécial $\t$.
         \item $\BS$ est une fonction $S\mapsto \TN$ définissant le batch d'appartenance d'un n-uplet
     \end{itemize}
-\end{coro}
+    
+    Par mesure de commodité, sauf mention contraire, nous écrirons $S$ pour désigner le couple $(S,\BS)$.
+\end{defi}
 
+Notre algèbre adopte la sémantique à deux concepts comme présenté dans la section~\ref{chap:rw:sgfd:modeles}. Nous définissons donc une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble d'n-uplet. Dans notre cas, le temps est définit comme un identifiant de batch, et l'ensemble d'n-uplet est en réalité une séquence. 
+\begin{defi}[Relation temporelle]\label{def:relation}
+	Une relation temporelle $R$ est une fonction en escalier associant un identifiant de batch $(t,i)\in\TN$ à une séquence d'n-uplet $R(t,i)$
+\end{defi}
+L'évaluation d'une relation temporelle à un instant donnée est donc une séquence (ou \textit{relation instantannée}) avec donc un ordre strict sur les n-uplets. Par abus de langage, nous utiliserons le terme \textit{relation} pour désigner une relation temporelle.
+
+Par la suite, nous utiliserons le terme \textbf{entité} pour désigner un flux ou une relation temporelle. Un opérateur est donc une fonction permettant de transformer des entités en une nouvelle.
+
+\subsection{Fondations de l'algèbre}
+\subsubsection{Hypothèse fondamentale de l'ordre}
+La notion d'ordre est crucial dans la gestion de flux de données. Nous avons effectivement introduit l'ordre naturel dans la séquence d'n-uplet. Ceci est l'ordre positionnel. Mais pour un flux, nous pouvons aussi définir les ordres des batchs et temporel (def~\ref{def:ordres}).
+\begin{defi}[Ordres d'un flux]\label{def:ordres}
+Soit $S$ un flux, trois ordres sont naturellement définis :
+
+$\forall s,s' \in S^2$,
+
+$\begin{array}{lcrcl} 
+\textrm{L'ordre positionnel : } &\qquad & s \leq_\varphi s' & \equ & s(\varphi) \leq s'(\varphi)\\
+\textrm{L'ordre des batch : } & & s \leq_{\B{}} s' &\equ& \BS(s) \leq \BS(s')\\
+\textrm{L'ordre temporel : } & & s \leq_\t s' &\equ& s(\t) \leq s'(\t)\\
+\end{array}$
+\end{defi}
+
+Nous supposons maintenant que nos flux sont correctement ordonnés (hyp~\ref{hyp:ordres}). Si un n-uplet est positionnellement avant un autre, alors son batch est inférieur ou égal. Et par conséquent son \textit{timestamp} est lui aussi inférieur ou égal.
+\begin{hyp}[Cohérence temporelle]\label{hyp:ordres}
+L'ordre positionnel implique l'ordre des batchs.
+$$\forall s, s'\in S^2, \qquad s <_\varphi s' \im s \leq_{\B{}} s'$$
+\end{hyp}
+Cette hypothèse est réputée pour être difficile à implémenter. Comme nous l'avons vu dans la section~\ref{sec:rw:sgfd:modeles}, certaines algèbres introduisent des opérations de réordonnement. Nous sommes convaincu que pour faire une algèbre claire, il faut faire cette supposition. Par la suite, plusieurs travaux intéressants tel que~\cite{Krishnamurthy:discontinuous} permettent de garantir cette hypothèse.
+
+\subsubsection{Requêtes}
+Tout d'abord, il nous faut définir le fait qu'a priori, une entité n'a pas de passé dans la gestion de flux de données. En effet, lorsqu'une requête est déployée sur un système, sauf opération explicite, le flux arrivant ne va pas nous renseigner naturellement sur les données passées. D'un point de vue algébrique, une entité est initialisée (def~\ref{def:init}) à un \textit{timestamp} donné si toutes ses données sont accessibles à un \textit{timestamp} supérieur à celui-ci.
+\begin{defi}[Entité initialisée]\label{def:init}
+	Une entité $E$ initialisée à un timestamp $t_0$ est une entité vérifiant :
+	\begin{itemize}
+		\item Si $E$ est une relation : $\forall b \in \TN$, tel que $b<(t_0,0)$, alors $E(b) = \emptyset$.
+		\item Si $E$ est un flux : $\forall s\in E$, $s(\t) \geq t_0$.
+	\end{itemize}
+\end{defi}
+
+La notion de requête s'appuie directement sur cette notion d'entité initialisée. Ainsi, la requête (def~\ref{def:requete}) est une composition d'opérateurs appliqués sur ces entités initialisées. Il est important de voir que les opérateurs sont potentiellement dépendants du timestamp d'initialisation.
+\begin{defi}[Requête]\label{def:requete}
+	Soient $E=(E_1, ..., E_n)$, $n$ entités,
+	
+	Une requête continue sur $E$ démarrée au temps $t_0$ est défini comme une composition d'opérateurs $Q$ appliqués sur les éléments de $E$ initialisés à $t_0$.
+\end{defi}
+
+\subsubsection{Équivalences de requêtes}
+La séquence d'n-uplet est le type central de notre algèbre car elle seule établit la notion d'ensemble d'n-uplets. Nous définissons l'inclusion de séquences (def~\ref{def:inclusion}) de manière similaire à la notion de suites extraites. La notion d'\textbf{équivalence} de deux séquences est donc définie naturellement par la double inclusion. 
+\begin{defi}[Inclusion et équivalences de séquences d'n-uplets]\label{def:inclusion}
+	Soient $TS_1$ et $TS_2$ deux séquences possédant le même schéma $A$,
+	
+	$TS_1$ est inclue dans $TS_2$ ($TS_1 \subseteqq TS_2$) si et seulement si : 
+	
+	\quad \quad $\exists f:\I \mapsto \I$ strictement croissante telle que 
+$$\forall s\in TS_1, \exists s'\in TS_2, \textrm{ tel que } \forall a \in A, s'(a) = \begin{cases} f(s(\varphi)) & a = \varphi \\ s(a) & \textrm{sinon}\end{cases}$$
+	L'équivalence ($TS_1 \equiv TS_2$) est définie par $TS_1 \subseteqq TS_2$ et $TS_1 \supseteqq TS_2$. 
+\end{defi}%
+
+La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transpos} présente les conséquences du changement de timestamp.
+\begin{defi}[Équivalences de requêtes]\label{def:equivalence}
+	Soient $E=(E_1, ..., E_n)$, $n$ entités,
+	
+	Les requêtes $Q$ et $Q'$ démarrées à $t_0$ sont équivalentes si et seulement si pour toutes entités $E'$ de même types et schéma, les entités $Q(E')$ et $Q'(E')$ sont équivalentes.
+\end{defi}%
