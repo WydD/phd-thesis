@@ -1,1 +1,36 @@
 \section{Héritages du modèle relationnel}
+La définition de relation temporelle que nous avons exposé comporte la notion de séquence d'n-uplet. Cette notion est certes proche des relations classiques mais possède un point majeur supplémentaire étant l'ordre. Dans cette section, nous verrons comment réutiliser les opérateurs de l'algèbre relationnelle.
+
+\subsection{Opérateurs unaires simples}
+Tout d'abord explorons le domaine des opérateurs unaires relationnels : sélection, projection et renommage. Comme ces opérateurs sont agnostiques de l'ordre dans lesquels sont les n-uplets, le principe de l'héritage est d'appliquer les définitions sur l'évaluation instantanée de la relation.
+
+Par exemple, notons la sélection relationnelle classique $\Sigma$. Alors, pour un batch $b$ quelconque, l'expression suivante : $\Sigma(R(b))$, exprime bien la sélection des n-uplets. Ainsi l'application de l'opérateur relationnel standard sur le batch présent permet de définir la sélection (def~\ref{def:selection}). L'identifiant physique n'est pas altéré donc l'ordre ne l'est pas non plus.
+\begin{defi}[Sélection]\label{def:selection}
+Soit $R$ une relation temporelle,
+
+Soit $c$ une expression booléenne applicable sur tout n-uplet de $R$,
+
+Alors la sélection est définie comme suit :
+$$\sigma_{c}(R) : b \mapsto \{s\in R(b), c(s)\} = \Sigma_c(R(b))$$
+\end{defi}
+
+Nous pouvons remarquer d'ores et déjà que la définition d'inclusion de requête est directement appliquable à la sélection (en prenant pour fonction d'extraction l'identité).
+\begin{prop}[Inclusion de la sélection]
+Soit $R$ une relation temporelle, et $c$ une condition de sélection, alors $\sigma_c R \subseteqq R$
+\end{prop}
+
+La projection et le renommage se définissent de façon similaire. Toutefois, il existe des cas pouvant altérer l'identifiant physique. Par exemple, la projection sur des attributs ne comprennant pas $\varphi$ le supprimerait. Nous instaurons donc des règles supplémentaires (def~\ref{projection}) pour éviter ces cas. De façon similaire, nous pourrions définir l'opérateur d'évaluation d'expressions $e_f^c$ permettant d'évaluer une expression $f$ dont le résultat serait placé dans l'attribut $c$.
+\begin{defi}[Projection et renommage]\label{def:projection}
+La projection $\Pi_p$ et le renommage $\rho_{b/a}$ sont défini par héritage de l'algèbre relationnelle à l'exception de ces deux règles :
+\begin{itemize}
+\item Une projection $\Pi_p$ est strictement égale à $\Pi_{p\cup \{\varphi\}}$
+\item Le renommage $\rho_{b/\varphi}$ correspond a une copie de $\varphi$ dans $b$.
+\end{itemize}
+\end{defi}
+
+Nous avons donc réussi à appliquer les définitions des 3 premiers opérateurs de l'algèbre relationnelle dans notre contexte. Il nous faut maintenant explorer les opérateurs binaires, en commençant par la jointure.
+
+\subsection{Produit cartésien}
+La contrainte de l'ordre commence à se faire pesante dans le cadre des opérations binaires. En effet, il nous faut établir un ordre strict sur la séquence d'n-uplets résultants du produit des deux relations. Il est important de noter que cette notion de séquence d'n-uplet est primordiale même pour les relations temporelles (voir notamment les \textit{streamers} def~\ref{def:streamers}).
+\begin{example}
+\end{example}
