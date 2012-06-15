@@ -11,12 +11,15 @@ De par sa nature, il est donc possible de représenter un n-uplet en tant qu'ens
 
 Ajoutons désormais la notion d'identifiant physique (def~\ref{def:phy}) au n-uplet. Cet attribut particulier a deux buts : tout d'abord permettre les duplicats, mais aussi définir la position (def~\ref{def:pos}) dans une séquence d'n-uplet (def~\ref{def:seq}). Naturellement, son rôle d'identifiant définit aussi l'égalité d'un n-uplet.
 \begin{defi}[Identifiant physique]\label{def:phy}
-    L'identifiant physique d'un n-uplet $s$ est un élément de l'espace des identifiants $\I$ isomorphe à $\N$. Le nom d'attribut de cet identifiant sera noté $\varphi$ et $s(\varphi)$ désigne la valeur de l'identifiant de $s$.
+    Un $\Phi$-espace est un ensemble dénombrable totalement ordonné.
+
+    L'identifiant physique d'un n-uplet est l'attribut $\varphi$ dont la valeur $s(\varphi)$ est un élément d'un $\Phi$-espace.
 \end{defi}
 \begin{defi}[Séquence d'n-uplet]\label{def:seq}
     Un ensemble dénombrable d'n-uplets $TS$ est une séquence si et seulement si : 
     \begin{itemize}
      \item Tout n-uplet de $TS$ partage le même schéma $A$ contenant $\varphi$.
+     \item L'ensemble $\{s(\varphi), s\in TS\} = \I_{TS}$ forme un $\Phi$-espace.
      \item $\forall s,s' \in TS^2$, $s = s' \equ s(\varphi) = s'(\varphi)$
     \end{itemize}
 
@@ -61,15 +64,13 @@ Par la suite, nous utiliserons le terme \textbf{entité} pour désigner un flux 
 \subsubsection{Hypothèse fondamentale de l'ordre}
 La notion d'ordre est crucial dans la gestion de flux de données. Nous avons effectivement introduit l'ordre naturel dans la séquence d'n-uplet. Ceci est l'ordre positionnel. Mais pour un flux, nous pouvons aussi définir les ordres des batchs et temporel (def~\ref{def:ordres}).
 \begin{defi}[Ordres d'un flux]\label{def:ordres}
-Soit $S$ un flux, trois ordres sont naturellement définis :
+Soit $S$ un flux, trois ordres sont naturellement définis : $\forall s,s' \in S^2$,
 
-$\forall s,s' \in S^2$,
-
-$\begin{array}{lcrcl} 
+$$\begin{array}{lcrcl} 
 \textrm{L'ordre positionnel : } &\qquad & s \leq_\varphi s' & \equ & s(\varphi) \leq s'(\varphi)\\
 \textrm{L'ordre des batch : } & & s \leq_{\B{}} s' &\equ& \BS(s) \leq \BS(s')\\
 \textrm{L'ordre temporel : } & & s \leq_\t s' &\equ& s(\t) \leq s'(\t)\\
-\end{array}$
+\end{array}$$
 \end{defi}
 
 Nous supposons maintenant que nos flux sont correctement ordonnés (hyp~\ref{hyp:ordres}). Si un n-uplet est positionnellement avant un autre, alors son batch est inférieur ou égal. Et par conséquent son \textit{timestamp} est lui aussi inférieur ou égal.

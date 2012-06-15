@@ -16,7 +16,7 @@ $$\sigma_{c}(R) : b \mapsto \{s\in R(b), c(s)\} = \Sigma_c(R(b))$$
 
 Nous pouvons remarquer d'ores et déjà que la définition d'inclusion de requête est directement appliquable à la sélection (en prenant pour fonction d'extraction l'identité).
 \begin{prop}[Inclusion de la sélection]
-Soit $R$ une relation temporelle, et $c$ une condition de sélection, alors $\sigma_c R \subseteqq R$
+Soit $R$ une relation temporelle, et $c$ une condition de sélection, alors $$\sigma_c R \subseteqq R$$
 \end{prop}
 
 La projection et le renommage se définissent de façon similaire. Toutefois, il existe des cas pouvant altérer l'identifiant physique. Par exemple, la projection sur des attributs ne comprennant pas $\varphi$ le supprimerait. Nous instaurons donc des règles supplémentaires (def~\ref{projection}) pour éviter ces cas. De façon similaire, nous pourrions définir l'opérateur d'évaluation d'expressions $e_f^c$ permettant d'évaluer une expression $f$ dont le résultat serait placé dans l'attribut $c$.
@@ -33,4 +33,54 @@ Nous avons donc réussi à appliquer les définitions des 3 premiers opérateurs
 \subsection{Produit cartésien}
 La contrainte de l'ordre commence à se faire pesante dans le cadre des opérations binaires. En effet, il nous faut établir un ordre strict sur la séquence d'n-uplets résultants du produit des deux relations. Il est important de noter que cette notion de séquence d'n-uplet est primordiale même pour les relations temporelles (voir notamment les \textit{streamers} def~\ref{def:streamers}).
 \begin{example}
+Soit $CPU$ une relation $(appId, cpu, \t)$ comportant des relevés fait par l'application $appId$ de la charge $cpu$ d'un processeur au temps $\t$. Soit $Devices$ la relation $(deviceId, appId)$ listant les applications $appId$ exécutés sur le dispositif $deviceId$. Voici un exemple de données :
+\begin{center}
+\begin{tabular}{ccc}
+& deviceId & appId \\ %\hline 
+\cline{2-3} & 1 & 2 \\
+\textbf{Devices} &2 & 23 \\
+&3 & 23 \\
+&4 & 12 \\
+\end{tabular} \quad \quad \quad
+\begin{tabular}{cccc}
+& appId & cpu & $\t$ \\% \hline 
+\cline{2-4} & 12 & 12 & 21 \\
+\textbf{CPU}& 2 & 11 & 32 \\
+& 2 & 14 & 48 \\
+&12& 13 & 54 \\
+\end{tabular}
+\end{center}
+
+Supposons que l'utilisateur souhaite obtenir la charge \textit{CPU} des équipements. L'opération demandé est donc une jointure entre ces deux relations. Toutefois, deux solutions sont envisageables.
+\begin{center}
+\begin{tabular}{cccc} 
+        deviceId & cpu & $\t$ \\ \hline 
+        1&  11&  32  \\
+        1&  14&  48  \\
+        4&  12&  21 \\
+        4&  13&  54\\
+\end{tabular}
+\quad \quad \quad
+\begin{tabular}{cccc}
+        deviceId & cpu & $\t$ \\ \hline 
+        4&  12&  21\\
+        1&  11&  32\\
+        1&  14&  48\\
+        4&  13&  54\\
+\end{tabular}
+\end{center}
+
+Dans le premier cas, les n-uplets sont listés par dispositifs, puis par \textit{timestamp}. Dans le second cas, les n-uplets sont listés par \textit{timestamp}. Si ce résultat est transformé en flux, il peut y avoir des impacts sémantiques lourds : fenêtres positionnelles ou \textit{load-shedding} différents. Mais de plus, le coût d'aggrégation éventuel sera lui aussi impacté (tri par groupement déjà effectué).
 \end{example}
+
+Ainsi, il est important de clarifier l'ambiguïté latente à la gestion de l'ordre dans les opérations binaires. Dans notre cas, c'est la gestion de l'identifiant physique qui est au centre de ces manipulations. En effet, l'utilisation obligatoire de cet attribut force la définition de l'ordre à tout niveau. Ainsi le produit cartésien (def~\ref{def:produit}) est similaire au produit classique nonobstant l'utilisation d'une application $\Phi^\times$ à définir permettant la création du nouvel identifiant.
+\begin{defi}[Produit Cartésien]\label{def:produit}
+Soient $R_1$ et $R_2$ deux relations temporelles telles que $Attr(R_1) \cap Attr(R_2) = \{\varphi\}$, soit $b$ un identifiant de \textit{batch},
+
+Soient $\I^{\times}$ un $\Phi$-espace et $\Phi^\times$ une application de $\I_{R_1}\times\I_{R_2}$ vers $\I^\times$,
+
+Le produit cartésien de $R_1$ par $R_2$ au \textit{batch} $b$ est : $(R_1\times R_2)(b)=$
+$$\bigcup_{\begin{array}{c}  r \in R_1(b)\\ s \in R_2(b)\end{array}} (\varphi, \Phi^\times(r(\varphi), s(\varphi))) \ \cup \ r[Attr(R_1)\backslash \varphi]\ \cup\ s[Attr(R_2)\backslash \varphi] $$
+\end{defi}
+
+Sauf mention contraire, dans Astral, nous considérons que $$\Phi^\times : \varphi_1, \varphi_2 \mapsto (\varphi_1,\varphi_2)\in \I^\times=\I_{R_1}\times \I_{R_2}$$ avec $\I^\times$ étant lexicographiquement ordonné (d'abord $R_1$ puis $R_2$).

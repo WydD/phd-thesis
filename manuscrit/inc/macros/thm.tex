@@ -7,6 +7,7 @@
 \definecolor{corocolor}{RGB}{255,250,224}
 \definecolor{hypcolor}{RGB}{224,224,224}
 
+
 \DeclareCaptionTextFormat{spaced}{#1}
 \newlength{\thmsize}
 \def\chapterarabic#1{\thesection.\arabic{#1}}
@@ -17,7 +18,7 @@
 % #3 = style (S - M)
 \def\newthmtype#1#2#3{
         \DeclareCaptionFormat*{#1label}{\hspace{1.5em}{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3}}\floatstyle{plaintop}
-        \newfloat{#1float}{ht}{#1toc}[chapter]\floatname{#1float}{#2}
+        \newfloat{#1float}{ht}{#1toc}[section]\floatname{#1float}{#2}
 	\expandafter\def\csname the#1float\endcsname{\chapterarabic{#1float}}
         \captionsetup[#1float]{position=top,aboveskip=0pt,format=#1label,textformat=spaced}
 	\newenvironment{#1}[1][]
@@ -29,12 +30,11 @@
                     \addtolength{\thmsize}{-6em}%
                     \newsavebox{\BODY}% Box storage
                     \begin{lrbox}{\BODY}% Start capturing the input 
-                        \phantom{m}\par \begin{minipage}{\thmsize}%
-                        \vskip 1em%
+                        \begin{minipage}{\thmsize}\vspace{.5em}\begin{minipage}[b]{\thmsize}
                 }
-		{\par\phantom{m} \end{minipage}%
+		{\end{minipage}\vspace{0.5em}\hspace{1em}\end{minipage}%
                     \end{lrbox}%
-                    \noindent\fbox{\fcolorbox{black}{#1color}{\usebox{\BODY}\hspace{1em}}}%
+                    \noindent\fcolorbox{black}{#1color}{\hspace{1em}\usebox{\BODY}\hspace{1em}}%
                 \end{#1float}}
 }
 \newthmtype{defi}{Définition}{L}
