@@ -16,8 +16,8 @@
 % #2 = label
 % #3 = style (S - M)
 \def\newthmtype#1#2#3{
-        \DeclareCaptionFormat*{#1label}{\hspace{2em}{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3}}\floatstyle{plaintop}
-        \newfloat{#1float}{ht}{#1toc}[section]\floatname{#1float}{#2}
+        \DeclareCaptionFormat*{#1label}{\hspace{1.5em}{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3}}\floatstyle{plaintop}
+        \newfloat{#1float}{ht}{#1toc}[chapter]\floatname{#1float}{#2}
 	\expandafter\def\csname the#1float\endcsname{\chapterarabic{#1float}}
         \captionsetup[#1float]{position=top,aboveskip=0pt,format=#1label,textformat=spaced}
 	\newenvironment{#1}[1][]
@@ -34,7 +34,7 @@
                 }
 		{\par\phantom{m} \end{minipage}%
                     \end{lrbox}%
-                    \noindent\fcolorbox{black}{#1color}{\usebox{\BODY}\hspace{1em}}%
+                    \noindent\fbox{\fcolorbox{black}{#1color}{\usebox{\BODY}\hspace{1em}}}%
                 \end{#1float}}
 }
 \newthmtype{defi}{Définition}{L}
