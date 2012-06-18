@@ -6,7 +6,8 @@
 \definecolor{thmcolor}{RGB}{255,224,224}
 \definecolor{corocolor}{RGB}{255,250,224}
 \definecolor{hypcolor}{RGB}{224,224,224}
-
+\newlength{\stdindent}
+\setlength{\stdindent}{\parindent}
 
 \DeclareCaptionTextFormat{spaced}{#1}
 \newlength{\thmsize}
@@ -30,7 +31,7 @@
                     \addtolength{\thmsize}{-6em}%
                     \newsavebox{\BODY}% Box storage
                     \begin{lrbox}{\BODY}% Start capturing the input 
-                        \begin{minipage}{\thmsize}\vspace{.5em}\begin{minipage}[b]{\thmsize}
+                        \begin{minipage}{\thmsize}\vspace{.5em}\begin{minipage}[b]{\thmsize}\setlength{\parindent}{.5\stdindent}
                 }
 		{\end{minipage}\vspace{0.5em}\hspace{1em}\end{minipage}%
                     \end{lrbox}%
@@ -51,14 +52,17 @@
 \newenvironment{example}[1][\examplename]{%
 	\renewcommand{\examplename}{Exemple \refstepcounter{examplect}\chapterarabic{examplect}}
 	\begin{absexample}}{\end{absexample}}
-\newenvironment{absexample}[1][\examplename]{\vspace{1em}%
-  \par\smallbreak%
-  \noindent\textbf{#1\, :} \relax}{\vspace{1em}}
+\newenvironment{absexample}[1][\examplename]{\par\vspace{1em}%
+                    \setlength{\thmsize}{\linewidth}%
+                    \addtolength{\thmsize}{-2\stdindent}%
+   \noindent\textbf{#1\, :}\phantom{p} \par \noindent\hspace{\stdindent}\begin{minipage}[b]{\thmsize}\setlength{\parindent}{\stdindent}
+   
+  }{\end{minipage} \hfill $\lhd$ \vspace{1em}}
 %  \let\demo=\comment
 %  \let\enddemo=\endcomment
-\newenvironment{demo}{
-	\renewcommand{\examplename}{Démonstration}
-	\begin{absexample} $\rhd$ }{ \hfill $\lhd$ \end{absexample}}
+\newenvironment{demo}[1][]{
+	\renewcommand{\examplename}{Démonstration #1}
+	\begin{absexample}}{\end{absexample}}
 
 \newenvironment{eqndemo}{\begin{displaymath}\begin{array}{rcll}}{\end{array}\end{displaymath}}
 \def\demodetail#1{& \;\text{#1}}
