@@ -1,1 +1,69 @@
 \section{Opérateurs de flux}
+L'avantage de la gestion de flux est de pouvoir gérer la dynamique des données via des opérateurs dédiés. Astral est construite sur la sémantique a deux concepts, il nous faut donc définir les opérateurs flux vers relation (fenêtres) et relation vers flux (streamers). Puis, nous définirons et explorerons des opérateurs spécifiques à la gestion de flux étant : la gestion des modifications des relations et des \textit{batchs}.
+\subsection{Fenêtres}
+L'opérateur de fenêtre est un des opérateurs les plus étudiés dans la littérature. Toutefois, son comportement est encore flou sur certains points. La formalisation de son fonctionnement permettra donc une meilleure compréhension.
+\subsubsection{Association position-\textit{batch}}
+\begin{defi}[Fonction position-\textit{batch}]\label{def:tau}
+    Soit $S$ un flux,
+
+    La fonction $\tau_S : \N\cup\{-1\}\to \TN$ est la fonction associant un entier à l'identifiant de \textit{batch} du seul n-uplet présent à cette position.
+
+    Par convention, $\tau_S(-1)=(t_0,0)$.
+\end{defi}
+\begin{coro}[Fonction pseudo-inverse $\tau$]
+    Soit $S$ un flux,
+
+    La pseudo-inverse $\tau_S^{-1}:\TN\to \N\cup\{-1\}$ existe et correspond à la plus grande position du \textit{batch} donné en entrée. Si aucun \textit{batch} n'existe, le plus proche est utilisé. Formellement, $$\forall b \in \TN, \qquad \tau_S^{-1}(b) = \sum_{n=-1}^{+\infty} n \indic_{[\tau_S(n),\tau_S(n+1)[}(b)$$
+\end{coro}
+
+\begin{prop}[Propriétés de $\tau$]
+    Soit $S$ un flux, alors les propriétés suivantes sont correctes :
+    \begin{eqnarray*}
+        t_0 & \leq & \tau_S(0) \\
+        \tau_S(\tau_S^{-1}(b)) & \leq & b \\
+        n & \leq & \tau_S^{-1}(\tau_S(n))
+    \end{eqnarray*}
+
+    De plus, si $\exists s \in S$, $\BS(s)=b$, alors $\tau_S(\tau_S^{-1}(b)) = b$.
+\end{prop}
+
+\begin{defi}[Description de Séquence de Fenêtre (DSF)]
+    Soient $\D$ et $\D'$ pouvant être $\T$ ou $\N$, une description de séquence de fenêtre (DSF) est un triplet $(\alpha,\beta,r)$ tel que :
+\begin{itemize}
+    \item $r \in \D$ est le taux d'évaluation des bornes de la fenêtre
+    \item $\alpha$ et $\beta$ sont deux fonction de $\N\to D'$ représentant l'évolution des bornes.
+\end{itemize}
+
+$\alpha(j)$ et $\alpha(j)$ définissent les $j\eme$ valeures des bornes. La première étant donnée pour $j=0$. Ces fonctions se doivent de vérifier les propriétés suivantes (en considérant $\D=\D'=\T$) :
+$$\forall j \in \N, \begin{cases} \alpha(j) \leq \beta(j) & \textrm{le début est avant la fin}\\ \alpha(j) \geq t_0 & \textrm{le début existe} \\ \beta(j) \leq jr + \beta(0) & \textrm{la fin est accessible} \end{cases}$$
+    Les conditions pour les autres cas pour $\D$ et $\D'$ sont évidentes par application des fonctions $\tau_S$ et $\tau_S^{-1}$.
+\end{defi}
+
+\begin{example}
+    Nous souhaitons relever tous les $100$ relevés de charge processeur, les $10$ derniers relevés. Dans ce cas, nous souhaitons obtenir une séquence de fenêtres positionnelles générées tous les $100$ n-uplets ($r=100\in \N$). Nous appliquons des bornes positionnelles donc $\alpha,\beta \in (\N\to\N)^2$. La première fenêtre couvrira du $91\eme$ n-uplet au $100\eme$. Ainsi : $\alpha(0) = 91$ et $\beta(0) = 100$. L'évolution des bornes étant linéaire, nous avons donc :
+\begin{eqnarray*}
+ \alpha(j) &=& 100j+91\\
+ \beta(j) &=& 100j + 100\\
+ r & = & 100
+\end{eqnarray*}
+\end{example}
+
+La création de fenêtre nécessite l'association entre les n-uplets du flux et le numéro de fenêtre décrit dans la \textit{DSF}. Pour cela, nous utilisons une \textit{fonction d'attente} utilisant les identifiants de \textit{batch}. Cette fonction donne le rang de la dernière fenêtre au moment indiqué par le batch. Le terme \textit{attente} est lié au fait que l'évaluateur devra attendre avant le prochain changement de $\gamma$.
+Nous retrouvons dans cette fonction le caractère \textit{bloquant} des fenêtres.
+\begin{defi}[Fonction d'attente $\gamma$]
+    Soit $S$ un flux, soit $(\alpha,\beta,r)$ une DSF,
+
+    La fonction d'attente de la DSF est une fonction $\TN \to \N$ associant un identifiant de \textit{batch} à l'identifiant de la dernière fenêtre complétée.
+\begin{itemize}
+ \item  Si $r\in\T$, cette fonction est définie par $\gamma : (t,i) \mapsto \left\lfloor \frac{t-\beta(0)}{r} \right\rfloor$.
+ \item  Si $r\in\N$, cette fonction est définie par $\gamma : (t,i) \mapsto \left\lfloor \frac{\rtau_S(t,i)-\beta(0)}{r} \right\rfloor$.
+\end{itemize}
+\end{defi}
+\begin{example}
+    En reprenant l'exemple précédent, après simplification nous obtenons : $$\gamma(b) = \left\lfloor \frac{\rtau_S(b)}{100}\right\rfloor-1.$$
+    Si nous supposons que le flux produit un n-uplet par seconde (ainsi, $\rtau_S(t,i) = \lfloor t/1s \rfloor$) : alors $\gamma(1024s,0) = \left\lfloor \frac{1024}{100}\right\rfloor-1 = 9$. Nous avons donc bien la $10\eme$ fenêtre ($j=9$) comme la dernière fenêtre créée à ce moment.
+\end{example}
+
+\subsection{Streamers}
+\subsection{Domaine}
+\subsection{Spread}
