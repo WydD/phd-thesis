@@ -101,7 +101,7 @@ Pour les fenêtres positionnelles, la gestion est plus délicate. Si nous consid
 	
 \begin{example}
 	La figure~\ref{fig:contrib:astral:fenetres} montre l'évolution d'une séquence où la fenêtre glisse de $2$ secondes toutes les $2$ secondes ($r=2$) avec une taille constante de $3$ secondes. $t_0 = 0$ par simplicité ici. 
-La première fenêtre possède les bornes $\alpha(0) = t_0+ 0s$ et $\beta(0) =t_0+3s$. Le glissement étant de $2s$ la description de fenêtre est donc $$\forall j \in \N, \begin{cases} \alpha(j)  & =\ i*2s+t_0 \\ \beta(j) & = \ j*2s+3s+t_0\end{cases}$$
+La première fenêtre possède les bornes $\alpha(0) = t_0+ 0s$ et $\beta(0) =t_0+3s$. Le glissement étant de $2s$ la description de fenêtre est donc $$\forall j \in \N, \begin{cases} \alpha(j)  & =\ j*2s+t_0 \\ \beta(j) & = \ j*2s+3s+t_0\end{cases}$$
 La relation temporelle généré par cette DSF peut être noté $S[2js,2js+3s,2s]$.  Le calcul de son état à un instant est simple. Prenons le batch $(t_0+5.5s,0)$. La fenêtre a calculer est la fenêtre numérotée $\gamma(t_0+5.5s,0) = \left\lfloor \frac{t_0+5.5s-\beta(0)}{r}\right\rfloor = 1$. Ainsi : $S[2js,2js+3s,2s](t_0+5.5s,0) = F_1 = \{s_4,s_5,s_6,s_7,s_8\}$.
 \end{example}
 \begin{figure}[ht]
@@ -109,6 +109,17 @@ La relation temporelle généré par cette DSF peut être noté $S[2js,2js+3s,2s
 	\includegraphics[width=0.7\textwidth]{contrib-astral-fenetres}
 	\caption{Séquence de fenêtre de taille $3s$ glissante de $2s$}\label{fig:contrib:astral:fenetres}
 \end{figure}
+
+\begin{defi}[Exclusions de bornes de fenêtres]
+    Soit $S$ un flux et $(\alpha,\beta,\gamma)$ une description de séquence de fenêtre,
+
+    La notation $S]\alpha,\beta,\gamma]$, $S[\alpha,\beta,\gamma[$ et $S]\alpha,\beta,\gamma[$ désignent les définitions de l'opérateur classique de séquence de fenêtre permettant d'exclure respectivement les bornes inférieure, supérieure ou toutes.
+\end{defi}
+
+\begin{example}
+    En reprenant une définition de fenêtre déjà abordée étant la fenêtre sur 5 secondes : $(j*5s+t_0,j*5s+5s+t_0,5s)$. Nous remarquons qu'entre la fenêtre 0 et 1, les n-uplets dont le \textit{timestamp} est égal à $t_0+5s$ seront dans ces deux fenêtres. Ainsi, l'opérateur $S]jr+t_0,jr+r+t_0,r]$ avec $r=5s$ permettra de retirer ce timestamp de cette fenêtre.
+\end{example}
+
 
 \subsubsection{Fenêtres partitionnées}
 L'opérateur de fenêtres partitionnée est très utilisé pour appliquer la même séquences de fenêtres à des sous-flux. Les opérateurs partitionnés sont tous décrit de la même manière. Le principe, illustré dans la figure~\ref{fig:contrib:astral:partition} est de divisé le flux suivant un (ou des) attributs $A$ donné. Sur chacun de ces sous-flux est appliqué un opérateur quelconque. Par la suite, une union est appliquée.
@@ -140,14 +151,14 @@ Par la suite, nous utiliserons plusieurs notations simplifiés pour désigner de
   & Définition & Équivalence \\ \bottomrule
  $[L]$ & $[j,j,1]$ &  \\ 
  & \multicolumn{2}{p{0.8\textwidth}}{La séquence de fenêtre où chaque fenêtre ne contient que le dernier n-uplet du flux. Cette séquence est égale à $[B]$ si le flux réparti ses n-uplets avec un n-uplet par \textit{batch}.} \\ \hline
- $[B]$ & $[\tau_S^{-1}(\tau_S(j)^-)+1,j,1]$ & $\{s\in S, \BS(s) = \tau_S\circ\tau_S^{-1}(b)\}$ \\ 
+ $[B]$ & $]\tau_S^{-1}(\tau_S(j)^-),j,1]$ & $\{s\in S, \BS(s) = \tau_S\circ\tau_S^{-1}(b)\}$ \\ 
  & \multicolumn{2}{p{0.8\textwidth}}{Séquence de fenêtre où chaque fenêtre contenient le dernier \textit{batch}.} \\\hline
  $[\infty]$ & $[0,j,1]$ & $\{s\in S, \BS(s) \leq b\}$ \\
  & \multicolumn{2}{p{0.8\textwidth}}{Séquence accumulative contenant tout le flux jusqu'au \textit{batch} courant.} \\\hline
- $[T\ r]$ & $[\max(rj-r+t_0,t_0),rj+t_0,r]$ &  \\
- & \multicolumn{2}{p{0.8\textwidth}}{Fenêtre temporelle de taille $r$ se déplaçant toutes les $r$ unités de temps.} \\\hline
- $[P\ r]$ & $[\max(rj-r,0),rj,r]$ &  \\
- & \multicolumn{2}{p{0.8\textwidth}}{Fenêtre positionnelle de taille $r$ n-uplets se déplaçant tous les $r$ n-uplets.} \\
+ $[T\ r\ s]$ & $]\max(sj-r+t_0,t_0),sj+t_0,s]$ &  \\
+ & \multicolumn{2}{p{0.8\textwidth}}{Fenêtre temporelle de taille $r$ se déplaçant toutes les $s$ unités de temps.} \\\hline
+ $[P\ r\ s]$ & $]\max(sj-r,0),sj,r]$ &  \\
+ & \multicolumn{2}{p{0.8\textwidth}}{Fenêtre positionnelle de taille $r$ n-uplets se déplaçant tous les $s$ n-uplets.} \\
  \toprule
 \end{tabular}
 \caption{Liste des fenêtres courantes} \label{tab:windows}
@@ -156,5 +167,31 @@ Par la suite, nous utiliserons plusieurs notations simplifiés pour désigner de
 Il est important de noter que les équivalences citées sont toutefois non triviales, des démonstrations formelles sont fournies en annexes.
 
 \subsection{Streamers}
+La classe des \textit{streamers} est l'ensemble des opérateurs produisants un flux à partir d'une relation. Son utilisation est souvent appliquée après l'application d'une fenêtre pour permettre la recréation d'un flux après avoir travaillé dans le relationnel. Sa définition est découpée en deux parties, tout d'abord la définition de la réécriture de \textit{timestamp} permettant d'ajouter le \textit{timestamp} aux données produites, et ensuite la définition de l'opérateur en soit.
+\subsubsection{Réécriture de \textit{timestamp}}
+La réécriture de \textit{timestamp} est important pour modifier les n-uplets de $R$ avant leur mise sous forme de flux. Tout d'abord, il est nécessaire de correctement gérer les identifiants physiques. En effet, si un n-uplet est envoyé plusieures fois dans le flux résultant, il y aura un conflit si $\varphi$ n'est pas modifié. De plus, tout flux doit avoir un attribut $\t$ par définition. Cet attribut doit être créé ou remplacé pour assurer l'hypothèse de ordres. Le principe étant que si nous souhaitons envoyer le n-uplet $s\in R(b)$ dans le flux au \textit{batch} $(t_s,i_s)$, alors nous devons envoyer le n-uplet $\Psi_b(s,t_s)$.
+\begin{defi}[Fonction de réécriture de \textit{timestamp}]
+    Soit $R$ une relation de schéma $A$, $b$ un batch,
+
+    Soit $\Phi_b^S$ une application $\I_{R} \to \I^S$ étant une fonction strictement croissante telle que : 
+        $\forall b'\leq b, \ \forall i\in \I_R, \ \Phi_{b'}^S(i) \leq \Phi_b^S(i)$
+
+    La fonction de réécriture de \textit{timestamp} appliquée à $R(b)$ est définie par : 
+$$\forall s\in R(b), \ \forall t_s\in\T, \ \Psi_b(s,t_s) = \{(\t,t_s), (\varphi, \Phi_b^S(\varphi))\}\bigcup_{a\in A\backslash\{\varphi,\t\}}\{(a,s(a))\}$$
+\end{defi}
+
+\begin{defi}[\textit{Streamers} sensibles]
+    Soit $R$ une relation, alors le \textit{streamer} d'insertion $\IS(R)=S$ est défini par la propriété suivante : $\forall (t,i)\in\TN$
+        $$s\in R(t,i) \wedge s\not\in R((t,i)^-) \equ s'=\Psi_{(t,i)}(s)\in S \wedge \BS(s') = (t,i)$$
+\end{defi}
+
+
+Cette définition assure donc que les nouveaux n-uplets formant le flux vérifieront les propriétés suivantes : 
+\begin{itemize}
+ \item ils ont pour \textit{timestamp} $t_s$ correspondant au moment où il a été estampillé.
+ \item Ils ont un identifiant physique (et donc une position) plus grande que les identifiants précédent.
+ \item L'ordre positionnel de $R(b)$ est préservé.
+\end{itemize}
+L'expression exacte de l'application $\Phi_b^S$ n'a pas beaucoup d'importance car ses propriétés suffisent à rendre son utilisation libre de toute ambiguïté. Il est important de
 \subsection{Domaine}
 \subsection{Spread}
