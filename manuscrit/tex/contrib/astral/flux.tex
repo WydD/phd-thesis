@@ -3,7 +3,7 @@ L'avantage de la gestion de flux est de pouvoir gérer la dynamique des données
 \subsection{Fenêtres}
 L'opérateur de fenêtre est un des opérateurs les plus étudiés dans la littérature. Toutefois, son comportement est encore flou sur certains points. La formalisation de son fonctionnement permettra donc une meilleure compréhension.
 \subsubsection{Association position-\textit{batch}}
-Avant de définir formellement l'opération de fenêtrage, nous avons besoin d'un outil pour gérer l'association entre la position d'un n-uplet et de son \textit{batch}. La fonction $\tau_S$ définit cette association. 
+Avant de définir formellement l'opération de fenêtrage, nous avons besoin d'un outil pour gérer l'association entre la position d'un n-uplet et de son \textit{batch}. La fonction $\tau_S$ définit cette association (def~\ref{def:tau}). 
 \begin{defi}[Fonction position-\textit{batch}]\label{def:tau}
     Soit $S$ un flux,
 
@@ -12,28 +12,28 @@ Avant de définir formellement l'opération de fenêtrage, nous avons besoin d'u
     Par convention, $\tau_S(-1)=(t_0,0)$.
 \end{defi}
 
-Par corollaire de l'hypothèse fondamentale~\ref{hyp:ordres}, la fonction $\tau_S$ est donc croissante non-stricte. Ainsi, il est possible de définir une pseudo inverse $\rtau_S$ capable de donner une position (la maximale en l'occurence) pour un \textit{batch} donné.
-\begin{coro}[Fonction pseudo-inverse $\tau$]
+Par corollaire de l'hypothèse fondamentale~\ref{hyp:ordres}, la fonction $\tau_S$ est donc croissante non-stricte. Ainsi, il est possible de définir une pseudo inverse (cor~\ref{cor:rtau}) $\rtau_S$ capable de donner une position (la maximale en l'occurence) pour un \textit{batch} donné.
+\begin{coro}[Fonction pseudo-inverse $\tau$]\label{cor:rtau}
     Soit $S$ un flux,
 
     La pseudo-inverse $\rtau_S:\TN\to \N\cup\{-1\}$ existe et correspond à la plus grande position du \textit{batch} donné en entrée. Si aucun \textit{batch} n'existe, le plus proche est utilisé. Formellement, $$\forall b \in \TN, \qquad \tau_S^{-1}(b) = \sum_{n=-1}^{+\infty} n \indic_{[\tau_S(n),\tau_S(n+1)[}(b)$$
 \end{coro}
 
-De par sa nature, la fonction $\tau$ et sa pseudo-inverse partagent des propriétés intéressantes que nous pourrons réutiliser lors de démonstrations formelles.
-\begin{prop}[Propriétés de $\tau$]
-    Soit $S$ un flux, alors les propriétés suivantes sont correctes :
-    \begin{eqnarray*}
-        t_0 & \leq & \tau_S(0) \\
-        \tau_S(\tau_S^{-1}(b)) & \leq & b \\
-        n & \leq & \tau_S^{-1}(\tau_S(n))
-    \end{eqnarray*}
-
-    De plus, si $\exists s \in S$, $\BS(s)=b$, alors $\tau_S(\tau_S^{-1}(b)) = b$.
-\end{prop}
+%De par sa nature, la fonction $\tau$ et sa pseudo-inverse partagent des propriétés intéressantes que nous pourrons réutiliser lors de démonstrations formelles.
+%\begin{prop}[Propriétés de $\tau$]
+%    Soit $S$ un flux, alors les propriétés suivantes sont correctes :
+%    \begin{eqnarray*}
+%        t_0 & \leq & \tau_S(0) \\
+%        \tau_S(\tau_S^{-1}(b)) & \leq & b \\
+%        n & \leq & \tau_S^{-1}(\tau_S(n))
+%    \end{eqnarray*}
+%
+%    De plus, si $\exists s \in S$, $\BS(s)=b$, alors $\tau_S(\tau_S^{-1}(b)) = b$.
+%\end{prop}
 \subsubsection{Description de séquences de fenêtres}
-Afin de se rapproche le plus possible d'un aspect déclaratif, nous souhaitons décorréler l'opérateur de fenêtre en deux objets mathématiques : la description et l'opérateur exécutable. Ce dernier prendra une description en argument pour pouvoir représenter la relation temporelle résultante. Le principe des descriptions de séquences de fenêtres est assez simples, il suffit de décrire deux bornes évoluant de manière discrête, et un taux d'évaluation de ces bornes.
+Afin de se rapproche le plus possible d'un aspect déclaratif, nous souhaitons décorréler l'opérateur de fenêtre en deux objets mathématiques : la description et l'opérateur exécutable. Ce dernier prendra une description en argument pour pouvoir représenter la relation temporelle résultante. Le principe des descriptions de séquences de fenêtres (def~\ref{def:dsf}) est assez simples puisqu'il suffit de décrire deux bornes évoluant de manière discrête, et un taux d'évaluation de ces bornes.
 
-\begin{defi}[Description de Séquence de Fenêtre (DSF)]
+\begin{defi}[Description de Séquence de Fenêtre (DSF)]\label{def:dsf}
     Soient $\D$ et $\D'$ pouvant être $\T$ ou $\N$, une description de séquence de fenêtre (DSF) est un triplet $(\alpha,\beta,r)$ tel que :
 \begin{itemize}
     \item $r \in \D$ est le taux d'évaluation des bornes de la fenêtre
@@ -54,9 +54,9 @@ $$\forall j \in \N, \begin{cases} \alpha(j) \leq \beta(j) & \textrm{le début es
 \end{eqnarray*}
 \end{example}
 
-La création de fenêtre nécessite l'association entre les n-uplets du flux et le numéro de fenêtre décrit dans la \textit{DSF}. Pour cela, nous utilisons une \textit{fonction d'attente} utilisant les identifiants de \textit{batch}. Cette fonction donne le rang de la dernière fenêtre au moment indiqué par le batch. Le terme \textit{attente} est lié au fait que l'évaluateur devra attendre avant le prochain changement de $\gamma$.
+La création de fenêtre nécessite l'association entre les n-uplets du flux et le numéro de fenêtre décrit dans la \textit{DSF}. Pour cela, nous utilisons une \textit{fonction d'attente} (def~\ref{def:gamma}) utilisant les identifiants de \textit{batch}. Cette fonction donne le rang de la dernière fenêtre au moment indiqué par le batch. Le terme \textit{attente} est lié au fait que l'évaluateur devra attendre avant le prochain changement de $\gamma$.
 Nous retrouvons dans cette fonction le caractère \textit{bloquant} des fenêtres.
-\begin{defi}[Fonction d'attente $\gamma$]
+\begin{defi}[Fonction d'attente $\gamma$]\label{def:gamma}
     Soit $S$ un flux, soit $(\alpha,\beta,r)$ une DSF,
 
     La fonction d'attente de la DSF est une fonction $\TN \to \N$ associant un identifiant de \textit{batch} à l'identifiant de la dernière fenêtre complétée.
@@ -71,8 +71,8 @@ Nous retrouvons dans cette fonction le caractère \textit{bloquant} des fenêtre
 \end{example}
 
 \subsubsection{L'opérateur}
-Il devient désormais possible de définir un opérateur permettant  de générer une relation temporelle à partir d'un flux donné. Cette relation temporelle gère ses changements d'état grâce à la fonction $\gamma$. De manière générale, une DSF peut être ramenée simplement à une expression plus générale $(\alpha,\beta,\gamma)$ ce que nous utiliserons pour la définition de séquence de fenêtres.
-\begin{defi}[Opérateur de Séquence de Fenêtres]
+Il devient désormais possible de définir un opérateur permettant  de générer une relation temporelle à partir d'un flux donné. Cette relation temporelle gère ses changements d'état grâce à la fonction $\gamma$. De manière générale, une DSF peut être ramenée simplement à une expression plus générale $(\alpha,\beta,\gamma)$ ce que nous utiliserons pour la définition de séquence de fenêtres (def~\ref{def:fenetre}).
+\begin{defi}[Opérateur de Séquence de Fenêtres]\label{def:fenetre}
 	Soit $S$ un flux et $(\alpha, \beta, \gamma)$ une description de séquence,
 	
 	L'opérateur de séquence de fenêtres est défini par : $\forall b \in \TN$, 
@@ -110,7 +110,7 @@ La relation temporelle généré par cette DSF peut être noté $S[2js,2js+3s,2s
 	\caption{Séquence de fenêtre de taille $3s$ glissante de $2s$}\label{fig:contrib:astral:fenetres}
 \end{figure}
 
-\begin{defi}[Exclusions de bornes de fenêtres]
+\begin{defi}[Exclusions de bornes de fenêtres]\label{def:exclufenetre}
     Soit $S$ un flux et $(\alpha,\beta,\gamma)$ une description de séquence de fenêtre,
 
     La notation $S]\alpha,\beta,\gamma]$, $S[\alpha,\beta,\gamma[$ et $S]\alpha,\beta,\gamma[$ désignent les définitions de l'opérateur classique de séquence de fenêtre permettant d'exclure respectivement les bornes inférieure, supérieure ou toutes.
@@ -128,7 +128,7 @@ L'opérateur de fenêtres partitionnée est très utilisé pour appliquer la mê
 	\includegraphics[width=0.9\textwidth]{contrib-astral-partition}
 	\caption{Principe d'un opérateur partitionné}\label{fig:contrib:astral:partition}
 \end{figure}
-\begin{defi}[Séquence de fenêtre partitionnée]
+\begin{defi}[Séquence de fenêtre partitionnée]\label{def:partition}
 	Soient $S$ un flux, $a_1,...,a_k$ un ensemble d'attributs du schéma de $S$, et $(\alpha,\beta,\gamma)$ une DSF,
 	
 	Soit $\cup^*$ l'union relationnelle conservatrice des identifiants physiques, 
@@ -171,8 +171,8 @@ Il est important de noter que les équivalences citées sont toutefois non trivi
 \subsection{Streamers}
 La classe des \textit{streamers} est l'ensemble des opérateurs produisants un flux à partir d'une relation. Son utilisation est souvent appliquée après l'application d'une fenêtre pour permettre la recréation d'un flux après avoir travaillé dans le relationnel. Sa définition est découpée en deux parties, tout d'abord la définition de la réécriture de \textit{timestamp} permettant d'ajouter le \textit{timestamp} aux données produites, et ensuite la définition de l'opérateur en soit.
 \subsubsection{Réécriture de \textit{timestamp}}
-La réécriture de \textit{timestamp} est important pour modifier les n-uplets de $R$ avant leur mise sous forme de flux. Tout d'abord, il est nécessaire de correctement gérer les identifiants physiques. En effet, si un n-uplet est envoyé plusieures fois dans le flux résultant, il y aura un conflit si $\varphi$ n'est pas modifié. De plus, tout flux doit avoir un attribut $\t$ par définition. Cet attribut doit être créé ou remplacé pour assurer l'hypothèse de ordres. Le principe étant que si nous souhaitons envoyer le n-uplet $s\in R(b)$ dans le flux au \textit{batch} $(t_s,i_s)$, alors nous devons envoyer le n-uplet $\Psi_b(s,t_s)$.
-\begin{defi}[Fonction de réécriture de \textit{timestamp}]
+La réécriture de \textit{timestamp} est important pour modifier les n-uplets de $R$ avant leur mise sous forme de flux. Tout d'abord, il est nécessaire de correctement gérer les identifiants physiques. En effet, si un n-uplet est envoyé plusieures fois dans le flux résultant, il y aura un conflit si $\varphi$ n'est pas modifié. De plus, tout flux doit avoir un attribut $\t$ par définition. Cet attribut doit être créé ou remplacé pour assurer l'hypothèse de ordres. Le principe étant que si nous souhaitons envoyer le n-uplet $s\in R(b)$ dans le flux au \textit{batch} $(t_s,i_s)$, alors nous devons envoyer le n-uplet $\Psi_b(s,t_s)$ (def~\ref{def:stamping}).
+\begin{defi}[Fonction de réécriture de \textit{timestamp}]\label{def:stamping}
     Soit $R$ une relation de schéma $A$, $b$ un batch,
 
     Soit $\I^S = \TN\times \I_R$ le $\Phi$-espace ordonné de manière lexicographique,
@@ -187,8 +187,8 @@ Cette définition assure donc que les nouveaux n-uplets formant le flux vérifie
  \item Ils ont un identifiant physique (et donc une position) plus grande que les identifiants précédent.
  \item L'ordre positionnel de $R(b)$ est préservé.
 \end{itemize}
-Nous pouvons désormais voir leur impact sur la définition des \textit{streamers} dit sensibles. Ces \textit{streamers} réagissent aux changements de $R$ et produisent un flux en conséquence.
-\begin{defi}[\textit{Streamers} sensibles]
+Nous pouvons désormais voir leur impact sur la définition des \textit{streamers} dit sensibles (def~\ref{def:streamers}). Ces \textit{streamers} réagissent aux changements de $R$ et produisent un flux en conséquence.
+\begin{defi}[\textit{Streamers} sensibles]\label{def:streamers}
     Soit $R$ une relation,
 
     Les \textit{streamers} sensibles sont les opérateurs créateurs d'un flux $S$ réagissant aux changements de $R$, trois types sont définis :
