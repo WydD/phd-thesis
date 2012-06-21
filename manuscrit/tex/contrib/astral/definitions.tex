@@ -46,7 +46,7 @@ Comme présenté dans le chapitre~\ref{chap:rw:sgfd}, la notion de batch a été
     Un flux est un couple $(S,\BS)$ tel que :
     \begin{itemize}
         \item $S$ est une séquence d'n-uplet potentiellement infinie possédant un schéma contenant l'attribut spécial $\t$.
-        \item $\BS$ est une fonction $S\mapsto \TN$ définissant le batch d'appartenance d'un n-uplet
+        \item $\BS$ est une fonction $S\to \TN$ définissant le batch d'appartenance d'un n-uplet
     \end{itemize}
     
     Par mesure de commodité, sauf mention contraire, nous écrirons $S$ pour désigner le couple $(S,\BS)$.
@@ -58,7 +58,16 @@ Notre algèbre adopte la sémantique à deux concepts comme présenté dans la s
 \end{defi}
 L'évaluation d'une relation temporelle à un instant donnée est donc une séquence (ou \textit{relation instantannée}) avec donc un ordre strict sur les n-uplets. Par abus de langage, nous utiliserons le terme \textit{relation} pour désigner une relation temporelle.
 
+La définition des relations temporelles et des flux implique qu'il existe une quantité dénombrable de \textit{batch} présents dans le flux ou en tant que changement d'état de relation. Ainsi, pour tout \textit{batch} $(t,i)$, il existe un autre \textit{batch} infiniment proche de $(t,i)$ sans y être égal. Ce type de \textit{batch} est noté $(t,i)^-$. Par exemple, pour une relation dont l'état change au \textit{batch} $b$, nous pouvons comparer les états $R(b)$ et $R(b^-)$ correspondant à avant et après le changement.
+
 Par la suite, nous utiliserons le terme \textbf{entité} pour désigner un flux ou une relation temporelle. Un opérateur est donc une fonction permettant de transformer des entités en une nouvelle.
+\subsection{Exemple}
+Dans la suite de ce chapitre, nous développerons plusieurs exemples. Ces exemples se baseront sur les sources suivantes issus de l'application du réseau local domestique.
+\begin{itemize}
+    \item[\textbf{CPU}] Flux(appId, cpu, $\t$) : flux de relevé des charges processeurs. Un n-uplet de ce flux indique qu'au timestamp $\t$, l'application \textit{appId} indique que sur son équipement hôte, la charge processeur est égale à \textit{cpu}.
+    \item[\textbf{Applications}] Relation(appId, appName, deviceId) : catalogue des applications. Un n-uplet de cette relation indique que l'application \textit{appId} appelée \textit{appName} est déployée sur le l'équipement \textit{deviceId}.
+    \item[\textbf{Devices}] Relation(deviceId, deviceName, deviceType) : catalogue des équipements. Un n-uplet de cette relation indique que l'équipement \textit{deviceId} appelé \textit{deviceName} est de type \textit{deviceType}.
+\end{itemize}
 
 \subsection{Fondations de l'algèbre}
 \subsubsection{Hypothèse fondamentale de l'ordre}
@@ -109,11 +118,57 @@ $$\forall s\in TS_1, \exists s'\in TS_2, \textrm{ tel que } \forall a \in A, s'(
 	L'équivalence ($TS_1 \equiv TS_2$) est définie par $TS_1 \subseteqq TS_2$ et $TS_1 \supseteqq TS_2$. 
 \end{defi}%
 
+
+\begin{example}
+La table~\ref{tab:contrib:astral:exequivalence} représente quatre exemple de séquences d'une instance figée de la relation temporelle \textbf{Device}. Ces séquences pourraient être équivalentes d'un point de vue algèbre relationnelle (en substituant $\varphi$).
+
+Les séquences (a) et (b) sont équivalentes car leurs identifiants physiques sont différentes mais représentent le même ordre des n-uplets. Selon la définition, nous pouvons effectivement trouver une fonction $f$ strictement croissante pour transformer les $\varphi$ de (a) en (b) et inversement. 
+
+Les séquences (a) et (c) ne sont pas équivalentes car l'ordre des n-uplets est inversé. Il est en effet impossible de trouver une transformation $f$ de $\varphi$ \textbf{croissante} telle que l'égalité des n-uplets soit exacte. Nous remarquons que la valeur de $\varphi$ n'a que peut d'importance car même (b) et (d) ne sont pas équivalentes malgré l'égalité notoire des identifiants. Bien évidemment, (c) et (d) sont équivalentes.
+\end{example}
+
+\begin{table}[ht]
+\centering
+(a)
+\begin{tabular}{c|ccc} 
+      $\varphi$ & id & name & type \\ \hline 
+       1  & 1 & Livebox & Passerelle \\
+       5  & 4 & hecate & PC\\
+       12 & 3 & iPad & Tablette\\
+\end{tabular}
+\hspace{1cm}
+(b)
+\begin{tabular}{c|ccc} 
+      $\varphi$ & id & name & type \\ \hline 
+       7  & 1 & Livebox & Passerelle \\
+       9  & 4 & hecate & PC\\
+       10 & 3 & iPad & Tablette\\
+\end{tabular}\\
+(c)
+\begin{tabular}{c|ccc} 
+      $\varphi$ & id & name & type \\ \hline 
+       3  & 4 & hecate & PC\\
+       6  & 1 & Livebox & Passerelle \\
+       11 & 3 & iPad & Tablette\\
+\end{tabular}
+\hspace{1cm}
+(d)
+\begin{tabular}{c|ccc} 
+      $\varphi$ & id & name & type \\ \hline 
+       7  & 4 & hecate & PC\\
+       9  & 1 & Livebox & Passerelle \\
+       10 & 3 & iPad & Tablette\\
+\end{tabular}
+\caption{Quatre séquences représentant une instance figée de \textbf{Device}}\label{tab:contrib:astral:exequivalence}
+\end{table}
+
 La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transpos} présente les conséquences du changement de timestamp.
 \begin{defi}[Équivalences de requêtes]\label{def:equivalence}
 	Soient $E=(E_1, ..., E_n)$, $n$ entités,
 	
 	Les requêtes $Q$ et $Q'$ démarrées à $t_0$ sont équivalentes si et seulement si pour toutes entités $E'$ de même types et schéma, les entités $Q(E')$ et $Q'(E')$ sont équivalentes.
-\end{defi}%
+\end{defi}
+
+
 
 Nous venons de poser les bases fondamentales pour notre algèbre de gestion de données. Il nous faut maintenant construire des opérateurs pour pouvoir manipuler nos concepts. Nous allons voir que les contraintes que nous nous sommes fixés sur l'ordre, la nature du temps.

@@ -145,7 +145,7 @@ Nous remarquons que nous utilisons la définition conservatrice de l'union relat
 \end{example}
 
 Par la suite, nous utiliserons plusieurs notations simplifiés pour désigner des descriptions de fenêtres courantes décrites dans le tableau~\ref{tab:windows}.
-\begin{table}
+\begin{table}[ht]
 \centering
 \begin{tabular}{c||p{0.4\textwidth}|p{0.4\textwidth}}
   & Définition & Équivalence \\ \bottomrule
@@ -180,18 +180,77 @@ La réécriture de \textit{timestamp} est important pour modifier les n-uplets d
 $$\forall s\in R(b), \ \forall t_s\in\T, \ \Psi_b(s,t_s) = \{(\t,t_s), (\varphi, \Phi_b^S(\varphi))\}\bigcup_{a\in A\backslash\{\varphi,\t\}}\{(a,s(a))\}$$
 \end{defi}
 
-\begin{defi}[\textit{Streamers} sensibles]
-    Soit $R$ une relation, alors le \textit{streamer} d'insertion $\IS(R)=S$ est défini par la propriété suivante : $\forall (t,i)\in\TN$
-        $$s\in R(t,i) \wedge s\not\in R((t,i)^-) \equ s'=\Psi_{(t,i)}(s)\in S \wedge \BS(s') = (t,i)$$
-\end{defi}
-
-
 Cette définition assure donc que les nouveaux n-uplets formant le flux vérifieront les propriétés suivantes : 
 \begin{itemize}
- \item ils ont pour \textit{timestamp} $t_s$ correspondant au moment où il a été estampillé.
+ \item Ils ont pour \textit{timestamp} $t_s$ correspondant au moment où il a été estampillé.
  \item Ils ont un identifiant physique (et donc une position) plus grande que les identifiants précédent.
  \item L'ordre positionnel de $R(b)$ est préservé.
 \end{itemize}
-L'expression exacte de l'application $\Phi_b^S$ n'a pas beaucoup d'importance car ses propriétés suffisent à rendre son utilisation libre de toute ambiguïté. Il est important de
-\subsection{Domaine}
+L'expression exacte de l'application $\Phi_b^S$ n'a pas beaucoup d'importance car ses propriétés suffisent à rendre son utilisation libre de toute ambiguïté. Nous pouvons désormais voir leur impact sur la définition des \textit{streamers} dit sensibles. Ces \textit{streamers} réagissent aux changements de $R$ et produisent un flux en conséquence.
+\begin{defi}[\textit{Streamers} sensibles]
+    Soit $R$ une relation,
+
+    Les \textit{streamers} sensibles sont les opérateurs créateurs d'un flux $S$ réagissant aux changements de $R$, trois types sont définis :
+\begin{itemize}
+ \item Le \textit{streamer} d'insertion, envoyant les nouveaux n-uplets : $\IS(R)$, $$s\in R(t,i) \wedge s\not\in R((t,i)^-) \equ s'=\Psi_{(t,i)}(s,t)\in S \wedge \BS(s') = (t,i)$$
+ \item Le \textit{streamer} de suppression, envoyant les n-uplets disparus : $\DS(R)$, $$s\not\in R(t,i) \wedge s\in R((t,i)^-) \equ s'=\Psi_{(t,i)^-}(s,t)\in S \wedge \BS(s') = (t,i)$$
+ \item Le \textit{streamer} d'envoi, envoyant tous les n-uplets présents : $\RSu(R)$, $$s\in R(t,i) \neq R((t,i)^-) \equ s'=\Psi_{(t,i)}(s,t)\in S \wedge \BS(s') = (t,i)$$
+\end{itemize}
+\end{defi}
+
+Nous avons désormais constitué la chaîne complète pour traiter les flux de données : flux vers relation, relation vers relation, et relation vers flux. Nous allons explorer un exemple complet pour montrer la clareté d'expression issue de l'algèbre.
+\begin{example}
+    Nous souhaitons obtenir le flux d'alerte avec pour attributs (deviceId, avgcpu, $\t$) et chaque n-uplet représentera que l'équipement \textbf{deviceId} au \textit{timestamp} $\t$ a eu une charge moyenne \textit{avgcpu} supérieure à 25\%. La moyenne est calculée sur 5 min toutes les minutes. Voici comment se passe la conception de cette requête.
+
+    Nous souhaitons joindre le flux \textbf{CPU} avec \textbf{Applications} afin de pouvoir associer le bon \textit{deviceId} à l'\textit{appId} présent dans le flux. Or cette opération est interdite à moins de faire une fenêtre sur le flux. Nous pourrions appliquer une fenêtre telle que $[B]$, mais comme nous devons grouper les n-uplets pour le calcul de moyenne, nous pouvons donc appliquer la fenêtre temporelle apropriée. Nous obtenons donc : $$CPU[T\ 5min\ 1min]\Join Applications.$$
+
+    Appliquons l'opération d'agrégation sur cette relation pour obtenir notre moyenne. Puis nous pouvons sélectionner les n-uplets donc la moyenne est supérieure à 25\%. Enfin, une fois que notre relation temporelle représentant les équipements supérieurs à 25\% de charge sur ces 5 dernières minutes, il faut pouvoir établir le flux. Ici une ambiguïté réside dans l'énoncé. Souhaitons-nous avoir le flux des nouveaux équipements ayant ce problème ou souhaitons nous être notifié à chaque vérification ? Ce critère va influencer le choix du \textit{streamer} : $\IS$ ou $\RSu$. Prenons le premier, nous aurons donc la requête suivante : 
+    $$\IS\left(\sigma_{avgcpu \geq 25} \ \null_{deviceId}\G_{avg_{cpu}^{avgcpu}} (CPU[T\ 5min\ 1min]\Join Applications)\right)$$
+\end{example}
+
+D'autres streamers peuvent être construits pour effectuer l'envoi de données dans le flux résultant de manière périodique comme le présente la définition~\ref{def:rsr}.
+\begin{defi}[\textit{Streamers} périodiques]\label{def:rsr}
+    Soit $R$ une relation,
+
+    Les \textit{streamers} périodiques sont les opérateurs créateurs d'un flux $S$ dont l'envoi est effectué périodiquement. Le \textit{streamer} d'envoi $\RS{r}$ est défini par un taux temporel $r$ et la propriété :
+$$s\in R(t,i) \wedge t-t_0\equiv 0[r]\equ s'=\Psi_{(t,i)}(s,t)\in S \wedge \BS(s') = (t,i)$$
+\end{defi}
+
+Nous avons maintenant vu une gestion des opérateurs permettant de couvrir la plupart des opérations. Toutefois, deux opérateurs sont encore à définir pour certaines opérations plus particulière.
+\subsection{Manipulation temporelle}
+Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. Elles changent au cours de l'exécution de la requête. En l'état, nous n'avons pas d'opérateur capable de contrôler ces changements. L'opérateur de manipulation temporelle permet de sélectionner, pour l'instant présent, un état passé de la relation. Tout d'abord, définissons une transformation temporelle (def~\ref{def:transformation}) permettant de sélectionner l'instant que nous souhaitons observer. La seule contrainte de cette transformation est le fait qu'il est impossible de regarder dans le futur. Nous pouvons ainsi définir l'opérateur de manipulation temporelle (def~\ref{def:manipulation}) qui appliquera cette transformation à .
+\begin{defi}[Transformation temporelle]\label{def:transformation}
+    Une transformation temporelle est une fonction de $\TN\to\TN$ telle que $\forall b\in\TN, f(b) \leq b$
+\end{defi}
+
+\begin{defi}[Opérateur de manipulation temporelle]\label{def:manipulation}
+    Soient $R$ une relation, et $f$ une transformation temporelle,
+
+    Alors l'opérateur de manipulation temporelle est défini par $$\D^f(R) = R \circ f = b \mapsto R(f(b))$$
+\end{defi}
+
+Plusieurs fonctions classiques ont une utilité directe :
+\begin{itemize}
+ \item $f(t,i)=(t_s,0)$ si $t \geq t_s$ ($(t_0,0)^-$ sinon). Permet de figer une relation temporelle à un instant précis, plus aucun changement ne sera retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Le cas particulier pouvant être lorsque $t_s=t_0$. Alors la relation n'aura connu qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
+ \item $f(t,i)=\left(\left\lfloor\frac{t-t_0}{r}\right\rfloor r + t_0, 0\right)$ met à jour la relation de manière périodique avec $r$ un taux de rafraîchissement.
+ \item $f(t,i)=\tau_S\circ\rtau_S$ met à jour la relation à chaque fois qu'un \textit{batch} est inséré dans $S$. Nous pourrions appliquer le même principe pour \textit{à chaque fois que la relation $R'$ change}.
+\end{itemize}
+
+Cette dernière fonction a un impact particulier lors de la jointure de deux éléments. Dans la jointure temporelle telle que nous l'avons définie, si un changement est appliqué d'un côté ou de l'autre, il y aura un nouveau calcul de jointure. Ce comportement peut ne pas être souhaité dans la pratique où nous pourrions souhaiter que seul une branche soit déclencheur de calcul et l'autre soit passive. La jointure semi-sensible permet cette opération.
+
+
+\begin{defi}[Jointure semi-sensible]
+    Soient $R_1$ et $R_2$ deux relations temporelles,
+
+    Soit $f_{R_1}$ la transformation temporelle telle que $f_{R_1}(b)$ corresponde au dernier changement de $R_1$ inférieur ou égal à $b$,
+
+    La jointure semi-sensible est définie par :
+        $$R_1\ssjoin R_2 = R_1 \Join \D^{f_{R_1}}(R_2)$$
+\end{defi}
+\begin{example}
+    $$DeviceCPU=\IS(\Pi_{deviceId,deviceName,cpu}(CPU[B]\Join Applications)\ssjoin Devices)$$
+
+Le flux $DeviceCPU$ correspond au flux \textit{CPU} originel sur lequel nous avons remplacé l'attribut \textit{appId} par les attributs \textit{deviceId} et \textit{deviceName} qui est plus intéressant d'un point de vue de l'observation. Mais si \textit{Devices} est mise à jour, typiquement pour changer le nom d'un équipement, alors la relation temporelle pourrait changer d'état. Ce qui pourrait provoquer potentiellement l'envoi d'un nouveau n-uplet dans le flux. Toutefois, grâce à l'opérateur de jointure semi-sensible, nous empêchons ce cas puisque les mises à jours seront cadencées par celles de $CPU[B]\Join Applications$ c'est à dire $CPU[B]$ soit encore les \textit{batchs} de $CPU$.
+\end{example}
+
 \subsection{Spread}

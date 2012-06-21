@@ -9,7 +9,13 @@
 \def\B#1{\mathcal{B}_{#1}}
 \def\IS{\mathcal{I_S}}
 \def\DS{\mathcal{D_S}}
-\def\RSu{\mathcal{R_S^u}}
+\def\RS#1{\mathcal{R}_{\mathcal S}^#1}
+\def\RSu{\RS{u}}
 \def\pos{\mathop{\mathrm{pos}}}
 \def\avg{\mathrm{avg}}
 \def\last{\mathrm{last}}
+
+\def\ssjoin{\mathop{\;\begin{tikzpicture}[x=1.25ex, y=1.25ex]
+        \draw[line width=0.075ex] (0,0) -- (0,1) -- (1,0) -- (1,1) -- (0,0);
+        \draw[fill] (0.5,0.5) -- (1,0) -- (1,1) -- (0.5,0.5);
+    \end{tikzpicture}\;}}

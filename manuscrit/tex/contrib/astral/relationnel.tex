@@ -33,12 +33,12 @@ Nous avons donc réussi à appliquer les définitions des 3 premiers opérateurs
 \subsection{Produit cartésien}
 La contrainte de l'ordre tend à se faire pesante dans le cadre des opérations binaires. En effet, il nous faut établir un ordre strict sur la séquence d'n-uplets résultants du produit des deux relations. Il est important de noter que cette notion de séquence d'n-uplet est primordiale même pour les relations temporelles (voir notamment les \textit{streamers} def~\ref{def:streamers}).
 \begin{example}\label{ex:asymetrie}
-Soit $CPU$ une relation $(appId, cpu, \t)$ comportant des relevés fait par l'application $appId$ de la charge $cpu$ d'un processeur au temps $\t$. Soit $Devices$ la relation $(deviceId, appId)$ listant les applications $appId$ exécutés sur le dispositif $deviceId$. Voici un exemple de données :
+Soit $TS$ la relation groupant les 60 dernières secondes du flux \textbf{CPU}. Voici un exemple de données instantannées pour la relation temporelle \textbf{Applications} et de $TS$ :
 \begin{center}
 \begin{tabular}{ccc}
 & deviceId & appId \\ %\hline 
 \cline{2-3} & 1 & 2 \\
-\textbf{Devices} &2 & 23 \\
+\textbf{TS} &2 & 23 \\
 &3 & 23 \\
 &4 & 12 \\
 \end{tabular} \quad \quad \quad
@@ -51,7 +51,7 @@ Soit $CPU$ une relation $(appId, cpu, \t)$ comportant des relevés fait par l'ap
 \end{tabular}
 \end{center}
 
-Supposons que l'utilisateur souhaite obtenir la charge \textit{CPU} des équipements. L'opération demandé est donc une jointure entre ces deux relations. Toutefois, deux solutions sont envisageables.
+Supposons que l'utilisateur souhaite obtenir la charge \textit{cpu} des équipements. L'opération demandé est donc une jointure entre ces deux relations. Toutefois, deux solutions sont envisageables.
 \begin{center}
 \begin{tabular}{cccc} 
         deviceId & cpu & $\t$ \\ \hline 
@@ -96,7 +96,7 @@ Sauf mention contraire, dans Astral, nous considérons que $$\Phi^\times : \varp
     Soient $a,b\in \N^2$ tels que $a \neq b$. Puisque l'ordre est total, alors $(a,b) <^2 (b,a)$ (ou inversement). Puisque l'ordre est symétrique alors, $(b,a) <^2 (a,b)$ ce qui est absurde.
 \end{demo}
 
-Ainsi, dans l'exemple~\ref{ex:asymetrie}, nous avions défini deux réponses à l'opération de jointure. Ces résultats correspondent aux opérations $Devices\Join CPU$ et $CPU \Join Devices$, ce qui illustre bien les problème d'asymétrie. Ce premier résultat est \textbf{majeur} car le choix de l'ordre des jointures est déterminant pour l'optimisation de requête. Toutefois, il est possible de redéfinir les ordres de jointures et obtenir $R_1 \times^1 R_2 = R_2 \times^2 R_1$ mais la définition de chacun des produits cartésiens n'est pas la même du fait d'un choix de $\Phi^\times$ différent. En pratique cela pourra se concrétiser par un tri a posteriori, ce qui peut introduire un surcoût.
+Ainsi, dans l'exemple~\ref{ex:asymetrie}, nous avions défini deux réponses à l'opération de jointure. Ces résultats correspondent aux opérations $Applications\Join TS$ et $TS \Join Applications$, ce qui illustre bien les problème d'asymétrie. Ce premier résultat est \textbf{majeur} car le choix de l'ordre des jointures est déterminant pour l'optimisation de requête. Toutefois, il est possible de redéfinir les ordres de jointures et obtenir $R_1 \times^1 R_2 = R_2 \times^2 R_1$ mais la définition de chacun des produits cartésiens n'est pas la même du fait d'un choix de $\Phi^\times$ différent. En pratique cela pourra se concrétiser par un tri a posteriori, ce qui peut introduire un surcoût.
 
 \subsection{Union}
 La définition de l'union de relations temporelles est aussi complexe à cause de l'identifiant physique encore. En effet, lors de l'union de deux séquences d'n-uplets, il n'est pas directement possible d'extraire une nouvelle séquence. Il est donc nécessaire réécrire sa définition. Le principe réside encore une fois dans une application particulière de réécriture $\Phi^\cup$ qui a pour but de réordonner.
