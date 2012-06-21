@@ -141,7 +141,9 @@ Nous remarquons que nous utilisons la définition conservatrice de l'union relat
 \begin{example}
 	L'exemple le plus courant étant la représentation de l'état actuel d'un système à partir d'un flux. Supposons un flux d'entrée $DeviceCPU(deviceId,cpu,\t)$, nous donnant les relevés de charge de processeur. Soit la description de fenêtre rapportant le dernier n-uplet d'un flux : $(1j,1j,1)$. Nous pouvons obtenir la relation temporelle représentant pour chaque dispositif $deviceId$, la dernière valeure connue de $cpu$ et son \textit{timestamp de mesure} $\tau$ : $$DeviceCPU[id/1j,1j,1]$$
 
-	Cet exemple illustre comment nous pouvons passer d'un flux brut à une représentation (dynamique) d'un \textbf{contexte}.
+	Cet exemple illustre comment nous pouvons passer d'un flux brut à une représentation (dynamique) d'un \textbf{contexte}. 
+	
+	La définition du partitionnement par l'union conservatrice permet d'avoir un ordre clair et intuitif sur la relation temporelle résultantes. Lorsqu'un nouveau n-uplet entre dans cette relation (ou remplace l'ancien n-uplet), alors il sera mis en bout. De plus, en utilisant l'union standarde, il aura fallu définir l'ordre d'application des unions. Et les n-uplets auraient changé d'identifiants à chaque état, ce qui devient difficile à contrôler et manipuler.
 \end{example}
 
 Par la suite, nous utiliserons plusieurs notations simplifiés pour désigner des descriptions de fenêtres courantes décrites dans le tableau~\ref{tab:windows}.
@@ -173,11 +175,10 @@ La réécriture de \textit{timestamp} est important pour modifier les n-uplets d
 \begin{defi}[Fonction de réécriture de \textit{timestamp}]
     Soit $R$ une relation de schéma $A$, $b$ un batch,
 
-    Soit $\Phi_b^S$ une application $\I_{R} \to \I^S$ étant une fonction strictement croissante telle que : 
-        $\forall b'\leq b, \ \forall i\in \I_R, \ \Phi_{b'}^S(i) \leq \Phi_b^S(i)$
+    Soit $\I^S = \TN\times \I_R$ le $\Phi$-espace ordonné de manière lexicographique,
 
     La fonction de réécriture de \textit{timestamp} appliquée à $R(b)$ est définie par : 
-$$\forall s\in R(b), \ \forall t_s\in\T, \ \Psi_b(s,t_s) = \{(\t,t_s), (\varphi, \Phi_b^S(\varphi))\}\bigcup_{a\in A\backslash\{\varphi,\t\}}\{(a,s(a))\}$$
+$$\forall s\in R(b), \ \forall t_s\in\T, \ \Psi_b(s,t_s) = \{(\t,t_s), (\varphi, (b,s(\varphi)))\}\bigcup_{a\in A\backslash\{\varphi,\t\}}\{(a,s(a))\}$$
 \end{defi}
 
 Cette définition assure donc que les nouveaux n-uplets formant le flux vérifieront les propriétés suivantes : 
@@ -186,7 +187,7 @@ Cette définition assure donc que les nouveaux n-uplets formant le flux vérifie
  \item Ils ont un identifiant physique (et donc une position) plus grande que les identifiants précédent.
  \item L'ordre positionnel de $R(b)$ est préservé.
 \end{itemize}
-L'expression exacte de l'application $\Phi_b^S$ n'a pas beaucoup d'importance car ses propriétés suffisent à rendre son utilisation libre de toute ambiguïté. Nous pouvons désormais voir leur impact sur la définition des \textit{streamers} dit sensibles. Ces \textit{streamers} réagissent aux changements de $R$ et produisent un flux en conséquence.
+Nous pouvons désormais voir leur impact sur la définition des \textit{streamers} dit sensibles. Ces \textit{streamers} réagissent aux changements de $R$ et produisent un flux en conséquence.
 \begin{defi}[\textit{Streamers} sensibles]
     Soit $R$ une relation,
 
@@ -254,3 +255,32 @@ Le flux $DeviceCPU$ correspond au flux \textit{CPU} originel sur lequel nous avo
 \end{example}
 
 \subsection{Spread}
+Enfin, le dernier opérateur est celui évoqué lors de la conception des \textit{batchs} dans~\cite{Jain:spread}. Il nous faut en effet de quoi manipuler les \textit{batchs} afin de modifier la fonction $\BS$ d'un flux sans toucher à ses données.
+
+L'opérateur de redéfinition des \textit{batchs} (def~\ref{def:spreadall}, \textit{spread all} dans la littérature) permet de rassembler les \textit{batchs} multiples pour chaque \textit{timestamp} en un seul. Ceci permet de réorganiser son flux.
+\begin{defi}[Réinitialisation des batch]\label{def:spreadall}
+Soit $S$ un flux,
+
+Le flux $S$ réinitialisé noté $\lhd S$ vérifie :
+$\forall s_1, s_2\in S^2, \textrm{ alors } s_1, s_2 \in (\lhd S)^2,$ tel que :
+$$\B{\lhd S}(s_1') < \B{\lhd S}(s_2') \equ s_1(\t) < s_2(\t)$$
+\end{defi}
+
+L'opérateur \textit{spread} quant à lui (def~\ref{def:spread}) permet de découper les \textit{batchs} présents dans un flux en plusieurs nouveaux. Le découpage se fait sur l'ordre induit par ses attributs, par exemple, le fait de partitionner selon un identifiant. Il est important de voir 
+\begin{defi}[\textit{Spread}]\label{def:spread}
+Soient $S$ un flux de schéma $A$, et $a$ un attribut de $S$,
+
+Soit $\I^S = \TN\times \I_R$ le $\Phi$-espace ordonné de manière lexicographique,
+
+Alors le flux $S$ raffiné par l'attribut $a$ noté $\rhd_{a} S$ vérifie :
+$\forall s_1, s_2\in S^2, \textrm{ alors } s_1', s_2' \in (\rhd_a S)^2,$ tel que :
+\begin{eqnarray*}
+b_1=\B{\rhd_a S}(s_1') < b_2=\B{\rhd_a S}(s_2') &\equ & \BS (s_1) < \BS (s_2)\\ & & \quad \vee \ \left(\BS (s_1) = \BS (s_2)\right. \\ & & \quad\quad \quad\quad\wedge \ \left.s_1(a) < s_2(a)\right)
+\end{eqnarray*}
+
+Ainsi que $s_i' = \{(\varphi, (b_i,s_i(\varphi)))\}\bigcup_{x\in A\backslash\{\varphi\}}\{(x,s(x))\}$, pour $i\in\{1,2\}$
+\end{defi}
+
+Dans sa spécification, l'opérateur \textit{spread} accepte le fait de ne pas avoir d'attribut, ce qui a pour conséquence d'étaler tous les n-uplets dans des batchs séparés de manière non-déterministe. Dans notre algèbre, nous avons à notre portée l'attribut $\varphi$ et l'ordre positionnel. Ainsi, en appliquant $\rhd=\rhd_\varphi$, nous définissons l'ordres des \textit{batchs} comme l'ordre positionnel. À l'inverse, en appliquant $\lhd$, nous définissons l'ordre des \textit{batchs} comme l'ordre temporel.
+
+Nous avons maintenant présenté l'ensemble des opérateurs de l'algèbre Astral. Nous sommes désormais capable d'exprimer une requête continue (et instantanné avec l'aide de la manipulation temporelle) avec une grande clareté et sans ambiguïté sémantique. Nous allons maintenant, pour finir ce chapitre, définir l'équivalence de requête avec des \textit{timestamps} de départs $t_0$ différents.
