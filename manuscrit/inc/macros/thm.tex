@@ -1,6 +1,6 @@
 %\usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
 \usepackage{caption}
-
+\usepackage{changepage}
 \definecolor{deficolor}{RGB}{224,255,224}
 \definecolor{propcolor}{RGB}{234,244,255}
 \definecolor{thmcolor}{RGB}{255,224,224}
@@ -8,6 +8,8 @@
 \definecolor{hypcolor}{RGB}{224,224,224}
 \newlength{\stdindent}
 \setlength{\stdindent}{\parindent}
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist 
 
 \DeclareCaptionTextFormat{spaced}{#1}
 \newlength{\thmsize}
@@ -54,11 +56,9 @@
 	\renewcommand{\examplename}{Exemple \refstepcounter{examplect}\chapterarabic{examplect}}
 	\begin{absexample}}{\end{absexample}}
 \newenvironment{absexample}[1][\examplename]{\par\vspace{1em}%
-                    \setlength{\thmsize}{\linewidth}%
-                    \addtolength{\thmsize}{-2\stdindent}%
-   \noindent\textbf{#1\, :}\phantom{p} \par \noindent\hspace{\stdindent}\begin{minipage}[b]{\thmsize}\setlength{\parindent}{\stdindent}
-   
-  }{\end{minipage} \hfill $\lhd$ \vspace{1em}}
+   \textbf{#1\, :}\phantom{p} 
+    \begin{adjustwidth}{2\stdindent}{0cm} \it
+  }{\end{adjustwidth} \vspace{1em}}
 %  \let\demo=\comment
 %  \let\enddemo=\endcomment
 \newenvironment{demo}[1][]{

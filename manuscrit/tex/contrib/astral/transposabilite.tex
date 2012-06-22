@@ -1,1 +1,38 @@
 \section{Transposabilité}
+\subsection{Stabilité d'une requête}
+\begin{defi}[Phénomène d'élaboration]
+    Le phénomène d'élaboration correspond à une période initiale de la vie d'une requête durant laquelle le résultat n'est pas calculable. Cette période transitoire constitue l'élaboration d'une requête.
+\end{defi}
+
+\begin{defi}[Équivalence de requêtes multitemporelles]
+    Soient $E_1$ et $E_2$ deux ensembles d'entités, et $(Q_1(E_1),t_1)$ et $(Q_2(E_2),t_2)$ deux requêtes telles que $t_1 \neq t_2$,
+
+    Soit $\E_t$ l'expression égale à $\begin{cases} \sigma_{\t\geq t} & \textrm{ si les requêtes sont des flux}\\ \D_{t\geq t}^{(t,i)} & \textrm{  si les requêtes sont des relations}\end{cases}$
+
+    Alors l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1(E_1), t_1) \subseteqq (\E_t\  Q_2(E_2), t_2)$$
+    L'équivalence de requêtes est définie naturellement par la double inclusion.
+\end{defi}
+
+\begin{defi}[Transposabilité de requête]
+    Soit $(A,t_0)$ une requête,
+
+    $A$ est transposable par $B$ sur $T\subset \T$ si et seulement si : $\forall t\in T$ $$(A,t_0) \equiv (B,t)$$
+
+    $A$ est dite \textit{naturellement} transposable si $B=A$.
+\end{defi}
+
+\begin{hyp}[Transposabilité native]
+    Soit $(Q(E),t_0)$ une requête,
+
+    Alors il existe une expression $Q'(E')$ telle que : $$\forall A\in E', \qquad A \textrm{ est naturellement transposable sur } \T$$
+\end{hyp}
+
+\begin{defi}[Transposabilité d'opérateur]
+    Soit $O$ un opérateur unaire,
+
+    Soit $(Q,t_0)$ une requête transposable par $Q'$ sur $E$,
+
+    $O$ est un opérateur transposable par $O'$ sur $T_{t_0}$ si et seulement si : $$(OQ,t_0) \textrm{ est naturellement transposable par } O'Q' \textrm{ sur } T_{t_0}\cap E$$
+
+    $O$ est dit \textit{naturellement} transposable si $O'=O$.
+\end{defi}

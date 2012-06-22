@@ -200,6 +200,7 @@ Nous pouvons désormais voir leur impact sur la définition des \textit{streamer
 \end{defi}
 
 Nous avons désormais constitué la chaîne complète pour traiter les flux de données : flux vers relation, relation vers relation, et relation vers flux. Nous allons explorer un exemple complet pour montrer la clareté d'expression issue de l'algèbre.
+
 \begin{example}
     Nous souhaitons obtenir le flux d'alerte avec pour attributs (deviceId, avgcpu, $\t$) et chaque n-uplet représentera que l'équipement \textbf{deviceId} au \textit{timestamp} $\t$ a eu une charge moyenne \textit{avgcpu} supérieure à 25\%. La moyenne est calculée sur 5 min toutes les minutes. Voici comment se passe la conception de cette requête.
 
@@ -219,20 +220,20 @@ $$s\in R(t,i) \wedge t-t_0\equiv 0[r]\equ s'=\Psi_{(t,i)}(s,t)\in S \wedge \BS(s
 
 Nous avons maintenant vu une gestion des opérateurs permettant de couvrir la plupart des opérations. Toutefois, deux opérateurs sont encore à définir pour certaines opérations plus particulière.
 \subsection{Manipulation temporelle}
-Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. Elles changent au cours de l'exécution de la requête. En l'état, nous n'avons pas d'opérateur capable de contrôler ces changements. L'opérateur de manipulation temporelle permet de sélectionner, pour l'instant présent, un état passé de la relation. Tout d'abord, définissons une transformation temporelle (def~\ref{def:transformation}) permettant de sélectionner l'instant que nous souhaitons observer. La seule contrainte de cette transformation est le fait qu'il est impossible de regarder dans le futur. Nous pouvons ainsi définir l'opérateur de manipulation temporelle (def~\ref{def:manipulation}) qui appliquera cette transformation à .
+Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. Elles changent au cours de l'exécution de la requête. En l'état, nous n'avons pas d'opérateur capable de contrôler ces changements. L'opérateur de manipulation temporelle permet de sélectionner, pour l'instant présent, un état passé de la relation. Tout d'abord, définissons une transformation temporelle (def~\ref{def:transformation}) permettant de sélectionner l'instant que nous souhaitons observer. La seule contrainte de cette transformation est le fait qu'il est impossible de regarder dans le futur. Nous pouvons ainsi définir l'opérateur de manipulation temporelle (def~\ref{def:manipulation}) qui appliquera cette transformation à la relation temporelle.
 \begin{defi}[Transformation temporelle]\label{def:transformation}
     Une transformation temporelle est une fonction de $\TN\to\TN$ telle que $\forall b\in\TN, f(b) \leq b$
 \end{defi}
 
 \begin{defi}[Opérateur de manipulation temporelle]\label{def:manipulation}
-    Soient $R$ une relation, et $f$ une transformation temporelle,
+    Soient $R$ une relation, $c$ une condition sur $\TN$ et $f$ une transformation temporelle,
 
-    Alors l'opérateur de manipulation temporelle est défini par $$\D^f(R) = R \circ f = b \mapsto R(f(b))$$
+    Alors l'opérateur de manipulation temporelle est défini par $$\D_c^f(R) = b \mapsto \begin{cases} R(f(b)) & \textrm{ si } c(b) \\ \emptyset & \textrm{ sinon}\end{cases}$$
 \end{defi}
 
 Plusieurs fonctions classiques ont une utilité directe :
 \begin{itemize}
- \item $f(t,i)=(t_s,0)$ si $t \geq t_s$ ($(t_0,0)^-$ sinon). Permet de figer une relation temporelle à un instant précis, plus aucun changement ne sera retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Le cas particulier pouvant être lorsque $t_s=t_0$. Alors la relation n'aura connu qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
+ \item $f(t,i)=(t_s,0)$ si $t \geq t_s$. Permet de figer une relation temporelle à un instant précis, plus aucun changement ne sera retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Le cas particulier pouvant être lorsque $t_s=t_0$. Alors la relation n'aura connu qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
  \item $f(t,i)=\left(\left\lfloor\frac{t-t_0}{r}\right\rfloor r + t_0, 0\right)$ met à jour la relation de manière périodique avec $r$ un taux de rafraîchissement.
  \item $f(t,i)=\tau_S\circ\rtau_S$ met à jour la relation à chaque fois qu'un \textit{batch} est inséré dans $S$. Nous pourrions appliquer le même principe pour \textit{à chaque fois que la relation $R'$ change}.
 \end{itemize}
@@ -263,7 +264,7 @@ Soit $S$ un flux,
 
 Le flux $S$ réinitialisé noté $\lhd S$ vérifie :
 $\forall s_1, s_2\in S^2, \textrm{ alors } s_1, s_2 \in (\lhd S)^2,$ tel que :
-$$\B{\lhd S}(s_1') < \B{\lhd S}(s_2') \equ s_1(\t) < s_2(\t)$$
+$$\B{\lhd S}(s_1) < \B{\lhd S}(s_2) \equ s_1(\t) < s_2(\t)$$
 \end{defi}
 
 L'opérateur \textit{spread} quant à lui (def~\ref{def:spread}) permet de découper les \textit{batchs} présents dans un flux en plusieurs nouveaux. Le découpage se fait sur l'ordre induit par ses attributs, par exemple, le fait de partitionner selon un identifiant. Il est important de voir 
