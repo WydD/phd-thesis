@@ -1,33 +1,34 @@
 \section{Transposabilité}
-\subsection{Stabilité d'une requête}
-\begin{defi}[Phénomène d'élaboration]
+Dans la définition de l'équivalence de requête (def~\ref{def:equivalence}), nous avions spécifié le fait que les entités étaient toutes deux initialisées à un \textit{timestamp} $t_0$. Ce type d'équivalence permet de réécrire une requête avant de l'exécuter tout en conservant exactement son comportement. Toutefois, si nous souhaitons nous comparer avec une requête déjà en exécution, la requête ne sera pas synchronisé au même moment. Vu que nous devrons intégrer des données provenant de différentes parties, cet aspect a une grande importance.
+\subsection{Équivalence de requêtes multitemporelle}
+Afin d'illustrer le fait que l'idée d'effectuer des équivalences de requêtes à différents moments n'est pas trivial, prenons un exemple. Prenons la requête $CPU[B]$. Cette requête représente la relation contenant le dernier \textit{batch} du flux \textbf{CPU}. Dans cette requête, durant la période $[t_0,\tau_S(0)[$, par définition, la relation est vide, c'est à dire : il est nécessaire d'attendre le premier n-uplet avant de former le résultat. Si nous prenons une autre requête ayant démarré au timestamp $t_1 \ll t_0$. Alors pendant la période $[t_0,\tau_S(0)[$, lui sera plein. Ceci constitue un exemple de ce que nous appelerons le phénomène d'élaboration (def~\ref{def:elaboration}.
+\begin{defi}[Phénomène d'élaboration]\label{def:elaboration}
     Le phénomène d'élaboration correspond à une période initiale de la vie d'une requête durant laquelle le résultat n'est pas calculable. Cette période transitoire constitue l'élaboration d'une requête.
 \end{defi}
 
-\begin{defi}[Équivalence de requêtes multitemporelles]
-    Soient $E_1$ et $E_2$ deux ensembles d'entités, et $(Q_1(E_1),t_1)$ et $(Q_2(E_2),t_2)$ deux requêtes telles que $t_1 \neq t_2$,
+Ainsi, nous sommes capable d'établir l'équivalence entre deux requêtes (def~\ref{def:equivalencegenerale}) si effectivement les résultats sont équivalents à partir d'un certain moment. Pour cela, nous définissons qu'il existe un \textit{timestamp} pour lequel, l'initialisation des entités (grâce à $\sigma$ et $\D$) à celui-ci impliquera une équivalence des résultats.
+\begin{defi}[Équivalence de requêtes générale]\label{def:equivalencegenerale}
+    Soient $E_1$ et $E_2$ deux ensembles d'entités, et $(Q_1,t_1)$ et $(Q_2,t_2)$ deux requêtes quelconques,
 
-    Soit $\E_t$ l'expression égale à $\begin{cases} \sigma_{\t\geq t} & \textrm{ si les requêtes sont des flux}\\ \D_{t\geq t}^{(t,i)} & \textrm{  si les requêtes sont des relations}\end{cases}$
+    Soit $\E_t$ l'opérateur égal à $\begin{cases} \sigma_{\t\geq t} & \textrm{ si les requêtes sont des flux}\\ \D_{t\geq t}^{(t,i)} & \textrm{  si les requêtes sont des relations}\end{cases}$
 
-    Alors l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1(E_1), t_1) \subseteqq (\E_t\  Q_2(E_2), t_2)$$
-    L'équivalence de requêtes est définie naturellement par la double inclusion.
+    Alors l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1, t_1) \subseteqq (\E_t\  Q_2, t_2)$$
+
+    L'équivalence de requêtes est définie par double inclusion.
 \end{defi}
 
-\begin{defi}[Transposabilité de requête]
+Nous avons donc défini une notion générique d'équivalence. Voyons désormais les conséquences du changement de \textit{timestamp} d'initialisation pour une requête donnée.
+\subsection{Transposabilité}
+La transposabilité (def~\ref{def:transposabilitereq}) est le fait de changer le \textit{timestamp} de départ d'une requête.
+\begin{defi}[Transposabilité de requête]\label{def:transposabilitereq}
     Soit $(A,t_0)$ une requête,
 
     $A$ est transposable par $B$ sur $T\subset \T$ si et seulement si : $\forall t\in T$ $$(A,t_0) \equiv (B,t)$$
 
     $A$ est dite \textit{naturellement} transposable si $B=A$.
 \end{defi}
-
-\begin{hyp}[Transposabilité native]
-    Soit $(Q(E),t_0)$ une requête,
-
-    Alors il existe une expression $Q'(E')$ telle que : $$\forall A\in E', \qquad A \textrm{ est naturellement transposable sur } \T$$
-\end{hyp}
-
-\begin{defi}[Transposabilité d'opérateur]
+Toutefois, cette définition ne fait pas avancer la résolution du problème car nous ne sommes pas capable a priori de calculer la transposition de la requête sur son nouveau \textit{timestamp}. Pour permettre la résolution de ce problème, nous allons raisonner par récursivité sur les opérateurs. Chaque opérateur peut se transposer (def~\ref{def:transposabiliteop} en un autre sur un ensemble de \textit{timestamp} calculé.
+\begin{defi}[Transposabilité d'opérateur]\label{def:transposabiliteop}
     Soit $O$ un opérateur unaire,
 
     Soit $(Q,t_0)$ une requête transposable par $Q'$ sur $E$,
@@ -36,3 +37,26 @@
 
     $O$ est dit \textit{naturellement} transposable si $O'=O$.
 \end{defi}
+
+Afin d'avancer dans notre réfléxion. Il est absolument nécessaire d'initialiser notre récurrence en supposant (car rien ne le présage) que pour toute expression algébrique : il est possible de trouver un ensemble d'entité source naturellement transposable. D'un point de vue de l'exécution, cela veut dire que nous ne contrôlons pas directement les sources de données. Ainsi, les entités sources ne sont pas influencé sur le moment où le démarre une requête qui les exploite.
+\begin{hyp}[Transposabilité native]\label{hyp:transposabilite}
+    Soit $(Q(E),t_0)$ une requête,
+
+    Alors il existe une expression $Q'(E')$ telle que : $$\forall A\in E', \qquad A \textrm{ est naturellement transposable sur } \T$$
+    
+    Les éléments de $E'$ sont appelés sources de la requête.
+\end{hyp}
+Cette affirmation reste toutefois à travailler car lors du déploiement d'une requête, nous instantions aussi le processus d'acquisition, qui est lui dépendant du moment de démarrage. Nous explorerons ces aspects lors de l'exploration de l'expressivité d'Astral dans le chapitre~\ref{chap:validation:expressivite}.
+
+\begin{example}
+	En tant qu'exemple, afin d'illustrer les propriétés de transposabilité, nous allons explorer la transposabilité d'une requête simple. Supposons que nous souhaitons obtenir la transposabilité de la requête permettant d'obtenir toutes les 5 secondes la liste des dispositifs actuellement connectés dans la maison : $\RS{5s} (\sigma_{deviceStatus=1} Devices)$. 
+	
+	Ici, nous supposons par l'hypothèse des transposabilités des sources que $Devices$ est naturellement transposable à tout instant. La sélection par la suite est un opérateur qui a la particularité de ne traiter que l'instant présent et est donc naturellement détaché de toute dépendance à $t_0$. Donc $\sigma_{deviceStatus=1} Devices$ est naturellement transposable à tout instant aussi.
+	
+	Par contre, $\RS{r}$, lui n'est pas transposable à tout moment. En effet, dans sa définition la condition d'appartenance au flux produit est la suivante : $s \in R(t,i)\wedge t-t_0 \equiv 0[r]$. Ainsi, si nous transposons à $t_1$, pour obtenir équivalence des requêtes, il faut que $\forall t \geq t_1$, $t-t_0\equiv t-t_1\equiv 0[r]$.  Ce qui nous conduit à montrer que $t_1 = t_0 +kr$ avec $k\in \Z$. 
+	
+	Supposons que $t_1$ vérifie cette condition. Nous arrivons très facilement à voir que $\forall R$, en prenant $t=\max(t_1,t_0)$, nous avons bien\footnote{en suivant naturellement les définitions, nous obtenons de plus une égalité stricte même sur les $\varphi$} que $(\E_{t}\RS{r}(R),t_0) \equiv (\E_{t}\RS{r}(R),t_1)$. Donc :
+	\begin{center}$\RS{5s}\sigma_{deviceStatus=1} Devices$ est naturellement transposable sur $\{t\in \T /\ t\equiv t_0 [5s]\}$\end{center}
+\end{example}
+
+Nous avons désormais explorer comment nous pouvions faire des équivalences de requêtes à travers le temps et comment manipuler ces concepts pour en extraire des propriétés. Dans la section~\ref{chap:validation:expressivite}, nous explorerons des cas généraux et plus complexe de transposabilité pour démontrer la puissance d'expression d'Astral.

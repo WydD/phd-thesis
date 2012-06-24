@@ -66,7 +66,7 @@ Dans la suite de ce chapitre, nous développerons plusieurs exemples. Ces exempl
 \begin{itemize}
     \item[\textbf{CPU}] Flux(appId, cpu, $\t$) : flux de relevé des charges processeurs. Un n-uplet de ce flux indique qu'au timestamp $\t$, l'application \textit{appId} indique que sur son équipement hôte, la charge processeur est égale à \textit{cpu}.
     \item[\textbf{Applications}] Relation(appId, appName, deviceId) : catalogue des applications. Un n-uplet de cette relation indique que l'application \textit{appId} appelée \textit{appName} est déployée sur le l'équipement \textit{deviceId}.
-    \item[\textbf{Devices}] Relation(deviceId, deviceName, deviceType) : catalogue des équipements. Un n-uplet de cette relation indique que l'équipement \textit{deviceId} appelé \textit{deviceName} est de type \textit{deviceType}.
+    \item[\textbf{Devices}] Relation(deviceId, deviceName, deviceType, deviceStatus) : catalogue des équipements. Un n-uplet de cette relation indique que l'équipement \textit{deviceId} appelé \textit{deviceName} est de type \textit{deviceType} et est actuellement dans le status \textit{deviceStatus} (1 ou 0 pour allumé et éteint).
 \end{itemize}
 
 \subsection{Fondations de l'algèbre}
