@@ -1,6 +1,7 @@
 %\usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
 \usepackage{caption}
 \usepackage{changepage}
+\usepackage{needspace}
 \definecolor{deficolor}{RGB}{224,255,224}
 \definecolor{propcolor}{RGB}{234,244,255}
 \definecolor{thmcolor}{RGB}{255,224,224}
@@ -56,7 +57,7 @@
 	\renewcommand{\examplename}{Exemple \refstepcounter{examplect}\chapterarabic{examplect}}
 	\begin{absexample}}{\end{absexample}}
 \newenvironment{absexample}[1][\examplename]{\par\vspace{1em}%
-   \textbf{#1\, :}\phantom{p} 
+   \needspace{3\baselineskip}\textbf{#1\, :}\phantom{p} 
     \begin{adjustwidth}{2\stdindent}{0cm} \it
   }{\end{adjustwidth} \vspace{1em}}
 %  \let\demo=\comment

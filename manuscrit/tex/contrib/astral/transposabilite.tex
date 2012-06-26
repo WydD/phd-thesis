@@ -1,4 +1,4 @@
-\section{Transposabilité}
+\section{Transposabilité}\label{sec:contrib:astral:transposabilite}
 Dans la définition de l'équivalence de requête (def~\ref{def:equivalence}), nous avions spécifié le fait que les entités étaient toutes deux initialisées à un \textit{timestamp} $t_0$. Ce type d'équivalence permet de réécrire une requête avant de l'exécuter tout en conservant exactement son comportement. Toutefois, si nous souhaitons nous comparer avec une requête déjà en exécution, la requête ne sera pas synchronisé au même moment. Vu que nous devrons intégrer des données provenant de différentes parties, cet aspect a une grande importance.
 \subsection{Équivalence de requêtes multitemporelle}
 Afin d'illustrer le fait que l'idée d'effectuer des équivalences de requêtes à différents moments n'est pas trivial, prenons un exemple. Prenons la requête $CPU[B]$. Cette requête représente la relation contenant le dernier \textit{batch} du flux \textbf{CPU}. Dans cette requête, durant la période $[t_0,\tau_S(0)[$, par définition, la relation est vide, c'est à dire : il est nécessaire d'attendre le premier n-uplet avant de former le résultat. Si nous prenons une autre requête ayant démarré au timestamp $t_1 \ll t_0$. Alors pendant la période $[t_0,\tau_S(0)[$, lui sera plein. Ceci constitue un exemple de ce que nous appelerons le phénomène d'élaboration (def~\ref{def:elaboration}.
@@ -59,4 +59,4 @@ Cette affirmation reste toutefois à travailler car lors du déploiement d'une r
 	\begin{center}$\RS{5s}\sigma_{deviceStatus=1} Devices$ est naturellement transposable sur $\{t\in \T /\ t\equiv t_0 [5s]\}$\end{center}
 \end{example}
 
-Nous avons désormais explorer comment nous pouvions faire des équivalences de requêtes à travers le temps et comment manipuler ces concepts pour en extraire des propriétés. Dans la section~\ref{chap:validation:expressivite}, nous explorerons des cas généraux et plus complexe de transposabilité pour démontrer la puissance d'expression d'Astral.
+Nous avons désormais exploré comment nous pouvions faire des équivalences de requêtes à travers le temps et comment manipuler ces concepts pour en extraire des propriétés. Dans la section~\ref{chap:validation:expressivite}, nous explorerons des cas généraux et plus complexe de transposabilité pour démontrer la puissance d'expression d'Astral.

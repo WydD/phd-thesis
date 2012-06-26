@@ -1,5 +1,15 @@
+\begin{savequote}[6cm]
+<< Don't you use your fancy mathematics to muddle the issue! >>
+\qauthor{Applejack}
+\end{savequote}
+
 \chapter{Astral : Modèle théorique de requêtes continues}
 \chaptertoc
+
+La gestion de flux de données est un domaine dérivé de la gestion de base de données relationnelles. Afin de pouvoir définir un langage de requête uniforme pour pouvoir interroger autant les flux que les relations, il nous faut définir un modèle algébrique précis. Nous accorderons comme importance primordiale le déterminisme du modèle. En effet, plusieurs formalisations ont permis dans certains cas le fait de faire des choix non-déterministe. Cet aspect apporte un flou sur les réponses aux requêtes. Nous souhaitons formaliser exactement les bases de l'algèbre afin de pouvoir fédérer tous les modèles existants.
+
+Nous développerons dans ce chapitre les fondations de notre algèbre : \textit{Astral} (\textit{Advanced Stream Algebra}). Cette algèbre reprend des bases théoriques développés dans \textit{STREAM}~\cite{Arasu:stream} (lui même basé sur le modèle relationnel) tout en précisant des concepts clés pour en améliorer l'expressivité et la clareté. Ce chapitre définit les concepts primitifs tels que les n-uplets, les flux, relations ainsi que la notion de requête dans la section~\ref{sec:contrib:astral:definitions}. Par la suite, nous présenterons les opérateurs : tout d'abord ceux issus de l'algèbre relationnel (section~\ref{sec:contrib:astral:relationnel}), puis ceux plus spécifiques à la gestion de flux (section~\ref{sec:contrib:astral:flux}). Enfin, nous investigerons l'influence de l'instant de début d'une requête sur son fonctionnement en section~\ref{sec:contrib:astral:transposabilite}. Puis, nous concluerons par une synthèse de ce modèle en section~\ref{sec:contrib:astral:conclusion}.
+
 \input{tex/contrib/astral/definitions}
 \input{tex/contrib/astral/relationnel}
 \input{tex/contrib/astral/flux}
