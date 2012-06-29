@@ -95,9 +95,9 @@ FUNCTION {output.check}
  
 FUNCTION {output.bibitem}
 { newline$
-  "\bibitem[" write$
+  "\bibitem[\textcolor{darkblue}{" write$
   label write$
-  "]{" write$
+  "}]{" write$
   cite$ write$
   "}" write$
   newline$

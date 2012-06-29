@@ -1,2 +1,36 @@
 \section{De l'algèbre aux composants}\label{sec:contrib:astronef:architecture}
+\subsection{Architecture}
+Avant de détailler l'architecture de notre système de traitement de requêtes continues, nous allons d'abord présenter le paradigme dans lequel nous allons développer ceci. L'architecture à composant est très puissante en terme de réutilisation du code mais manque de flexibilité. 
+\subsubsection{Architecture à service}
+Les architectures à services permettent aux applications d'être assemblés sous forme de blocs réutilisables étant des \textit{services}. Un \textit{service} est définit par une spécification (ou \textit{description}, ou \textit{contrat}), qui décrit sa syntaxe, son comportement, sa sémantique ainsi que sa dépendance aux autres services. Dans les architectures à service, les services interagissent via un patron récurrent d'interaction (fig~\ref{fig:contrib:astronef:services}). 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{contrib-astronef-services}
+    \caption{Patron d'interaction de service}\label{fig:contrib:astronef:services}
+\end{figure}
+Un fournisseur de service va publier sa spécification à un registre. Un consommateur de service découvre le service fournit par une requête sur le registre. Enfin, le consommateur et le fournisseur se connectent. Le point clé de cette architecture étant que cette résolution est faite au \textit{runtime}.
 
+\subsubsection{Architecture à composants orientés services}
+Le modèle d'architecture à composants orientés services~\cite{Cervantes:servicecomponent} permet la mise en œuvre d'applications à base de services dans le paradigme de la programmation par composants. Le principe étant de séparer les mécanismes des architectures à services du code implémentant le comportement du service fournit. Ainsi, voici les principes d'un tel modèle :
+\begin{itemize}
+    \item Un service est une fonctionnalité fournie.
+    \item Un service est caractérisé par sa spécification.
+    \item Les composants implémentent des spécifications de services, qui peuvent eux-mêmes dépendre, du fait de leurs implémentations, d'autres services.
+    \item Les patrons d'interactions de services sont utilisés pour résoudre les dépendances de services au \textit{runtime}.
+    \item Les compositions sont décrites en terme de spécifications de services.
+    \item Tout composant peut se substituer par un autre si les spécifications de services sont identiques.
+\end{itemize}
+Nous mêlons donc dans un même modèle, les idées de composants et de services.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{contrib-astronef-ipojo}
+    \caption{Un composant iPojo}\label{fig:contrib:astronef:ipojo}
+\end{figure}
+
+\subsubsection{Les différents composants}
+\subsubsection{Structure d'une requête}
+\subsubsection{De l'importance de la réutilisation}
+
+\subsection{Construction du plan par règles}
+\subsection{Analogie aux SGBD}
