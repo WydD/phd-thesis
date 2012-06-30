@@ -20,17 +20,21 @@ Le modèle d'architecture à composants orientés services~\cite{Cervantes:servi
     \item Les compositions sont décrites en terme de spécifications de services.
     \item Tout composant peut se substituer par un autre si les spécifications de services sont identiques.
 \end{itemize}
-Nous mêlons donc dans un même modèle, les idées de composants et de services.
+Nous mêlons donc dans un même modèle, les idées de composants et de services. De plus, en s'inspirant des modèles récents tels que Fractal~\cite{Bruneton:fractal}, chaque composant possède un ensemble de propriétés (ou attributs) configurables. Nous obtenons aussi le pouvoir d'instancier (grâce aux fabriques) des composants à partir de configurations.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\textwidth]{contrib-astronef-ipojo}
     \caption{Un composant iPojo}\label{fig:contrib:astronef:ipojo}
 \end{figure}
+La figure~\ref{fig:contrib:astronef:ipojo} représente un composant dans l'implémentation \textit{iPojo}~\cite{Escoffier:ipojo}. Le principe étant que le code du composant (le \textit{POJO}, \textit{Plain Old Java Object}) est embarqué dans un conténaire auxquels seront accrochés des gestionnaires. Les trois couramment utilisés sont les gestionnaires de dépendances, de production de service, et de configuration. Ainsi, un composant pourra s'exposer sur un registre, tout en dépendant d'autres services et en supportant le fait d'être configurable.
 
 \subsubsection{Les différents composants}
+L'architecture d'Astronef est entièrement dirigé par ces approches. De multiples composants sont créés et instantiables, pour former une requête.
+
 \subsubsection{Structure d'une requête}
 \subsubsection{De l'importance de la réutilisation}
+La structure de notre gestionnaire de requêtes continues est entièrement structuré sur ces principes.
 
 \subsection{Construction du plan par règles}
 \subsection{Analogie aux SGBD}
