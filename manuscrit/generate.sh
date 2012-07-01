@@ -7,7 +7,7 @@ for i in `find . | grep "\.tex\$" | sed 's/\.tex//' | sed 's!^./!!' | grep "$pat
 		if [ -e $i/.order ]; then
 			for k in `ls $i/*.tex`; do
 				if grep `basename $k .tex` $i/.order > /dev/null; then
-					echo -n;
+					echo > /dev/null;
 				else
 					echo "\input{$k}"
 				fi;
