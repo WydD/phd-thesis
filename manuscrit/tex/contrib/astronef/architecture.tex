@@ -68,8 +68,8 @@ Nous utilisons un moteur capable d'exécuter du Prolog~\footnote{En réalité, l
 \begin{center} [$\underbrace{A}_{\textrm{Nature du nœud}}$, $\underbrace{B}_{\textrm{Ensemble de propriétés}}$, $\underbrace{C}_{\textrm{Liste de nœuds fils}}$] \end{center}
 \begin{example}
 	Soit $R$ une source déclaré dans le système, nous souhaitons exécuter la requête $\sigma_{id=1} R$. Alors l'expression de cette requête est la suivante :
-	\begin{lstlisting}[language=Prolog]
-[sigma,	{condition:"id=1"}, [
+	\begin{lstlisting}
+[sigma,	{"condition":"id=1"}, [
 	[source, {id:"R"}, []]
 ]]
 	\end{lstlisting}

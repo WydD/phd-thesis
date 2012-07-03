@@ -11,7 +11,7 @@ Ce prédicat est appliqué tant qu'il peut l'être (de manière itérative).
 
 \begin{example}
 	Nous nous proposons d'appliquer le sucre syntaxique pour transformer $\Join_c$ en $\sigma_c \Join$. Pour rappel, le prédicat \textit{sugar} sera appliqué si et seulement si ses conditions sont vérifiées. Ici, nous vérifions qu'il y a une condition \textit{Cond} dans les propriétés. Par la suite, nous pouvons transformer la jointure en sélection-jointure (après avoir retiré la condition des propriétés évidemment).
-	\begin{lstlisting}[language=Prolog]
+	\begin{lstlisting}
 sugar(
 	[join,B,C], 
 	[sigma, {"condition": Cond}, [
@@ -37,7 +37,7 @@ Ceux deux prédicats s'appliquent de manière récursive, d'abord la projection 
 
 \begin{example}
 	Pour la définition de la jointure, les règles sont simples. Le liste des attributs est l'union des listes d'attributs fils. Et le type est du relationnel vers le relationnel.
-	\begin{lstlisting}[language=Prolog]
+	\begin{lstlisting}
 typerules([join,_,_, TypesFils], Type):- 
 	allequal(TypesFils,Type), % Verification que tous soient relationnels 
 	relation(Type), !.
@@ -61,19 +61,19 @@ Ceux deux prédicats s'appliquent de manière itérative.
 Les règles exprimant ces capacités sont en général longues à écrire du fait qu'il est nécessaire de gérer des conditions fines. Pour illustrer ces règles, nous allons montrer des cas simples issus de l'algèbre relationnelle.
 \begin{example}
 	Tout d'abord, une règle très simple étant le fait de pouvoir transformer $\Pi_A R$ en $R$ si $Attr(R)=A$. Voyons, comment cela s'écrit.
-	\begin{lstlisting}[language=Prolog]
+	\begin{lstlisting}
 pushprojectionrule(
-    [pi, {attributes: Attr}, [
+    [pi, {"attributes": Attr}, [
         [A,B,C]
     ]],
     [A,B,C]
 ):-
-    map_get(B, 'attributes', AttrB), %Recupere la liste d'attribut de R
+    map_get(B, "attributes", AttrB), %Recupere la liste d'attribut de R
     list_equivalent(Attr,AttrB). %Verifie si les listes sont equivalentes
 	\end{lstlisting}
 	
 	Maintenant, pour la sélection et pour montrer un cas plus complexe. Voyons comment nous pouvons appliquer la règle de l'algèbre relationnelle $\sigma_c (R_1 \cup R_2) = (\sigma_c R_1 \cup \sigma_c R_2)$. Ici, nous n'avons pas de condition à vérifier a priori.
-	\begin{lstlisting}[language=Prolog]
+	\begin{lstlisting}
 pushselectionrule(
     [sigma, ArgSigma, [
         [union, ArgUnion, [C1,C2]]

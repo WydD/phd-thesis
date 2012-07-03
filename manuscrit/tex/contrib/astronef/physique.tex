@@ -1,1 +1,18 @@
 \section{Optimisation physique}\label{sec:contrib:astronef:physique}
+
+\subsection{Macro-blocs}
+\begin{regle}[Regroupement de macro-blocs]
+La transformation d'un groupe de nœud $[AIn,BIn,CIn]$ en un macro-bloc $[AOut,BOut,COut]$ est géré par le prédicat :
+\begin{center} \textbf{macrogroup}($[AIn,BIn,CIn],[AOut,BOut,COut]$).\end{center}
+L'application de ce prédicat est faite de manière itérative.
+\end{regle}
+
+\subsubsection{Opérations unaires}
+
+
+\subsection{Sélection des implémentations}
+\begin{regle}[Sélection d'implementations]
+La sélection de l'implémentation $Impl$ pour le nœud $[A,B,C]$ est décidé par le prédicat :
+\begin{center} \textbf{implrules}($[A,B,C]$,$Impl$).\end{center}
+L'application de ce prédicat est faite de manière récursive.
+\end{regle}

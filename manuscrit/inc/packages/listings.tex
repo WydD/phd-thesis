@@ -1,19 +1,19 @@
 \usepackage{listings}
 
-\usepackage{color}
-\definecolor{gray}{rgb}{0.4,0.4,0.4}
-\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
-\definecolor{cyan}{rgb}{0.0,0.6,0.6}
 
 \lstset{
   language=XML,
-  basicstyle=\footnotesize\ttfamily,
+  basicstyle=\footnotesize\ttfamily\upshape,
   columns=fullflexible,
   showstringspaces=false,
-  stringstyle=\color{black},
+  stringstyle=\color{darkgreen},
   identifierstyle=\color{darkblue},
-  keywordstyle=\color{cyan},
-  commentstyle=\color{gray}\upshape
+  keywordstyle=\color{darkred},
+  keywordstyle=[2]\btt,
+  commentstyle=\color{gray}\upshape,
+    numbers=left,
+frame=leftline,
+xleftmargin=2\stdindent
 }
 
 \lstdefinelanguage{XML}
@@ -21,5 +21,11 @@
   morestring=[b]",
   morestring=[s]{>}{<},
   morecomment=[s]{<?}{?>},
-  morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join}% list your attributes here
+  morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union}% list your attributes here
+}
+
+\lstdefinelanguage{PrologAstral}[]{Prolog}{
+   morekeywords={!,\_,:-},
+   morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union},% list your attributes here
+   morekeywords=[2]{pushselectionrule,typerules,attribrules,sugar,pushprojectionrule,macrogroup,implrules,optimizationrule}
 }
