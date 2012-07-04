@@ -1,1 +1,11 @@
-\section{Intégration d'un nouvel opérateur}\label{sec:contrib:astronef:integration}
+\section{Intégration de nouveaux composants}\label{sec:contrib:astronef:integration}
+Astronef est basé sur l'architecture de composants à services. Ainsi, comme nous l'avons présenté précédemment, les composants sont nativement fournis avec des fabriques. Ces fabriques sont enregistrés dans le registre de service. La recherche d'un composant et sa création se fait donc via le motif d'interaction des services.
+
+Toutefois, l'intégration des composants d'opérateurs nécessite aussi l'apport de ses connaissances en terme de règles logiques. L'intergiciel expose donc un service \textit{KnowledgeBase} capable d'ajouter des règles  à sa base de connaissance (sous forme de fichier ou de chaîne de caractère). Ainsi, il devient possible d'étendre les possibilités de la construction de requêtes.
+\subsection{Construction du composant}
+La construction du composant doit simplement être construit dans la technologie qui nous permet d'instancier l'architecture (en l'occurence iPojo/OSGi). Et il doit implémenter les services nécessaire à son exploitation. Par la suite, il doit spécifier les propriétés de configurations qu'il supporte, et évidemment respecter et correctement manipuler l'API fournie par Astronef pour manipuler les structures. Ceci est important pour notamment correctement manipuler le \textit{scheduler} en indiquant si le composant doit s'abonner aux modifications du résultat intermédiaire et autres.
+
+\subsection{Règles logiques}
+La seule règle obligatoire pour exploiter un nouveau composant est le fait de fournir au moins une règle \textbf{implrules} où le nom du composant (sa classe d'implémentation par défaut) est indiqué. Si ce composant implémente un macro-bloc, alors il faudra définir potentiellement un nouveau nom de nœud en plus des règles \textbf{macrobloc}.
+
+Mais si ce composant implémente un nouvel opérateur que nous souhaitons utiliser dans l'expression de requête. Alors il est strictement \textbf{nécessaire} de définir sa sémantique en terme de types supportés et d'attributs fournis. Sans ces deux règles, il sera impossible de construire la requête. De plus, si nous possèdons la connaissance suffisante, nous pouvons indiquer son comportement face à la projection, la sélection ou d'autres optimisations logiques.

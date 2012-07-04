@@ -74,7 +74,7 @@ La distribution du calcul est un problème différent des bases parallèles dans
 \paragraph*{L'optimisation sémantique}
 Supposons la présence d'une base de connaissance en parallèle de la base de donnée. Il est alors possible de raisonner sur les conditions de sélections notamment, afin d'amener plus ou moins de restriction à la requête. Les calculs d'inférence de concepts, comme vus en section~\ref{sec:rw:supervision:contexte}, permettent d'extraire des conditions plus restrictives mais équivalentes. Le problème étant d'avoir une base de connaissance suffisamment exploitable car une erreur de raisonnement pourrait supprimer potentiellement des résultats. De plus, les calculs d'inférences peuvent être lourds et ne doivent pas rendre le traitement de requête trop lourd. Cette approche commence a être exploitée en gestion de flux de données aussi grâce à des méta-données~\cite{Ding:semantic}.
 
-\subsection{Optimisation spécifique de la gestion de flux}
+\subsection{Optimisation spécifique de la gestion de flux}\label{sec:rw:sgfd:optimisation:flux}
 L'infrastructure de traitement des flux est sensiblement différente à la gestion des bases de données. Ainsi, des optimisations plus spécifiques sont applicables dans ce contexte concernant : le mode de traitement des requêtes, la gestion de la charge sur le long terme, le partage des requêtes, l'ordonnancement et enfin le routage pour les infrastructures distribués. Nous pouvons remarquer que toutes ces optimisations ont été explorées premièrement dans le domaine des systèmes de base de données. Toutefois, ils prennent plus d'ampleur dans ce contexte.
 
 \subsubsection{Calcul incrémental}
