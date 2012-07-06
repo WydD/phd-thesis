@@ -52,7 +52,7 @@ Comme présenté dans le chapitre~\ref{chap:rw:sgfd}, la notion de batch a été
     Par mesure de commodité, sauf mention contraire, nous écrirons $S$ pour désigner le couple $(S,\BS)$.
 \end{defi}
 
-Notre algèbre adopte la sémantique à deux concepts comme présenté dans la section~\ref{chap:rw:sgfd:modeles}. Nous définissons donc une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble d'n-uplet. Dans notre cas, le temps est définit comme un identifiant de batch, et l'ensemble d'n-uplet est en réalité une séquence. 
+Notre algèbre adopte la sémantique à deux concepts comme présenté dans la section~\ref{sec:rw:sgfd:modeles}. Nous définissons donc une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble d'n-uplet. Dans notre cas, le temps est définit comme un identifiant de batch, et l'ensemble d'n-uplet est en réalité une séquence. 
 \begin{defi}[Relation temporelle]\label{def:relation}
 	Une relation temporelle $R$ est une fonction en escalier associant un identifiant de batch $(t,i)\in\TN$ à une séquence d'n-uplet $R(t,i)$
 \end{defi}
@@ -162,7 +162,7 @@ Les séquences (a) et (c) ne sont pas équivalentes car l'ordre des n-uplets est
 \caption{Quatre séquences représentant une instance figée de \textbf{Device}}\label{tab:contrib:astral:exequivalence}
 \end{table}
 
-La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transpos} présente les conséquences du changement de timestamp.
+La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transposabilite} présente les conséquences du changement de timestamp.
 \begin{defi}[Équivalences de requêtes]\label{def:equivalence}
 	Soient $E=(E_1, ..., E_n)$, $n$ entités,
 	

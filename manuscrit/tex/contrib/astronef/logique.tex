@@ -1,5 +1,5 @@
 \section{Optimisation logique}\label{sec:contrib:astronef:logique}
-Cette première application de règles permet de restructurer l'expression de la requête pour avoir la structure la plus adéquate. Notre critère d'évaluation de performances en gestion de flux de données est sur le débit maximal d'n-uplets entrant. Ce qui implique principalement le processeur et plus légèrement la quantité mémoire qui doit être contrôlée. Dans cette section, nous pourrons exploiter les connaissances accumulés grâce aux théorèmes d'Astral que nous pourrons retrouver dans le chapitre~\ref{chap:validation:expressivite}.
+Cette première application de règles permet de restructurer l'expression de la requête pour avoir la structure la plus adéquate. Notre critère d'évaluation de performances en gestion de flux de données est sur le débit maximal d'n-uplets entrant. Ce qui implique principalement le processeur et plus légèrement la quantité mémoire qui doit être contrôlée. Dans cette section, nous pourrons exploiter les connaissances accumulés grâce aux théorèmes d'Astral que nous p retrouver dans le chapitre~\ref{chap:validation:expressivite}.
 \subsection{Préparation}
 Tout d'abord, il est nécessaire d'appliquer les sucres syntaxiques pouvant être présents dans l'expression. Par exemple, l'opérateur $\ssjoin$ est un opérateur composite qui n'est défini que par la composition d'autres opérateurs primitifs.
 
@@ -53,7 +53,7 @@ Nous supposons l'hypothèse~\ref{hyp:optimpush} qui permet d'intégrer des proje
 \begin{hyp}[Heuristique du coût de sélection et projection]\label{hyp:optimpush}
     Le coût de la sélection et de la projection peuvent être considérés comme négligeables.
 \end{hyp}
-Cette optimisation permet de réduire l'empreinte mémoire des résultats intermédiaires ce qui de plus réduira les temps de calculs des opérateurs. Pour atteindre ce résultat, il est nécessaire d'appliquer les résultats que nous donne Astral. Ces résultats seront tous présentés dans le chapitre~\ref{chap:validation:expressivite}. Nous pouvons tout de même présenter le prédicat logique qui devra appliquer ces règles.
+Cette optimisation permet de réduire l'empreinte mémoire des résultats intermédiaires ce qui de plus réduira les temps de calculs des opérateurs. Pour atteindre ce résultat, il est nécessaire d'appliquer les résultats que nous donne Astral. Ces résultats sont tous présentés dans le chapitre~\ref{chap:validation:expressivite}. Nous pouvons tout de même présenter le prédicat logique qui doit appliquer ces règles.
 \begin{regle}[Pousser les projections et sélections]
 La transformation d'un nœud contenant la projection afin de l'appliquer sur ses nœuds fils est gérée par le prédicat suivant :
 \begin{center} \textbf{pushprojectionrule}($[pi,BPi,[[A,B,C]]],[AOut,BOut,COut]$).\end{center}

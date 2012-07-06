@@ -6,6 +6,12 @@
 \chapter{Astronef : De l'expression à l'exécution}\label{chap:contrib:astronef}
 \chaptertoc
 
+Astral est une algèbre de requêtes continues. Elle permet de définir sans ambiguïté la sémantique d'une requête. Les concepts développés lors des définitions ne sont pas attaché à un mode d'exécution ou à une implémentation particulière. Son exécution et sa mise en œuvre ne sont donc pas spécifié. Dans ce chapitre, nous présentons l'intergiciel \textit{Astronef}\footnote{Astral Optimization and Execution Framework} permettant l'exécution d'une requête continue Astral.
+
+Dans la section~\ref{sec:rw:supervision:criteres}, nous avons mis en avant le fait qu'il faut que l'intergiciel soit extensible. Cela permet à l'utilisateur d'ajouter ses propres composants au système pour permettre : l'ajout de sources de données ou encore l'ajout de traitement métier spécifiques. Toutefois, il est nécessaire d'arriver à refleter cette flexibilité tout en gardant exprimant les requêtes avec le formalisme conféré par Astral. De plus, comme dans les SGBD, l'exécution naïve d'une requête d'une requête n'est en général pas efficace. Ainsi, il est important de pouvoir effectuer une optimisation du processus de traitement.
+
+La section~\ref{sec:contrib:astronef:architecture} présente l'architecture générale d'Astronef. La section~\ref{sec:contrib:astronef:logique} présente la première partie de l'optimisation du traitement : l'optimisation logique, qui permet de réécrire une requête de manière plus efficace. Puis nous détaillons en section~\ref{sec:contrib:astronef:physique} la seconde partie de l'optimisation étant : l'optimisation physique, qui permet de sélectionner les meilleurs composants pour exécuter le plan de requête. Enfin, nous analysons en section~\ref{sec:contrib:astronef:integration} les impacts de l'intégration d'un nouveau composant à l'architecture. Nous concluons ce chapitre en section~\ref{sec:contrib:astronef:conclusion}.
+
 \lstset{language=PrologAstral}
 \input{tex/contrib/astronef/architecture}
 \input{tex/contrib/astronef/logique}
