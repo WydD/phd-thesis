@@ -1,0 +1,29 @@
+\section{Formalisation théorique}\label{sec:contrib:asteroid:theorie}
+
+\subsection{Dynamique des données}
+Dans un système, nous avons vu que les données peuvent être persistantes ou temps réel. Nous remarquons aussi que les données évoluent suivant des schémas différents qui vont influencer la manière de les manipuler par la suite. Notamment, cela a un impact non négligeable sur le schéma utilisé dans le SGBD relationnel pour le support de persistance.
+
+Par définition, la persistance d'une donnée implique le fait de stocker l'information sur un support. Sa mise à jour sur ce support est une opération considérée comme lente\footnote{Cette lenteur a permit la création des SGFD à la fin des années 90.}. Ainsi, il sera difficile de supposer possible le fait d'avoir une représentation physique acceptable de toutes les données du système.
+
+Les données persistantes sont considérés en quatre dynamiques divisées en deux catégories. Tout d'abord, celles que nous qualifions de meta-données qui sont rassemblés dans des catalogues (donc, des relations persistantes). Celle-ci est composé de deux classes de dynamiques :
+\begin{itemize}
+	\item[\textbf{Statique}] Cette meta-donnée ne changera jamais par essence. Son utilisation en interrogation continue sera similaire à une relation temporelle $R$ figée : $R^{t_0}$. Le numéro de série d'un équipement est une information qui par nature est immuable.
+	\item[\textbf{Stable}] Cette meta-donnée est considéré la plupart du temps comme figée. Elle n'est toutefois pas immuable par essence et peut subir des modifications. Bien que son utilisation soit avant-tout une interrogation instantannée, son utilisation en interrogation continue est une relation temporelle $R$ n'ayant subit aucune manipulation temporelle. Un paramètre de configuration d'un équipement du réseau local est considéré comme stable.
+\end{itemize}
+
+La deuxième catégorie rassemble les données évoluant en temps réel. Ces données sont issus de flux de données. Elles peuvent posséder deux dynamiques :
+\begin{itemize}
+	\item[\textbf{Périodique}] L'historique de cette donnée forme un flux régulier. Son interrogation continue passe par l'application d'une fenêtre dont le contenu n'est pas limité à un \textit{batch}. En effet, la régularité induite par cette donnée implique qu'il est plus important d'observer son évolution plutôt que sa valeur présente. Le relevé des débits d'une carte réseau constitue une donnée périodique.
+	\item[\textbf{Imprévisible}] Cette donnée n'a pas de motif d'évolution défini a priori. Son comportement incontrôlable fait que chaque nouvelle donnée du flux a son importante. Son utilisation en requête continue est donc faite par l'application d'une fenêtre $[B]$ décrivant le dernier \textit{batch}. La notification de l'arrivée d'un équipement sur le réseau est imprévisible.
+\end{itemize}
+
+Le principe important est le fait que ces classes de dynamiques sont manipulables grâce à l'algèbre. Il est possible de figer une donnée à un instant grâce à la manipulation temporelle. Il est possible de former un flux de changement à partir d'une relation stable. De plus, elle traduit une certaine qualité de la donnée car si nous utilisons une donnée d'une classe comme une autre alors nous perdrons de la qualité.
+\begin{example}
+	Si nous récupérons les notifications d'arrivée des équipements sur le réseau de manière périodique, nous perdons de la qualité en terme de ponctualité. De même si nous considérons un paramètre de configuration comme statique. A l'inverse, nous introduisons du bruit si nous interrogeons de manière périodique la configuration du routeur de la passerelle d'accès à internet.
+\end{example}
+
+Il est important de voir que ces classes nous permettent d'imaginer les mécanismes les plus adaptés pour collecter les données. Toutefois, si un mécanisme n'est pas disponible et qu'un autre est utilisé\footnote{\textit{push} absent $\im$ remplacement par un \textit{pull} régulier}, cela nous permet d'en analyser rapidement les conséquences.
+
+\subsection{Modèle physique de la persistance}
+
+\subsection{Représentation dans Astral}
