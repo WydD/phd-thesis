@@ -22,7 +22,33 @@ Le principe important est le fait que ces classes de dynamiques sont manipulable
 	Si nous récupérons les notifications d'arrivée des équipements sur le réseau de manière périodique, nous perdons de la qualité en terme de ponctualité. De même si nous considérons un paramètre de configuration comme statique. A l'inverse, nous introduisons du bruit si nous interrogeons de manière périodique la configuration du routeur de la passerelle d'accès à internet.
 \end{example}
 
-Il est important de voir que ces classes nous permettent d'imaginer les mécanismes les plus adaptés pour collecter les données. Toutefois, si un mécanisme n'est pas disponible et qu'un autre est utilisé\footnote{\textit{push} absent $\im$ remplacement par un \textit{pull} régulier}, cela nous permet d'en analyser rapidement les conséquences.
+Il est important de voir que ces classes nous permettent d'imaginer les mécanismes les plus adaptés pour collecter les données. Toutefois, si un mécanisme n'est pas disponible et qu'un autre est utilisé\footnote{\textit{push} absent $\im$ remplacement par un \textit{pull} régulier}, cela nous permet d'en analyser rapidement les conséquences. La figure~\ref{fig:contrib:asteroid:theorie:dynamics} montre des transformations possibles entre les dynamiques grâce à l'algèbre Astral. Les méta-données sont représenté par des relations temporelles $R$ et les données temps-réelles sont des flux non-partitionnables $S$.
+
+\begin{figure}[ht]
+    \centering
+\tikzstyle{dynamics}=[ellipse,minimum width=3cm,minimum height=1cm,draw=blue!50,fill=blue!20,thick]
+\begin{tikzpicture}[>=stealth,->,shorten >=2pt,thick,bend angle=20, node distance=7cm]
+\node (relation) {Méta-données};
+\node (flux) [below of=relation,node distance=3cm] {Temps-réel};
+
+\node[dynamics] (static) [right of=relation,node distance=4cm]{Statique};
+\node[dynamics] (stable) [right of=static] {Stable};
+\node[dynamics] (periodic) [below of=static,node distance=3cm] {Périodique};
+\node[dynamics] (event) [right of=periodic] {Imprévisible};
+
+\tikzstyle{every node}=[auto]
+\path (stable)      edge    node[above]{$R^{t_0}$} (static);
+\path (event)       edge    node[near end,above,sloped]{$S[B]^{\tau_S(0)}$} (static);
+\path (periodic)    edge[bend left]    node{$S[B]^{\tau_S(0)}$} (static);
+\path (static)      edge[bend left]    node[right]{$\RS{r}(R)$} (periodic);
+\path (stable)      edge    node[near end,below,sloped]{$\RS{r}(R)$} (periodic);
+\path (event)       edge    node{$\RS{r}(S[B])$} (periodic);
+
+\path (stable)      edge[bend left]    node{$\IS(R)$} (event);
+\path (event)      edge[bend left]    node{$S[B]$} (stable);
+\end{tikzpicture}
+\caption{Transformations des différentes dynamiques en Astral}\label{fig:contrib:asteroid:theorie:dynamics}
+\end{figure}
 
 \subsection{Modèle physique de la persistance}
 
