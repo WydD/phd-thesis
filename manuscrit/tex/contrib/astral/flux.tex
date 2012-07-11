@@ -219,7 +219,7 @@ $$s\in R(t,i) \wedge t-t_0\equiv 0[r]\equ s'=\Psi_{(t,i)}(s,t)\in S \wedge \BS(s
 \end{defi}
 
 Nous avons maintenant vu une gestion des opérateurs permettant de couvrir la plupart des opérations. Toutefois, deux opérateurs sont encore à définir pour certaines opérations plus particulière.
-\subsection{Manipulation temporelle}
+\subsection{Manipulation temporelle}\label{sec:contrib:astral:manipulation}
 Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. Elles changent au cours de l'exécution de la requête. En l'état, nous n'avons pas d'opérateur capable de contrôler ces changements. L'opérateur de manipulation temporelle permet de sélectionner, pour l'instant présent, un état passé de la relation. Tout d'abord, définissons une transformation temporelle (def~\ref{def:transformation}) permettant de sélectionner l'instant que nous souhaitons observer. La seule contrainte de cette transformation est le fait qu'il est impossible de regarder dans le futur. Nous pouvons ainsi définir l'opérateur de manipulation temporelle (def~\ref{def:manipulation}) qui appliquera cette transformation à la relation temporelle.
 \begin{defi}[Transformation temporelle]\label{def:transformation}
     Une transformation temporelle est une fonction de $\TN\to\TN$ telle que $\forall b\in\TN, f(b) \leq b$

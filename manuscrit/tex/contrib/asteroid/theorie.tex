@@ -50,6 +50,50 @@ Il est important de voir que ces classes nous permettent d'imaginer les mécanis
 \caption{Transformations des différentes dynamiques en Astral}\label{fig:contrib:asteroid:theorie:dynamics}
 \end{figure}
 
-\subsection{Modèle physique de la persistance}
+\subsection{Schéma physique de la persistance}
+La notion de dynamiques va directement impacter la structure du schéma de la base de donnée. Cette persistance va utilisée pour permettre de stocker et conserver deux catégories de données : le modèle descriptif et les historiques de flux.
+\subsubsection{Le schéma descriptif}
+Les données que nous avons décrites en tant que meta-données forment une description du système observé. Cette description servira de catalogue lors de l'interrogation du système. Elle contiendra l'ensemble des concepts du systèmes, leurs relations ainsi que leurs propriétés. D'un point de vue conceptuel, celui-ci peut-être structuré comme un schéma entité-relation qui pourra par la suite être traduit en schéma physique normalisé.
+
+Le point important étant que tous les concepts dit observables du système sont des sous-classes de \textit{Monitorable}. Cette classe permet avant tout d'identifier de manière unique chaque entité du système (clé artificielle unique). L'idée étant que toute entité pourra être manipulée de façon uniforme.
+
+\begin{example}
+	Dans le cadre du réseau local domestique, nous observons un système composé d'équipements. Ces équipements sont hôtes d'applications pouvant avoir un statut allumé ou éteint. Ils peuvent posséder un numéro de série unique. Ces équipements embarquent une ou plusieurs interfaces réseaux. Celles-ci ont un type défini (wifi, plc, ethernet) et possèdent une adresse \textit{IP} et \textit{MAC} lui considéré comme unique. Le réseau est composé de liens physiques entre les interfaces réseaux.
+	
+	Nous avons donc les relations \textit{Devices}, \textit{Applications}, \textit{Interfaces} et \textit{Link} qui sont toutes filles de \textit{Monitorable}. Nous obtenons ainsi le schéma physique présenté en figure~\ref{fig:contrib:asteroid:theorie:model}
+	\begin{figure}[ht]
+		\TODO{figure}
+		\caption{Potentiel schéma descriptif du système : réseau local domestique}\label{fig:contrib:asteroid:theorie:model}
+	\end{figure}
+\end{example}
+
+\noindent \textbf{Remarque} : Les clés artificielles ont une grande importance dans le cadre des applications d'observation. En effet, du fait du caractère incomplet de l'observation\footnote{soit parce que la donnée n'est pas parvenue au système, soit il n'existe pas de moyen technique pour y accéder}, il est possible d'obtenir des informations sur un équipement par exemple, sans avoir pu obtenir son numéro de série. Des moyens alternatifs d'identifications doivent être mis en place. Par exemple, << \textit{l'équipement qui possède l'adresse IP 192.168.0.1} >> permet d'identifier de manière approximative l'équipement. Les clés artificielles permettent donc de tisser les relations entre les instances en ayant des données partielles. Toutefois, des vérifications d'intégrités devrons être de rigueur pour garder un modèle cohérent.
+
+La différence entre une donnée stable et une donnée statique est le fait qu'il est intéressant de surveiller la modification d'une donnée (par des mécanismes tels que les \textit{triggers}) et en former un flux, qui pourra être potentiellement archivé.
+
+\subsubsection{Les historiques}
+Le stockage brut d'un flux $S$ comme relation physique dans le SGBD est difficilement manipulable. Car de ce fait, les données de flux persistées n'ont aucun lien avec le système. Or, toute donnée temps réel concerne une entité du catalogue du système. Et toute donnée temps réel est matérialisé par la relation temporelle $S[\infty]$.
+
+Nous appelons \textit{Volatile} une donnée temps réel. Nous modélisons donc notre persistance des historiques par l'association donnant à partir d'une entité et d'un \textit{volatile}, la relation contenant son historique. D'un point de vue physique, les SGBD supportent mal cette implémentation ce qui fait que ce dernier est en réalité une table contenant un pointeur vers une table qui elle contient l'historique comme montré dans la figure~\ref{fig:contrib:asteroid:theorie:volatile}.
+
+
+	\begin{figure}[ht]
+		\TODO{figure}
+		\caption{Potentiel schéma descriptif du système : réseau local domestique}\label{fig:contrib:asteroid:theorie:volatile}
+	\end{figure}
+
+\begin{example}
+	La donnée de changement de \textit{status} est une donnée imprévisible aussi bien attachée à un équipement qu'à une application. Lors de l'enregistrement d'un historique de \textit{status} concernant un équipement par exemple, il est donc nécessaire d'insérer un n-uplet dans la relation \textit{TablePointer}, qui permet de déclarer l'historique et un autre dans \textit{HasVolatile} qui permet de lier cette historique à une entité. Si la donnée \textit{status} n'avait pas été déclarée, il est évidemment nécessaire d'insérer un n-uplet dans la relation \textit{Volatile}.
+	
+	De façon similaire, les relevés de charges processeurs \textit{cpu} sont peuvent être attachés à un équipement ou à une application. Alors que les relevés de débits n'ont de sens que sur les interfaces (ou les liens suivant la modélisation voulue par l'utilisateur).
+\end{example}
+
+Il est intéressant de voir que puisque les données temps-réelles ont tendances à être de forte densité, il n'est peut-être pas possible de garantir une fraicheur des données au niveau du support de persistance pour les historiques.
 
 \subsection{Représentation dans Astral}
+Les relations issues d'un SGBD sont manipulables dans Astral du fait de leurs fondations théoriques similaires. Ainsi une relation d'un système relationnel observée de manière continue est assimilable à une relation temporelle. Deux différences majeures subsistent : l'ordre des données et le mode d'interrogation.
+\subsubsection{L'ordre d'une relation}
+En SGBD, l'ordre n'importe pas jusqu'au moment de l'envoi des données à l'utilisateur (via le mot clé \textit{ORDER BY}). Le système peut en profiter pour modifier l'ordre lors d'opérations de jointures par exemple. Il est important de garder la même notion d'ordre lors de la prise en compte de l'évolution. L'identifiant physique de la relation temporelle induite sera donc par défaut la clé primaire de la relation observée, i.e. son identifiant de monitorable. Ainsi, nous gardons le même identifiant, et l'ordre est conservé lors des opérations.
+
+\subsubsection{Le mode d'interrogation}
+Afin d'être capable de représenter une relation temporelle dans \textit{Astronef}, il est nécessaire de pouvoir surveiller les changements effectués dans la relation. Ceci peut toutefois être coûteux ou impossible suivant les moyens techniques disponible dans le SGBD manipulé. Ainsi, pour être capable de représenter la relation telle que nous l'obtenons dans Astronef par la suite, nous utilisons un opérateur de manipulation du temps. Ce qui nous permet d'obtenir, comme indiqué dans la section~\ref{sec:contrib:astral:manipulation}, une mise à jour effective, périodique, à la demande ou inexistante.
