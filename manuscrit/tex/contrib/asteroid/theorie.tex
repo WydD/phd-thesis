@@ -26,6 +26,7 @@ Il est important de voir que ces classes nous permettent d'imaginer les mécanis
 
 \begin{figure}[ht]
     \centering
+\scalebox{0.8}{
 \tikzstyle{dynamics}=[ellipse,minimum width=3cm,minimum height=1cm,draw=blue!50,fill=blue!20,thick]
 \begin{tikzpicture}[>=stealth,->,shorten >=2pt,thick,bend angle=20, node distance=7cm]
 \node (relation) {Méta-données};
@@ -47,6 +48,7 @@ Il est important de voir que ces classes nous permettent d'imaginer les mécanis
 \path (stable)      edge[bend left]    node{$\IS(R)$} (event);
 \path (event)      edge[bend left]    node{$S[B]$} (stable);
 \end{tikzpicture}
+}
 \caption{Transformations des différentes dynamiques en Astral}\label{fig:contrib:asteroid:theorie:dynamics}
 \end{figure}
 
@@ -58,11 +60,12 @@ Les données que nous avons décrites en tant que meta-données forment une desc
 Le point important étant que tous les concepts dit observables du système sont des sous-classes de \textit{Monitorable}. Cette classe permet avant tout d'identifier de manière unique chaque entité du système (clé artificielle unique). L'idée étant que toute entité pourra être manipulée de façon uniforme.
 
 \begin{example}
-	Dans le cadre du réseau local domestique, nous observons un système composé d'équipements. Ces équipements sont hôtes d'applications pouvant avoir un statut allumé ou éteint. Ils peuvent posséder un numéro de série unique. Ces équipements embarquent une ou plusieurs interfaces réseaux. Celles-ci ont un type défini (wifi, plc, ethernet) et possèdent une adresse \textit{IP} et \textit{MAC} lui considéré comme unique. Le réseau est composé de liens physiques entre les interfaces réseaux.
+	Dans le cadre du réseau local domestique, nous observons un système composé d'équipements. Ces équipements sont hôtes d'applications pouvant avoir un statut allumé ou éteint. Ils peuvent posséder un numéro de série unique. Ces équipements embarquent une ou plusieurs interfaces réseaux. Celles-ci possèdent une adresse \textit{IP} et \textit{MAC} lui considéré comme unique. Le réseau est composé de liens physiques entre les interfaces réseaux.
 	
 	Nous avons donc les relations \textit{Devices}, \textit{Applications}, \textit{Interfaces} et \textit{Link} qui sont toutes filles de \textit{Monitorable}. Nous obtenons ainsi le schéma physique présenté en figure~\ref{fig:contrib:asteroid:theorie:model}
 	\begin{figure}[ht]
-		\TODO{figure}
+                \centering
+		\includegraphics[width=0.9\textwidth]{contrib-asteroid-model}
 		\caption{Potentiel schéma descriptif du système : réseau local domestique}\label{fig:contrib:asteroid:theorie:model}
 	\end{figure}
 \end{example}
@@ -77,10 +80,11 @@ Le stockage brut d'un flux $S$ comme relation physique dans le SGBD est difficil
 Nous appelons \textit{Volatile} une donnée temps réel. Nous modélisons donc notre persistance des historiques par l'association donnant à partir d'une entité et d'un \textit{volatile}, la relation contenant son historique. D'un point de vue physique, les SGBD supportent mal cette implémentation ce qui fait que ce dernier est en réalité une table contenant un pointeur vers une table qui elle contient l'historique comme montré dans la figure~\ref{fig:contrib:asteroid:theorie:volatile}.
 
 
-	\begin{figure}[ht]
-		\TODO{figure}
-		\caption{Potentiel schéma descriptif du système : réseau local domestique}\label{fig:contrib:asteroid:theorie:volatile}
-	\end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{contrib-asteroid-historians}
+    \caption{Représentation physique de l'enregistrement des historiques}\label{fig:contrib:asteroid:theorie:volatile}
+\end{figure}
 
 \begin{example}
 	La donnée de changement de \textit{status} est une donnée imprévisible aussi bien attachée à un équipement qu'à une application. Lors de l'enregistrement d'un historique de \textit{status} concernant un équipement par exemple, il est donc nécessaire d'insérer un n-uplet dans la relation \textit{TablePointer}, qui permet de déclarer l'historique et un autre dans \textit{HasVolatile} qui permet de lier cette historique à une entité. Si la donnée \textit{status} n'avait pas été déclarée, il est évidemment nécessaire d'insérer un n-uplet dans la relation \textit{Volatile}.
