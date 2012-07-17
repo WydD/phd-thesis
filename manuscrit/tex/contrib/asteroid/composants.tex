@@ -1,2 +1,49 @@
 \section{Composants Astronef}\label{sec:contrib:asteroid:composants}
+\subsection{Source d'interrogation}
+Comme présenté dans la section~\ref{sec:contrib:asteroid:theorie:astral}, une relation de base de donnée peut être présentée comme une relation temporelle Astral. Il est ainsi possible d'imaginer un composant source de donnée \textit{dbsource} capable de représenter une telle relation temporelle. Cette source devra suivre l'évolution de la relation suivant différents modes. Son implémentation est une application directe des principes exposés jusqu'ici : lorsque la relation temporelle doit être mise à jour, le composant interroge le SGBD avec une requête \textit{SQL} telle que \sql{SELECT * FROM Relation}.
 
+Afin de pouvoir réutiliser \textit{dbsource}, nous pouvons le rendre plus générique en permettant la spécifications de paramètres de configuration. Ainsi, la source est capable de supporter la représentation de toutes requêtes du type $\D^f Q$ où $Q$ désigne une relation temporelle exprimable en algèbre relationnelle sur les relations de la base de donnée. La liste des paramètres de ce composants est disponible dans la table~\ref{tab:contrib:asteroid:dbsource} et la sémantique des modes de mise à jour est disponible dans la table~\ref{tab:contrib:asteroid:dbsource:modes}.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{cl}
+        paramètre & description \\ \midrule
+        query & Requête \textit{SQL} à exécuter sur le SGBD \\
+        mode & Sémantique de mise à jour
+    \end{tabular}
+    \caption{Paramètres obligatoires du composant \textit{dbsource}}\label{tab:contrib:asteroid:dbsource}
+\end{table}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{ccl}
+        mode & sémantique & paramètre supplémentaire \\ \midrule
+        hold & $\D^{\mathrm{id}}_{t\geq t_s}$ & \textit{at} : \textit{timestamp} correspondant à $t_s$ \\
+        freeze & $\D^{\mathrm{freeze}^{t_s}}_{t\geq t_s}$ & \textit{at} : \textit{timestamp} correspondant à $t_s$\\
+        trigger & $\D^{\mathrm{change}_{R_1,...,R_n}}$ & \textit{tables} : liste des relations $(R_i)$ à surveiller \\
+        periodic & $\D^{\mathrm{period}^{r}}$ & \textit{rate} : période en seconde correspondant à $r$\\
+        notify & $\D^{\mathrm{change}_{E}}$ & \textit{dependentRId} : identifiant du service de l'entité $E$
+    \end{tabular}
+    \caption{Modes supportés par le composants \textit{dbsource}}\label{tab:contrib:asteroid:dbsource:modes}
+\end{table}
+
+Il est important de voir que l'ensemble de la relation sera représenté dans la relation temporelle fournie. Or les relations temporelles sont placés en mémoires. Ainsi, si la séquence produite par l'interrogation du SGBD est de plusieurs millions d'n-uplets, le coût mémoire sera à prendre en compte. Comme cette source est capable de représenter toute requête \textit{SQL}, il est possible de déporter des opérations dans cette requête pour obtenir des résultats moins volumineux. Nous verrons dans la section~\ref{sec:contrib:asteroid:reecriture} comment effectuer cette opération automatiquement grâce à l'optimisation par règle d'Astronef.
+
+\subsection{Macro-opération de jointure}
+Le second composant d'Asteroid est un opérateur de jointure : \textit{dbjoin}. Son rôle est le suivant : lors de la réception d'un nouvel état d'une relation temporelle, requêter le SGBD et effectuer une jointure entre cet état et une requête \textit{SQL}. L'idée principale de cet opérateur est d'exploiter au maximum le SGBD. L'utilisation d'index pré-calculés sur le disque permet d'effectuer la jointure de façon efficace car l'optimiseur sélectionnera un plan performant grâce à ceux-ci.
+
+D'un point de vue Astral, cet opérateur permet d'effectuer l'opération suivante $R \ssjoin_c Q$, où $Q$ est une relation temporelle exprimable en algèbre relationnelle sur les relations de la base de donnée, et $c$ une condition de jointure. Comme le composant \textit{dbsource}, il est configurables via les paramètres présentés dans la table~\ref{tab:contrib:asteroid:dbjoin}.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{cl}
+        paramètre & description \\ \midrule
+        query & Requête \textit{SQL} à joindre sur le SGBD \\
+        on & Expression de la condition de jointure (optionel)
+    \end{tabular}
+    \caption{Paramètres du composant \textit{dbjoin}}\label{tab:contrib:asteroid:dbsource}
+\end{table}
+
+Son implémentation peut différer selon les capacités fonctionnelles du SGBD. De façon générale, il est nécessaire d'utiliser une table temporaire \sql{Tmp} (en mémoire). Au moment de l'exécution de \textit{dbjoin}, l'opérateur insère les données de la séquence fournie dans \sql{Tmp}. Ensuite, il applique la requête \textit{SQL} suivante : \begin{center} \sql{SELECT * FROM Tmp AS l NATURAL JOIN (*query*) AS r ON (*on*)} \end{center}
+Le résultat est transformé en séquence d'n-uplet qui sera envoyée à la relation temporelle de sortie. La requête \sql{DELETE FROM Tmp} est ensuite appliqué pour supprimer les données temporaires. Par mesures de performances évidentes, les requêtes sont préparés à l'avance pour ne plus avoir le coût de préparation du plan.
+
+Sur certains SGBD, il est possible d'optimiser cette implémentation. Sur \textit{H2} par exemple, il est possible d'utiliser la syntaxe \sql{TABLE(A1 T1=?,...,An Tn=?)} pour représenter une table temporaire d'attributs $A_i$ et de types $T_i$ dont les données seront passés comme paramètres lors de l'exécution de la requête. Il est aussi possible d'accélerer l'opération de suppression via l'opération \sql{TRUNCATE} maintenant répendue parmis les SGBD populaires.
+
+\subsection{Composants puits de persistance}

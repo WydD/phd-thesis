@@ -1,0 +1,15 @@
+
+\lstdefinelanguage{XML}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union}% list your attributes here
+}
+
+\lstdefinelanguage{PrologAstral}[]{Prolog}{
+   morekeywords={!,\_,:-},
+   morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union,aggregate,windowaggregate},% list your attributes here
+   morekeywords=[2]{pushselectionrule,typerules,attribrules,sugar,pushprojectionrule,macrogroup,implrules,optimizationrule,dynamicoperator,isdynamic}
+}
+\def\sql#1{\lstinline[language=SQL,basicstyle=\normalsize\ttfamily\upshape]|#1|}

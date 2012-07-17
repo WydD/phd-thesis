@@ -94,7 +94,7 @@ Nous appelons \textit{Volatile} une donnée temps réel. Nous modélisons donc n
 
 Il est intéressant de voir que puisque les données temps-réelles ont tendances à être de forte densité, il n'est peut-être pas possible de garantir une fraicheur des données au niveau du support de persistance pour les historiques.
 
-\subsection{Représentation dans Astral}
+\subsection{Représentation dans Astral}\label{sec:contrib:asteroid:theorie:astral}
 Les relations issues d'un SGBD sont manipulables dans Astral du fait de leurs fondations théoriques similaires. Ainsi une relation d'un système relationnel observée de manière continue est assimilable à une relation temporelle. Deux différences majeures subsistent : l'ordre des données et le mode d'interrogation.
 \subsubsection{L'ordre d'une relation}
 En SGBD, l'ordre n'importe pas jusqu'au moment de l'envoi des données à l'utilisateur (via le mot clé \textit{ORDER BY}). Le système peut en profiter pour modifier l'ordre lors d'opérations de jointures par exemple. Il est important de garder la même notion d'ordre lors de la prise en compte de l'évolution. L'identifiant physique de la relation temporelle induite sera donc par défaut la clé primaire de la relation observée, i.e. son identifiant de monitorable. Ainsi, nous gardons le même identifiant, et l'ordre est conservé lors des opérations.

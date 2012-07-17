@@ -233,9 +233,9 @@ Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. E
 
 Plusieurs fonctions classiques ont une utilité directe :
 \begin{itemize}
- \item $f(t,i)=(t_s,0)$ si $t \geq t_s$. Permet de figer une relation temporelle à un instant précis, plus aucun changement ne sera retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Le cas particulier pouvant être lorsque $t_s=t_0$. Alors la relation n'aura connu qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
- \item $f(t,i)=\left(\left\lfloor\frac{t-t_0}{r}\right\rfloor r + t_0, 0\right)$ met à jour la relation de manière périodique avec $r$ un taux de rafraîchissement.
- \item $f(t,i)=\tau_S\circ\rtau_S$ met à jour la relation à chaque fois qu'un \textit{batch} est inséré dans $S$. Nous pourrions appliquer le même principe pour \textit{à chaque fois que la relation $R'$ change}.
+ \item $\mathrm{freeze}^{t_s}(t,i)=(t_s,0)$ si $t \geq t_s$. Permet de figer une relation temporelle à un instant précis, plus aucun changement ne sera retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Le cas particulier pouvant être lorsque $t_s=t_0$. Alors la relation n'aura connu qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
+ \item $\mathrm{period}^r(t,i)=\left(\left\lfloor\frac{t-t_0}{r}\right\rfloor r + t_0, 0\right)$ met à jour la relation de manière périodique avec $r$ un taux de rafraîchissement.
+ \item $\mathrm{change}_S(t,i)=\tau_S\circ\rtau_S$ met à jour la relation à chaque fois qu'un \textit{batch} est inséré dans $S$. Nous pourrions appliquer le même principe pour \textit{à chaque fois que la relation $R'$ change}.
 \end{itemize}
 
 Cette dernière fonction a un impact particulier lors de la jointure de deux éléments. Dans la jointure temporelle telle que nous l'avons définie, si un changement est appliqué d'un côté ou de l'autre, il y aura un nouveau calcul de jointure. Ce comportement peut ne pas être souhaité dans la pratique où nous pourrions souhaiter que seul une branche soit déclencheur de calcul et l'autre soit passive. La jointure semi-sensible permet cette opération.
@@ -244,10 +244,10 @@ Cette dernière fonction a un impact particulier lors de la jointure de deux él
 \begin{defi}[Jointure semi-sensible]
     Soient $R_1$ et $R_2$ deux relations temporelles,
 
-    Soit $f_{R_1}$ la transformation temporelle telle que $f_{R_1}(b)$ corresponde au dernier changement de $R_1$ inférieur ou égal à $b$,
+    Soit $\mathrm{change}_{R_1}$ la transformation temporelle telle que $\mathrm{change}_{R_1}(b)$ corresponde au dernier changement de $R_1$ inférieur ou égal à $b$,
 
     La jointure semi-sensible est définie par :
-        $$R_1\ssjoin R_2 = R_1 \Join \D^{f_{R_1}}(R_2)$$
+        $$R_1\ssjoin R_2 = R_1 \Join \D^{\mathrm{change}_{R_1}}(R_2)$$
 \end{defi}
 \begin{example}
     $$DeviceCPU=\IS(\Pi_{deviceId,deviceName,cpu}(CPU[B]\Join Applications)\ssjoin Devices)$$
