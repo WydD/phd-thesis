@@ -47,3 +47,5 @@ Le résultat est transformé en séquence d'n-uplet qui sera envoyée à la rela
 Sur certains SGBD, il est possible d'optimiser cette implémentation. Sur \textit{H2} par exemple, il est possible d'utiliser la syntaxe \sql{TABLE(A1 T1=?,...,An Tn=?)} pour représenter une table temporaire d'attributs $A_i$ et de types $T_i$ dont les données seront passés comme paramètres lors de l'exécution de la requête. Il est aussi possible d'accélerer l'opération de suppression via l'opération \sql{TRUNCATE} maintenant répendue parmis les SGBD populaires.
 
 \subsection{Composants puits de persistance}
+\subsubsection{Archives de flux}
+\subsubsection{Entretien du catalogue}
