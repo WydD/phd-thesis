@@ -52,7 +52,7 @@ Il est important de voir que ces classes nous permettent d'imaginer les mécanis
 \caption{Transformations des différentes dynamiques en Astral}\label{fig:contrib:asteroid:theorie:dynamics}
 \end{figure}
 
-\subsection{Schéma physique de la persistance}
+\subsection{Schéma physique de la persistance}\label{sec:contrib:asteroid:theorie:schema}
 La notion de dynamiques va directement impacter la structure du schéma de la base de donnée. Cette persistance va utilisée pour permettre de stocker et conserver deux catégories de données : le modèle descriptif et les historiques de flux.
 \subsubsection{Le schéma descriptif}
 Les données que nous avons décrites en tant que meta-données forment une description du système observé. Cette description servira de catalogue lors de l'interrogation du système. Elle contiendra l'ensemble des concepts du systèmes, leurs relations ainsi que leurs propriétés. D'un point de vue conceptuel, celui-ci peut-être structuré comme un schéma entité-relation qui pourra par la suite être traduit en schéma physique normalisé.

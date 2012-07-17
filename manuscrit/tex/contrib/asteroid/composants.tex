@@ -1,4 +1,6 @@
 \section{Composants Astronef}\label{sec:contrib:asteroid:composants}
+Dans cette section, nous présentons les différents composants développés pour permettre le couplage entre Astronef et un SGBD relationnel quelconque supportant \textit{SQL}. Nous présentons d'abord le composant capable de représenter une relation temporelle à partir d'une relation issue d'un SGBD. Nous détaillons le fonctionnement d'un opérateur permettant de faire une opération de jointure Astronef par le SGBD pour exploiter ses capacités. Enfin, nous décrivons les composants puits capables de faire de la persistance de données.
+
 \subsection{Source d'interrogation}
 Comme présenté dans la section~\ref{sec:contrib:asteroid:theorie:astral}, une relation de base de donnée peut être présentée comme une relation temporelle Astral. Il est ainsi possible d'imaginer un composant source de donnée \textit{dbsource} capable de représenter une telle relation temporelle. Cette source devra suivre l'évolution de la relation suivant différents modes. Son implémentation est une application directe des principes exposés jusqu'ici : lorsque la relation temporelle doit être mise à jour, le composant interroge le SGBD avec une requête \textit{SQL} telle que \sql{SELECT * FROM Relation}.
 
@@ -38,7 +40,7 @@ D'un point de vue Astral, cet opérateur permet d'effectuer l'opération suivant
         query & Requête \textit{SQL} à joindre sur le SGBD \\
         on & Expression de la condition de jointure (optionel)
     \end{tabular}
-    \caption{Paramètres du composant \textit{dbjoin}}\label{tab:contrib:asteroid:dbsource}
+    \caption{Paramètres du composant \textit{dbjoin}}\label{tab:contrib:asteroid:dbjoin}
 \end{table}
 
 Son implémentation peut différer selon les capacités fonctionnelles du SGBD. De façon générale, il est nécessaire d'utiliser une table temporaire \sql{Tmp} (en mémoire). Au moment de l'exécution de \textit{dbjoin}, l'opérateur insère les données de la séquence fournie dans \sql{Tmp}. Ensuite, il applique la requête \textit{SQL} suivante : \begin{center} \sql{SELECT * FROM Tmp AS l NATURAL JOIN (*query*) AS r ON (*on*)} \end{center}
@@ -46,6 +48,40 @@ Le résultat est transformé en séquence d'n-uplet qui sera envoyée à la rela
 
 Sur certains SGBD, il est possible d'optimiser cette implémentation. Sur \textit{H2} par exemple, il est possible d'utiliser la syntaxe \sql{TABLE(A1 T1=?,...,An Tn=?)} pour représenter une table temporaire d'attributs $A_i$ et de types $T_i$ dont les données seront passés comme paramètres lors de l'exécution de la requête. Il est aussi possible d'accélerer l'opération de suppression via l'opération \sql{TRUNCATE} maintenant répendue parmis les SGBD populaires.
 
-\subsection{Composants puits de persistance}
+\subsection{Puits de persistance}
+Enfin, nous présentons l'ensemble des composants puits de couplage. Ces composants ont pour but d'effectuer des opérations d'écritures dans la base de donnée. Deux catégories de composants sont décrits : les archives de flux ainsi que l'entretien du catalogue décrit par le schéma descriptif.
 \subsubsection{Archives de flux}
+La première utilisation de la persistance pour la gestion de flux de données reste avant tout l'historisation. Ces données sont importantes pour effectuer des analyses a posteriori.
+
+Le composant le plus direct dans cette application est \textit{streampersistence}. Celui-ci a pour but de faire persister un flux donné en entrée. Son fonctionnement est simple, pour chaque n-uplet, effectuer une action \sql{INSERT} dans le SGBD sur la table créée au préalable. Son seul paramètre de configuration est le nom de la table qui sera utilisé comme archive : \textit{table}.
+
+Cependant, nous avons présenté en section~\ref{sec:contrib:asteroid:theorie:schema} que les données temps réelles sont considérés comme des \textit{volatiles} dans le schéma physique. Ainsi, lors de leur mise en archive, il est nécessaire de créer leurs données d'enregistrement. Le composant \textit{volatilepersistence} a pour but de faire persister un flux donné tout en faisant cette mise à jour. Ses paramètres de configuration sont listés dans la table~\ref{tab:contrib:asteroid:volatilepersistence}.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{cl}
+        paramètre & description \\ \midrule
+        table & Nom de la table cible\\
+        volatiles & Liste des noms des \textit{volatiles} à enregistrer\\
+        attributes & Liste des attributs du flux correspondant à \textit{volatiles}\\
+        monitorableId & Attribut du flux correspondant à un \textit{monitorableId}
+    \end{tabular}
+    \caption{Paramètres du composant \textit{volatilepersistence}}\label{tab:contrib:asteroid:volatilepersistence}
+\end{table}
+
+Il est important de noter le paramètre \textit{monitorableId}. En effet, pour enregistrer une persistance de donnée dite \textit{volatile}, il est nécessaire que cette donnée soit une propriété attachée à un des concepts du système. Il est donc nécessaire avant de faire la persistance du flux d'associer son identifiant interne \textit{monitorableId}. Cette opération pourra se faire via une jointure avec le schéma descriptif.
+
 \subsubsection{Entretien du catalogue}
+Dans le schéma de la base de donnée, il y existe une description du système qui permet de modéliser le catalogue des entités du système et leurs liens. Cette base de donnée nécessite d'être mis à jour en fonction des observations que nous pouvons faire grâce aux flux remontés.
+
+Les opérations d'entretien du catalogue sont potentiellement complexe. En effet, la modélisation que l'utilisateur fait de son système est une vision qui ne correspond souvent pas à l'ensemble des données qu'il peut manipuler. L'exemple ci-dessous indique un des cas observé dans la pratique indiquant la difficulté de ce processus de mise à jour.
+
+\begin{example}
+Dans la modélisation que nous avons faite du réseau local domestique sur la figure~\ref{fig:contrib:asteroid:theorie:model}, nous avions les relations \textit{Devices} et \textit{Interfaces}. Cependant, l'utilisateur ne possède qu'un flux \textit{Network(applicationName,ipAddress)} lui indiquant l'arrivée de l'application \textit{applicationName} sur le réseau avec l'IP \textit{ip}.
+
+Il sera donc nécessaire pour chaque n-uplet de créer l'application si nécessaire (en supposant que le nom est un critère d'identification), puis de créer ou relier l'\textit{Interface} associée à l'adresse \textit{IP} fournie. Pour satisfaire les contraintes, il sera nécessaire de créer ou mettre à jour un \textit{Device} associé.
+\end{example}
+
+Ce problème est toutefois connu et pour la plupart résolu dans le domaine de la recherche fondamentale en base de données. En effet, ce problème est très similaire à  la traduction de mises à jours sur une vue~\cite{Keller:viewupdate}. Ce problème correspond au fait de traduire une mise à jour d'une vue matérialisé par un ensemble d'opérations.
+
+En l'état, aucun composant générique n'a été développé comme extension d'Astronef pour permettre cette opération, chaque cas de mise à jour est résolu de façon ad-hoc. Toutefois, une approche intéressante pourrait de se tourner vers les travaux du domaine de la mise à jour de vue. Par exemple,~\cite{Shu:viewupdate} propose une façon de résoudre ce problème par l'utilisation de solveur de contraintes. L'intégration des contraintes de sémantiques supplémentaires (unicité de l'\textit{IP}, ou du nom d'application par exemple) se traduit dans cette proposition par un simple ajout de contraintes.
