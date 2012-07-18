@@ -18,8 +18,7 @@ Afin de pouvoir réutiliser \textit{dbsource}, nous pouvons le rendre plus gén�
     \centering
     \begin{tabular}{ccl}
         mode & sémantique & paramètre supplémentaire \\ \midrule
-        hold & $\D^{\mathrm{id}}_{t\geq t_s}$ & \textit{at} : \textit{timestamp} correspondant à $t_s$ \\
-        freeze & $\D^{\mathrm{freeze}^{t_s}}_{t\geq t_s}$ & \textit{at} : \textit{timestamp} correspondant à $t_s$\\
+        oneshot & $\D^{\mathrm{freeze}^{t_s}}_{t\geq t_s}$ & \textit{at} : \textit{timestamp} correspondant à $t_s$\\
         trigger & $\D^{\mathrm{change}_{R_1,...,R_n}}$ & \textit{tables} : liste des relations $(R_i)$ à surveiller \\
         periodic & $\D^{\mathrm{period}^{r}}$ & \textit{rate} : période en seconde correspondant à $r$\\
         notify & $\D^{\mathrm{change}_{E}}$ & \textit{dependentRId} : identifiant du service de l'entité $E$

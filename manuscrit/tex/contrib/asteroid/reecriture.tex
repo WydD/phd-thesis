@@ -1,1 +1,75 @@
 \section{Plan d'exécution}\label{sec:contrib:asteroid:reecriture}
+Notre objectif est de pouvoir interroger toute entité de la façon la plus unifié possible grâce au langage Astral. Nous avons décrit dans la section précédente des composants capables de représenter toute requête \textit{SQL} en tant que relation temporelle, ainsi que d'effectuer une jointure avec une requête \textit{SQL}. Nous souhaitons exprimer la requête dans Astral et qu'Astronef puisse sélectionner un plan de requête efficace correspondant à la sémantique exacte.
+
+Comme nous ne souhaitons pas manipuler \textit{SQL} lors de l'expression de la requête, car cela ne fait pas parti du langage Astral, il nous faut traduire les nœuds sources. Pour cela, nous appliquons un sucre syntaxique permettant de traduire l'appel d'une relation \textit{Name} en composant \textit{dbsource} avec ses paramètres de configurations reflétant une mise à jour par \textit{trigger} :
+\begin{lstlisting}
+sugar(
+    [entity,{name: Name},[]],
+    [dbsource, {
+        'attributes': Attributes,
+        'tables': [Name],
+        'query': Query,
+        'mode': 'trigger'
+    },[]]
+):-
+    dbattributes(Name,Attributes), % Recupere la liste des attributs de cette relation
+    concat(["SELECT * FROM ", Name], Query). % Forme la requete SQL
+\end{lstlisting}
+Après l'application de cette règle, nous avons un arbre dont toutes les intéractions avec le SGBD se fait via ces nœuds \textit{dbsource} configurés pour être mis à jour à chaque changement. L'application du processus de construction de requête actuel nous permettra d'obtenir un résultat exact. Toutefois, ce plan peut ne pas être efficace car nous n'exploitons pas les capacités du SGBD. Nous présentons dans la suite de cette section l'heuristique principale que nous appliquons pour considérer qu'un plan est plus efficace. Nous détaillons sa mise en œuvre grâce aux règles d'Astronef. Enfin, nous analysons le cas particulier de la jointure mixte entre Astronef et un SGBD pour laquelle l'heuristique n'est pas applicable dans le cadre général.
+
+\subsection{Heuristique principale}
+Notre heuristique que nous choisissons est le fait que pour une requête relationnelle le SGBD sait calculer de façon plus efficace une requête. 
+\begin{hyp}[Heuristique de l'utilisation prioritaire du SGBD]\label{hyp:sgbd}
+    Plus les opérations sont déléguées au SGBD plus le plan de requête est efficace dans le cas général.
+\end{hyp}
+Ce choix est argumenté par le fait que le SGBD a sûrement pré-calculé des index et autres structures pour rendre les calculs plus rapides. Ce qui fait que les opérations de sélection ou de jointures seront très efficaces comparé à un calcul à la volée. Cette heuristique s'inspire de l'hypothèse~\ref{hyp:optimpush} permettant de pousser les projections et sélections au plus proche des sources.
+
+D'un point de vue théorique, nous avons décrit que le composant \textit{dbsource} supporte la classe des opérateurs relationnels ainsi que l'application de l'opérateur $\D^f_c$. 
+
+\subsection{Règles de macro-blocs pour le placement d'opérateurs}
+L'application de l'heuristique consiste à transformer un bloc \lstinline|[A,B,[[dbsource,Config,[]],...]]| avec \lstinline|[A,B,_]| opérateur supporté par \textit{dbsource} en un seul \lstinline|[dbsource,NewConfig,[]]|. Ceci correspond à la spécification de macro-blocs. Il existe deux types de transformations : celles modifiant la requête, celles modifiants le mode. Pour mettre en œuvre, nous utilisons le prédicat \textbf{macrogroup} faisant appel à deux prédicats modifiant la requête ou le mode.
+
+Voyons tout d'abord la modification de requête dans \textit{dbsource}. Nous définissons un prédicat capable de transformer les requêtes des sources en une nouvelle. Naturellement, la règle \textbf{macrogroup} devra transmettre les attributs et conserver les anciens paramètres de configuration.
+\begin{regle}[Modification de la requête de dbsource]
+    Soit $[A,B,C]$ un nœud dont tous les fils sont de type \textit{dbsource} avec pour requêtes \textit{Queries},
+
+    La transformation du macro-bloc $[A,B,C]$ en $[dbsource,Config,[]]$ est assuré par le prédicat suivant :
+    \begin{center} \textbf{dboperator}($[A,B,C], Queries, NewQuery$). \end{center}
+    Avec l'attribut \textit{query} de $Config$ égal à $NewQuery$.
+\end{regle}
+
+\begin{example}
+    Nous souhaitons pousser une sélection sur le SGBD. Cette opération est faite par l'application de la clause \sql{WHERE} sur la requête \textit{SQL} actuelle. Par mesure de simplification, nous pouvons considérer la requête d'entrée comme une sous-requête à placer dans \textit{FROM}. Nous obtenons la règle de transformation suivante :
+    \begin{lstlisting}
+dboperator([sigma,B,_], [Query], NewQuery):- !,
+    map_get(B, 'condition', Cond),
+    conditionsql(Cond, Sql), % Traduit la condition en SQL
+    concat(['SELECT * FROM (', Query, ') v WHERE ', Sql], NewQuery).
+    \end{lstlisting}
+
+    Si le SGBD possède un optimiseur suffisamment puissant, il sera capable de traiter efficacement cette nouvelle requête.
+\end{example}
+
+Il est intéressant de voir qu'il n'est pas évident de transformer des opérateurs binaires. Notamment, il est difficile de transformer la requête suivante $(\D^{f_1} R_1)\Join (\D^{f_2} R_2)$ (avec $f_1\neq f_2$) en $\D^{f} R$. Nous nous limiterons donc au cas où les modes appliqués au composant \textit{dbsource} sont égaux (typiquement \textit{trigger} ou \textit{freeze}).
+
+Nous nous intéressons maintenant à l'application de l'opération $\D^f_c$ au composant \textit{dbsource} ce qui correspond à un changement de mode. L'application du prédicat \textbf{dbsourcemode} permet de traduire la sémantique de l'opérateur $\D^f_c$ par le mode de \textit{dbsource}.
+\begin{regle}[Modification du mode de dbsource]
+    Soit $[timetransform,B,[dbsource, Config, []]]$ un nœud de manipulation temporelle dont la transformation temporelle est de type $T$ et dont les paramètres est $Parameters$
+
+    La transformation du macro-bloc $[timetransform,B,[dbsource, Config, []]]$ en $[dbsource,NewConfig,[]]$ est assuré par le prédicat suivant :
+    \begin{center} \textbf{dbsourcemode}($T, Parameters, Config, NewConfig$).\end{center}
+\end{regle}
+\begin{example}
+    Nous souhaitons effectuer une requête instantannée sur le SGBD et d'en produire la relation temporelle associée. Nous écrivons donc la règle suivante :
+    \begin{lstlisting}
+dbsourcemode("freeze", {'at': Time}, Config, NewConfig):- !,
+    map_merge(Config, {
+        'at': Time,
+        'mode': "oneshot"
+    }, NewConfig).
+    \end{lstlisting}
+\end{example}
+
+Une application intéressante de cet ensemble de règle est le fait de pouvoir traduire une requête Astral relationnelle pure en \textit{SQL}. Notamment, si toutes les sources issues du SGBD sont utilisés sous forme de requête instantanée (ou si l'opérateur $\D^{freeze}$ est appliqué en tête de la requête) : nous sommes capables d'exécuter nativement une requête instantannée Astral par le SGBD. Notons toutefois que le surcoût induit par l'applications de règles ainsi que le surcoût apporté par une requête \textit{SQL} potentiellement plus lourde à analyser fait qu'il sera plus lourd de faire cette opération dans la pratique.
+
+\subsection{Cas de la jointure mixte flux-SGBD}
