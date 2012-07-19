@@ -1,4 +1,5 @@
 \section{Formalisation théorique}\label{sec:contrib:asteroid:theorie}
+Dans cette section, nous présentons les fondamentaux théoriques pour permettre l'intégration d'un support persistant relationnel dans Astral et dans notre architecture. Tout d'abord, nous présentons en détail les différents motifs d'évolutions des données persistantes ou temps réel. Ces motifs auront des impacts sur le schéma de la base de donnée utilisé pour la persistance que nous présentons par la suite. Enfin, nous décrivons comment une relation persistante sera représentée en tant que relation temporelle.
 
 \subsection{Dynamique des données}
 Dans un système, nous avons vu que les données peuvent être persistantes ou temps réel. Nous remarquons aussi que les données évoluent suivant des schémas différents qui vont influencer la manière de les manipuler par la suite. Notamment, cela a un impact non négligeable sur le schéma utilisé dans le SGBD relationnel pour le support de persistance.
