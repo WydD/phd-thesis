@@ -12,7 +12,7 @@ sugar(
         'mode': 'trigger'
     },[]]
 ):-
-    dbattributes(Name,Attributes), % Recupere la liste des attributs de cette relation
+    dbattributes(Name,Attributes), % Recupere les attributs de cette relation
     concat(["SELECT * FROM ", Name], Query). % Forme la requete SQL
 \end{lstlisting}
 Après l'application de cette règle, nous avons un arbre dont toutes les intéractions avec le SGBD se fait via ces nœuds \textit{dbsource} configurés pour être mis à jour à chaque changement. L'application du processus de construction de requête actuel nous permettra d'obtenir un résultat exact. Toutefois, ce plan peut ne pas être efficace car nous n'exploitons pas les capacités du SGBD. Nous présentons dans la suite de cette section l'heuristique principale que nous appliquons pour considérer qu'un plan est plus efficace. Nous détaillons sa mise en œuvre grâce aux règles d'Astronef. Enfin, nous analysons le cas particulier de la jointure mixte entre Astronef et un SGBD pour laquelle l'heuristique n'est pas applicable dans le cadre général.
@@ -50,7 +50,7 @@ dboperator([sigma,B,_], [Query], NewQuery):- !,
     Si le SGBD possède un optimiseur suffisamment puissant, il sera capable de traiter efficacement cette nouvelle requête.
 \end{example}
 
-Il est intéressant de voir qu'il n'est pas évident de transformer des opérateurs binaires. Notamment, il est difficile de transformer la requête suivante $(\D^{f_1} R_1)\Join (\D^{f_2} R_2)$ (avec $f_1\neq f_2$) en $\D^{f} R$. Nous nous limiterons donc au cas où les modes appliqués au composant \textit{dbsource} sont égaux (typiquement \textit{trigger} ou \textit{freeze}).
+Il est intéressant de voir qu'il n'est pas évident de transformer des opérateurs binaires. Notamment, il est difficile de transformer la requête suivante $(\D^{f_1} R_1)\Join (\D^{f_2} R_2)$ (avec $f_1\neq f_2$) en $\D^{f} R$. Nous nous limiterons donc au cas où les modes appliqués au composant \textit{dbsource} sont égaux (typiquement \textit{trigger} ou \textit{oneshot}).
 
 Nous nous intéressons maintenant à l'application de l'opération $\D^f_c$ au composant \textit{dbsource} ce qui correspond à un changement de mode. L'application du prédicat \textbf{dbsourcemode} permet de traduire la sémantique de l'opérateur $\D^f_c$ par le mode de \textit{dbsource}.
 \begin{regle}[Modification du mode de dbsource]
@@ -70,6 +70,53 @@ dbsourcemode("freeze", {'at': Time}, Config, NewConfig):- !,
     \end{lstlisting}
 \end{example}
 
-Une application intéressante de cet ensemble de règle est le fait de pouvoir traduire une requête Astral relationnelle pure en \textit{SQL}. Notamment, si toutes les sources issues du SGBD sont utilisés sous forme de requête instantanée (ou si l'opérateur $\D^{freeze}$ est appliqué en tête de la requête) : nous sommes capables d'exécuter nativement une requête instantannée Astral par le SGBD. Notons toutefois que le surcoût induit par l'applications de règles ainsi que le surcoût apporté par une requête \textit{SQL} potentiellement plus lourde à analyser fait qu'il sera plus lourd de faire cette opération dans la pratique.
+Une application intéressante de cet ensemble de règle est le fait de pouvoir traduire une requête Astral relationnelle pure en \textit{SQL}. Notamment, si toutes les sources issues du SGBD sont utilisés sous forme de requête instantanée (ou si l'opérateur $\D^{(t_0,0)}$ est appliqué en tête de la requête) : nous sommes capables d'exécuter nativement une requête instantannée Astral par le SGBD. Notons toutefois que le surcoût induit par l'application de règles ainsi que le surcoût apporté par une requête \textit{SQL} potentiellement plus lourde à analyser fait qu'il sera plus long de faire cette opération par ce biais en la pratique.
 
 \subsection{Cas de la jointure mixte flux-SGBD}
+Nous avons jusqu'ici présenté les optimisations envisageables grâce à la flexibilité de \textit{dbsource}. Toutefois, nous sommes aussi en possession d'un composant opérateur que nous pouvons exploiter : \textit{dbjoin}. Nous avons défini la sémantique de l'opérateur comme capable de supporter toute requête $R_1\ssjoin R_2$ avec $R_2$ exprimé en algèbre relationnelle sur les relations de la base de donnée. Ce composant est donc un macro-bloc que nous pouvons former grâce à une règle.
+
+Afin d'illustrer l'application successives des règles, voici l'ensemble des résultats intermédiaires appliqués lors du raisonnement :
+\begin{align*} 
+R_1\ssjoin_c R_2 &= \sigma_c \left(R_1 \Join \D^{\mathrm{change}}_{R_1} R_2\right) & \text{(via \textbf{sugar})}\\
+& =  R_1 \Join_c \D^{\mathrm{change}}_{R_1} R_2 & \text{(via \textbf{pushselection})}\\
+& =  R_1 \Join_c \D^{\mathrm{change}}_{R_1} \textbf{dbsource}_{trigger}^{Q} & \text{(via \textbf{dboperator})}\\
+& =  R_1 \Join_c \textbf{dbsource}_{notify(R_1)}^{Q} & \text{(via \textbf{dbsourcemode})}
+\end{align*}
+
+Enfin, l'application d'une dernière règle va nous permettre de transformer cette jointure en : $\textbf{dbjoin}^Q_c (R_1)$. Cette règle est exprimée grâce au prédicat \textbf{macrogroup} :
+
+\begin{lstlisting}
+macrogroup(
+    [join,JoinConfig,[
+        [A,LeftConfig,C],
+        [dbsource,DBConfig,[]]
+    ]],
+    [dbjoin,NewConfig,[[A,LeftConfig,C]]]
+):- % Si...
+    map_get(DBConfig, "mode", "notify"), % Le mode de dbsource est notify
+    map_get(DBConfig, "dependentRId", RId), % Et notify pointe sur...
+    map_get(LeftConfig, "rid", RId), % ... l'entite de gauche,
+    !, % alors...
+    map_get(DBConfig, "query", Query), % Recuperation de la requete
+    map_get(JoinConfig, "attributes", Attr), % Recupere les attributs
+    map_get(JoinConfig, "condition", "1==1", Cond), % Condition
+        % (...par defaut, la condition est vraie donc 1=1 si elle est manquante)
+    conditionsql(Cond, CondSQL), % Transformation en SQL
+    map_merge(JoinConfig, { % Ajout des nouveaux parametres de configuration
+        'query': Query,
+        'condition': CondSQL, 
+        'attributes': Attr,
+    }, NewConfig).
+\end{lstlisting}
+
+Toutefois, l'application systématique de cette règle n'est pas évidente. Pour effectuer l'opération de jointure (semi-sensible) entre une relation temporelle et un SGBD, il existe donc deux plans de requête :
+\begin{itemize}
+    \item[\textbf{P1}] Une jointure relationnelle usuelle (par exemple, jointure hashée) est appliquée entre la relation temporelle et un nœud \textit{dbsource} configuré en mode \textit{notify}.
+    \item[\textbf{P2}] Un \textit{dbjoin} configuré avec la bonne requête \textit{SQL} est appliqué sur la relation temporelle.
+\end{itemize}
+
+En effet, si le contenu des relations de la base de donnée n'est pas sujet à changement, alors il devient raisonnable de dire que la création d'une vue matérialisé en mémoire du résultat intermédiaire peut améliorer les performances avec le plan \textit{P1}. Cette vue sera utilisé comme un cache local. L'opérateur de jointure pourra créer des accès plus optimisés comme des tables de hachages pour minimiser son coût. Toutefois, la construction de cette vue peut être lourd car une requête va être exécutée sur le SGBD et la taille de son résultat peut être massive.
+
+A contrario, si nous appliquons un \textit{dbjoin} avec le plan \textit{P2}, la sélection des n-uplets fait que la taille du résultat sera minimisé comparé au plan \textit{P1}. Les résultats intermédiaires pourront être optimisés par le SGBD. Toutefois, cette requête sera exécutée pour chaque n-uplet ce qui peut avoir un coût important. Même avec des stratégies de cache évolués du côté du SGBD, il est possible d'avoir un état de la relation entrante différent pour chaque requête ce qui le rendra difficile d'exploiter des caches.
+
+Notre analyse empirique nous indique que pour des taux de mise à jour rares, le plan \textit{P1} semble plus performant ; et que pour les taux de mise à jour plus fréquent, le plan \textit{P2} semble être un meilleur compromis. Ce point est validé et affiné par les expérimentations que nous menons dans le chapitre~\ref{chap:valid:performances}.

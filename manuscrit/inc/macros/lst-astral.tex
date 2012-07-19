@@ -4,12 +4,13 @@
   morestring=[b]",
   morestring=[s]{>}{<},
   morecomment=[s]{<?}{?>},
-  morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union}% list your attributes here
+  morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union,dbjoin,dbsource}
 }
 
 \lstdefinelanguage{PrologAstral}[]{Prolog}{
    morekeywords={!,\_,:-},
-   morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union,aggregate,windowaggregate},% list your attributes here
-   morekeywords=[2]{pushselectionrule,typerules,attribrules,sugar,pushprojectionrule,macrogroup,implrules,optimizationrule,dynamicoperator,isdynamic}
+   morekeywords={pi,sigma,streamer,ssjoin,window,description,source,rho,rename,entity,join,union,aggregate,windowaggregate,dbjoin,dbsource},
+   morekeywords=[2]{pushselectionrule,typerules,attribrules,sugar,pushprojectionrule,macrogroup,implrules,optimizationrule,dynamicoperator,isdynamic},
+   morekeywords={map_get,map_merge,map_put,map_remove,dbattributes,conditionsql,list_equivalent,allequal}
 }
 \def\sql#1{\lstinline[language=SQL,basicstyle=\normalsize\ttfamily\upshape]|#1|}
