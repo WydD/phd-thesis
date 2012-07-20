@@ -1,10 +1,13 @@
+\def\critereA{Représentation des données}
 \def\critereAA{Modèle de données}
 \def\critereAB{Schéma contextuel}
-\def\critereAC{Dynamique}
+\def\critereAC{Gestion de l'évolution}
+\def\critereB{Traitement des données}
 \def\critereBA{Modes d'interrogation}
 \def\critereBB{Intégration de sources}
 \def\critereBC{Langage et paradigme}
 \def\critereBD{Pouvoir expressif}
+\def\critereC{Adaption à l'application}
 \def\critereCA{Adaptation au système}
 \def\critereCB{Gestion de perspectives}
 \def\critereCC{Extensibilité}
@@ -19,20 +22,20 @@
 \end{tabular}
 \end{center}}
 \def\criteretabDonnee#1#2#3{
-\criteretab{Structure des données}{
+\criteretab{\critereA}{
 \critereAA & #1  \\ \midrule
 \critereAB & #2 \\ \midrule
 \critereAC & #3}
 }
 \def\criteretabTraitement#1#2#3#4{
-\criteretab{Traitement}{
+\criteretab{\critereB}{
 \critereBA & #1  \\ \midrule
 \critereBB & #2 \\ \midrule
 \critereBC & #3 \\ \midrule
 \critereBD & #4}
 }
 \def\criteretabAdaptabilite#1#2#3#4{
-\criteretab{Adaptabilité}{
+\criteretab{\critereC}{
 \critereCA & #1  \\ \midrule
 \critereCB & #2 \\ \midrule
 \critereCC & #3 \\ \midrule

@@ -1,0 +1,17 @@
+#/bin/bash
+FILE=$1
+I=1
+while read -r line; do
+    varline=$( echo $line | sed 's/\\/\\\\/g' )
+    echo $line \
+        | detex -ns \
+        | tr -s '[:punct:][:space:]' '\n' \
+        | french-deconjugator \
+        | grep -v "^\$" \
+        | grep future \
+        | sed 's/,//g' \
+        | awk -v f=$FILE -v i=$I -v li="$varline" 'BEGIN{IFS=","; OFS="\t"} {c=index(li,$1); print f ":" i ":" c,$1,$2,$6}'
+
+    I=$(( $I+1 ))
+done < $FILE
+
