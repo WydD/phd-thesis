@@ -1,7 +1,9 @@
 #/bin/bash
 FILE=$1
 I=1
+N=`wc -l $FILE | awk '{print $1}'`
 while read -r line; do
+    printf "Scanning line $I/$N\r"
     varline=$( echo $line | sed 's/\\/\\\\/g' )
     echo $line \
         | detex -ns \
@@ -10,7 +12,7 @@ while read -r line; do
         | grep -v "^\$" \
         | grep future \
         | sed 's/,//g' \
-        | awk -v f=$FILE -v i=$I -v li="$varline" 'BEGIN{IFS=","; OFS="\t"} {c=index(li,$1); print f ":" i ":" c,$1,$2,$6}'
+        | awk -v f=$FILE -v i=$I -v li="$varline" 'BEGIN{IFS=","; OFS="    "} {c=index(li,$1); print f ":" i ":" c,$1}'
 
     I=$(( $I+1 ))
 done < $FILE

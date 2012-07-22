@@ -1,5 +1,5 @@
 98c98,99
-<             d.infinitive
+<             << d.infinitive
 ---
 >             << inputWord
 >             << ", " << d.infinitive
