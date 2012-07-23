@@ -2,23 +2,22 @@
 FILE=$1
 SOURCE="${BASH_SOURCE[0]}"
 DIR="$( dirname "$SOURCE" )"
-
 while read -r line;
 do
 PATTERN=$line
-grep -nRH "$PATTERN" --include=*.tex $1 | grep -v "\-$PATTERN\-" | grep -v ":$PATTERN:" | \
-	awk -v pattern="$PATTERN" 'BEGIN{FS=":";} 
+#grep -nRH "$PATTERN" --include=*.tex $1 | grep -v "\-$PATTERN\-" | grep -v ":$PATTERN[\:}]" | \
+grep -nH "$PATTERN" $1 | grep -v "\-$PATTERN\-" | grep -v ":$PATTERN[\:}]" | \
+	awk -v pattern="$PATTERN" 'BEGIN{FS=":";OFS=":";}
 		{
-			i=length($1)+length($2)+2; 
-			str=substr($0,i,length($0)-i); 
+			i=length($1)+length($2)+3;
+			str=substr(tolower($0),i,length($0)-i);
 			c=index(str,pattern);
 			i=0;
 			while(c > 0) {
-				i=i+c;
-				found=substr(str,c,length(pattern)+20);
-				print $1 ":" $2 ":" i "    " found;
+				i=i+c-1;
+				print $1,$2,i,pattern,"motif à éviter";
 				str=substr(str,c+1,length(str)-c-2);
 				c=index(str,pattern);
 			}
 		}'
-done < $DIR/../searchbadpatterns/badpatterns.txt
+done < $DIR/../searchbadpatterns/badpatterns.txt | sort -t : -k 2 -k 3 -n

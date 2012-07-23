@@ -1,0 +1,34 @@
+#!/bin/bash
+printcontext() {
+while read -r LINE; do
+	IFS=":" read -ra arr <<< "$LINE"
+    sed -n "${arr[1]}p" "${arr[0]}" | awk -v c="${arr[2]}" -v head="${arr[0]}:${arr[1]}:${arr[2]}" -v pattern="${arr[3]}" -v type="${arr[4]}" '{
+				if(c >= 20) {
+					before=substr($0,c-19,20);
+				} else {
+					before=substr($0,1,c);
+				}
+				after=substr($0,c+1+length(pattern),25-length(pattern));
+				printf "%-30s%20s%-45s%s\n", head, before, "\033[1;31m" pattern "\033[0m" after, type;
+			}';
+done
+}
+VERBS=0
+PATTERNS=1
+while getopts "vo" opt; do
+        case $opt in
+                v) VERBS=1;;
+		o) PATTERNS=0;;
+		?) exit 1;;
+        esac
+done
+shift $(( OPTIND-1 ))
+FILE=$1
+
+((if [[ $VERBS == 1 ]]; then
+	detectverbs $FILE;
+fi) && \
+(if [[ $PATTERNS == 1 ]]; then
+	searchbadpatterns $FILE;
+fi)
+) | printcontext | sort -t : -k 2 -k 3 -n
