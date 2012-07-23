@@ -12,7 +12,7 @@ while read -r line; do
         | grep -v "^\$" \
         | grep future \
         | sed 's/,//g' \
-        | awk -v f=$FILE -v i=$I -v li="$varline" '
+        | gawk -v f=$FILE -v i=$I -v li="$varline" '
 		BEGIN{IFS=","; OFS="    "} {
 		c=index(li,$1)-1;
 		print f ":" i ":" c ":" $1 ":verbe au futur";

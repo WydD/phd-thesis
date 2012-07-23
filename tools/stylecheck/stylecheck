@@ -2,7 +2,7 @@
 printcontext() {
 while read -r LINE; do
 	IFS=":" read -ra arr <<< "$LINE"
-    sed -n "${arr[1]}p" "${arr[0]}" | awk -v c="${arr[2]}" -v head="${arr[0]}:${arr[1]}:${arr[2]}" -v pattern="${arr[3]}" -v type="${arr[4]}" '{
+    sed -n "${arr[1]}p" "${arr[0]}" | gawk -v c="${arr[2]}" -v head="${arr[0]}:${arr[1]}:${arr[2]}" -v pattern="${arr[3]}" -v type="${arr[4]}" '{
 				if(c >= 20) {
 					before=substr($0,c-19,20);
 				} else {

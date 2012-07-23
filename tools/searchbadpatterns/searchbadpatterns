@@ -7,7 +7,7 @@ do
 PATTERN=$line
 #grep -nRH "$PATTERN" --include=*.tex $1 | grep -v "\-$PATTERN\-" | grep -v ":$PATTERN[\:}]" | \
 grep -nH "$PATTERN" $1 | grep -v "\-$PATTERN\-" | grep -v ":$PATTERN[\:}]" | \
-	awk -v pattern="$PATTERN" 'BEGIN{FS=":";OFS=":";}
+	gawk -v pattern="$PATTERN" 'BEGIN{FS=":";OFS=":";}
 		{
 			i=length($1)+length($2)+3;
 			str=substr(tolower($0),i,length($0)-i);
