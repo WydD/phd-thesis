@@ -1,4 +1,4 @@
-\section{Conclusion}
+\section{Conclusion}\label{sec:rw:sgfd:synthese}
 Après 20 années de recherche, la gestion de flux de données devient désormais suffisamment mature pour être appliqué massivement. Plusieurs produits commerciaux sont d'ailleurs maintenant utilisés en production. Toutefois, nous pouvons nous rendre compte que la complexité théorique de ces systèmes a été sous-estimé. De nombreux modèles ont été décrit pour représenter les flux de données et leurs traitements. Ces modèles sont encore remis en questions aujourd'hui au fur et à mesure des applications concrètes. Certains points sont encore manquants :
 \begin{itemize}
 \item[\textbf{Le fenêtrage}] : malgré les efforts récurrents de formalisation de cet opérateur, la sémantique reste souvent restreinte à la fenêtre glissante. Qu'en est-il des fenêtres moins conventionnelles mélangeant à la fois les positions et le temps ? Ce type de fenêtre apparait pourtant dans des systèmes d'observation \textit{fenêtre sur 5 données, toutes les 3 minutes}.
@@ -14,7 +14,7 @@ Similairement, les contributions sur l'optimisation de traitement des requêtes 
 
 Notre contribution technique se focalise sur trois points principaux :
 \begin{itemize}
- \item[\textbf{Modélisation}] : Création d'Astral, algèbre de traitement des requêtes continues sur flux et relations temporelles. Nous accordons de l'importance sur la prise en compte des problèmes relevés en section~\ref{sec:rw:sgfd:modeles:synthese}. Cette algèbre est présenté dans le chapitre~\ref{chap:contrib:astral}
+ \item[\textbf{Modélisation}] : Création d'Astral, algèbre de traitement des requêtes continues sur flux et relations temporelles. Nous accordons de l'importance sur la prise en compte des problèmes relevés dans cette section. Cette algèbre est présenté dans le chapitre~\ref{chap:contrib:astral}
  \item[\textbf{Exécution}] : Mise en œuvre de l'intergiciel Astronef pour construire et exécuter efficacement une requête exprimée avec l'algèbre Astral. Ainsi, à partir d'une requête algébrique, il est possible de sélectionner le plan de requête qui semble le plus efficace grâce aux connaissances accumulés. Cette mise en œuvre est développée dans le chapitre~\ref{chap:contrib:astronef}.
  \item[\textbf{Persistance}] : Conception de l'extension Asteroid permettant l'intégration des requêtes continues sur flux et des requêtes sur support relationnel persistant. Ceci permet de gérer la représentation du système observé ainsi que l'historisation des données dynamiques. Le support mathématique de cette intégration est effectué par Astral et sa mise en œuvre par Astronef. Cette intégration est effectuée dans le chapitre~\ref{chap:contrib:asteroid}.
 \end{itemize}
