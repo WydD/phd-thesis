@@ -66,7 +66,7 @@ La fonction $\gamma$ est définie par une liste de points. Cette définition est
 Dans certains systèmes d'observations~\cite{Jurdak:sumac}, il est courant de récupérer les données par vague. Ainsi, dans les interfaces d'observations, nous pouvons régulièrement voir des séquences de fenêtres \enquote{les $n$ derniers n-uples toutes les $m$ secondes}. Pour formaliser une telle séquence, il n'est pas nécessaire d'utiliser une DSF générique car l'évaluation reste périodique. Voici la description de la séquence précédemment décrite :
 
 \DSF{r=m}
-	{\beta(j) = \rtau^{-1}(mj+t_0)}
+	{\beta(j) = \rtau(mj+t_0)}
 	{\alpha(j)= \max(\rtau_S(mj+t_0)-n,0)}
 
 Le taux est temporel et les bornes sont positionnelles. Le pont entre les domaines est assuré par l'opérateur grâce aux fonctions $\tau_S$ et $\rtau_S$. Dans ce cas, l'expression $\rtau_S(mi+t_0)$ donne la position à un \textit{timestamp} donné. La remarque concernant le $\max$ que nous avions faite plus tôt reste valable ici.
