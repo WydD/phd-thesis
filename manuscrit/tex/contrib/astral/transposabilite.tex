@@ -8,11 +8,11 @@ Afin d'illustrer le fait que l'idée d'effectuer des équivalences de requêtes 
 
 Ainsi, nous sommes capable d'établir l'équivalence entre deux requêtes (def~\ref{def:equivalencegenerale}) si effectivement les résultats sont équivalents à partir d'un certain moment. Pour cela, nous définissons qu'il existe un \textit{timestamp} pour lequel, l'initialisation des entités (grâce à $\sigma$ et $\D$) à celui-ci impliquera une équivalence des résultats.
 \begin{defi}[Équivalence de requêtes générale]\label{def:equivalencegenerale}
-    Soient $E_1$ et $E_2$ deux ensembles d'entités, et $(Q_1,t_1)$ et $(Q_2,t_2)$ deux requêtes quelconques,
+    Soient $(Q_1(E_1),t_1)$ et $(Q_2(E_2),t_2)$ deux requêtes quelconques,
 
-    Soit $\E_t$ l'opérateur égal à $\begin{cases} \sigma_{\t\geq t} & \textrm{ si les requêtes sont des flux}\\ \D_{t\geq t}^{(t,i)} & \textrm{  si les requêtes sont des relations}\end{cases}$
+    Soit $\E_t$ l'opérateur égal à $\begin{cases} \sigma_{t\geq \t} & \textrm{ si les requêtes sont des flux}\\ \D_{t\geq \t}^{(t,i)} & \textrm{  si les requêtes sont des relations}\end{cases}$
 
-    Alors l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1, t_1) \subseteqq (\E_t\  Q_2, t_2)$$
+    Alors l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1(E_1), t_1) \subseteqq (\E_t\  Q_2(E_2), t_2)$$
 
     L'équivalence de requêtes est définie par double inclusion.
 \end{defi}

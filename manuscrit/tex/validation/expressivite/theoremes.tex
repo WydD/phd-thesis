@@ -1,15 +1,186 @@
 \section{Propositions et théorèmes}
+\subsection{Transmission du temps}
+La définition~\ref{def:stamping} de la réécriture
+\begin{thm}[Transmission temporelle des \textit{streamers}]\label{thm:transmission}
+    Soit $S$ un flux,
+
+    Soit $]\!\![\alpha,j+k,1]$ une DSF positionnelle avec $\alpha$ croissante et $k$ un entier, 
+
+    Considérant $S'$ le flux formé par la requête $\IS(S]\!\![\alpha,i+k,1])$,
+
+    Si un n-uplet réécrit de $S'$ a pour \textit{batch} $(t,i)$ alors, ce n-uplet avait originellement pour \textit{batch} $(t,i)$ dans $S$. Formellement :
+$$\Psi_{(t,i)}(s,t) \wedge \B{S'}(\Psi_{(t,i)}(s,t)) = (t,i) \im s\in S \wedge \BS(s) = (t,i)$$
+
+    Cette propriété est aussi valable pour $\RSu(S[B])$.
+\end{thm}
+
+\begin{coro}[Équivalence de la composition fenêtre-\textit{streamer}]
+    Sachant une composition de fenêtre-streamers respectant les conditions du théorème~\ref{thm:transmission},
+
+    Si $\alpha$ est telle que la séquence de fenêtre contient $[B]$, alors,
+$$S \equiv \IS(S]\!\![\alpha,i+k,1n]) \equiv \IS(S[B]) \equiv \IS(S[\infty]) \equiv \RSu(S[B])$$
+
+\end{coro}
+
+\begin{example}
+Reprenons l'exemple vu dans la section~\ref{sec:contrib:astral:definitions:exemple} avec le flux \textbf{CPU}(appId, cpu, $\t$). En prenant la fenêtre $[B]$, le corollaire nous assure que $\IS(S[B])=S$. L'insertion d'un n-uplet dans le flux est effectuée à un \textit{batch} égal au \textit{batch} du n-uplet initial. Ainsi, l'opérateur $\IS$ écrasera le \textit{timestamp} avec celui du \textit{batch}. Voici la suite des états par lesquels passe la relation temporelle $CPU[B]$, ainsi que le flux résultant de $\IS(CPU[B])$ :
+$$CPU(\textrm{id},\textrm{cpu},\t)=\{(1,v1,3);(2,v2,9);(1,v3,10);(3,v4,12);...\}$$
+\noindent\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$CPU[B](3)$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|}
+\hline
+id & cpu & $\t$ \\
+\hline
+$1$ & $v1$ & $3$ \\
+\hline
+\end{tabular}\end{center}
+\end{minipage} % Ne pas sauter de ligne !
+\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$CPU[B](9)$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|}
+\hline
+id & cpu & $\t$ \\
+\hline
+$2$ & $v2$ & $9$ \\
+\hline
+\end{tabular}\end{center}
+\end{minipage} % Ne pas sauter de ligne !
+\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$CPU[B](10)$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|}
+\hline
+id & cpu & $\t$ \\
+\hline
+$1$ & $v3$ & $10$ \\
+\hline
+\end{tabular}\end{center}
+\end{minipage} % Ne pas sauter de ligne !
+\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$\IS(CPU[B])$: \\
+\begin{tabular}{|c|c|c|}
+\hline
+id & cpu & $\t$ \\ \hline
+$1$ & $v1$ & $3$ \\ \hline
+$2$ & $v2$ & $9$ \\ \hline
+$1$ & $v3$ & $10$ \\ \hline
+... & ... & ... \\ \hline
+\end{tabular}\end{center}
+\end{minipage} % Ne pas sauter de ligne !
+
+Nous avons vu que la propriété était effectivement vraie. Voyons maintenant un contre-exemple avec une fenêtre ne respectant pas les conditions du théorème. Nous considérons maintenant l'utilisation de la fenêtre temporelle glissante de $2$ secondes : $[T\ 2s\ 2s]=[W]$. Comme la production d'un n-uplet dans un \textit{streamer} sensible est dirigée par les changements de fenêtres, alors le \textit{timestamp} des n-uplets produits est le moment où le contenu de la fenêtre change. Dans le cas d'une fenêtre changeant toutes les $2$ secondes, cela ne correspond pas au \textit{timestamp} original.
+
+Voici la suite des états par lesquels passe la relation temporelle $CPU[W]$, ainsi que le flux résultant de $\IS(CPU[W])$ :
+
+\noindent\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$CPU[W](4)$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|c|}
+\hline
+id & cpu & $\t$ \\
+\hline
+$1$ & $v1$ & $3$ \\
+\hline
+\end{tabular}\end{center}
+\end{minipage}  % Ne pas sauter de ligne !
+\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$CPU[W](10)$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|c|}
+\hline
+id & cpu & $\t$ \\
+\hline
+$2$ & $v2$ & $9$ \\ \hline
+$1$ & $v3$ & $10$ \\ \hline
+\end{tabular}\end{center}
+\end{minipage} % Ne pas sauter de ligne !
+\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$CPU[W](12)$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|c|}
+\hline
+id & cpu & $\t$ \\
+\hline
+$3$ & $v4$ & $12$ \\ \hline
+\end{tabular}\end{center}
+\end{minipage} % Ne pas sauter de ligne !
+\begin{minipage}[c]{0.24\linewidth}
+\begin{center}$\IS(CPU[W])$: \\ \vspace{1em}
+\begin{tabular}{|c|c|c|c|} \hline
+id & cpu & $\t$ \\ \hline
+$1$ & $v1$ & $4$ \\ \hline
+$2$ & $v2$ & $10$ \\ \hline
+$1$ & $v3$ & $10$ \\ \hline
+$3$ & $v4$ & $12$ \\ \hline
+... & ... & ... \\ \hline
+\end{tabular}\end{center}
+\end{minipage}
+
+Ainsi, nous avons bel et bien la relation suivante : $I_S(CPU[T\ 2s\ 2s]) \not\equiv CPU$.
+\end{example}
+
 \subsection{Commutativité et associativité}
+\begin{coro}[Définition de la sélection, projection et renommage sur flux]
+    Soit $S$ un flux,
+
+    Soit $\nu$ un opérateur pouvant être $\sigma$, $\Pi$ ou $\rho$,
+
+    Son application sur un flux est définie par :
+$$\nu S = \IS(\nu(S[B]))$$
+\end{coro}
+
+
+\begin{table}[p]
+\centering
+\begin{tabular}{|c|c|c|} \bottomrule
+\rowcolor{hypcolor} Hypothèse & Condition & Résultat \\ \hline
+    $\Pi_a E$ & $a = attr(E)$ & $E$ \\ \hline
+    $\Pi_a \Pi_b E$ & & $\Pi_a E$ \\ \hline
+    $\Pi_a \sigma_c E$ & &  $\Pi_{a}\sigma_c \Pi_{a\cup attr(c)} E$  \\ \hline
+    $\Pi_a e_{f(b)}^c E$ & &  $\Pi_{a} e_{f(b)}^c \Pi_{(a \backslash c)\cup b} E$  \\ \hline
+    \multirow{2}{*}{$\Pi_{a} \rho_{y/x} E$} & $y \in a$ & $\rho_{y/x}\Pi_{a\backslash\{y\},x}  E$ \\ \cline{2-3}
+    & $y \not\in a$ & $\rho_{y/x}\Pi_{a} E$ \\ \hline
+    $\Pi_{a}(R_1\Join R_2)$ & &  $\Pi_{a}(\Pi_{Attr(R_1)\cap a} R_1\Join \Pi_{Attr(R_2)\cap a} R_2)$  \\ \hline
+    $\Pi_{a} S[\alpha,\beta,\gamma]$ & &  $(\Pi_{a\cup \t} S)[\alpha,\beta,\gamma]$  \\ \hline
+    $\Pi_{a} \IS(R)$ &  & $\IS(\Pi_{a\backslash \t} R)$ \\ \hline
+    $\Pi_{a} \DS(R)$ &  & $\DS(\Pi_{a\backslash \t} R)$ \\ \hline
+    $\Pi_{a} \RSu(R)$ &  & $\RSu(\Pi_{a\backslash \t} R)$ \\ \hline
+    $\Pi_{a} \RS{r}(R)$ & & $\RS{r}(\Pi_{a\backslash \t} R)$ \\ \hline
+    $\Pi_{a} \D_c^f(R)$ & & $\D_c^f(\Pi_{a} R)$ \\ \hline
+    $\Pi_{a} \ {}_{b} G_{f(c)} R$ & & $\Pi_{a}\  {}_{b} G_{f(c)}  \Pi_{b \cup c} R$ \\ \hline
+    $\Pi_{a} (R_1\cup R_2)$ & &  $(\Pi_{a} R_1)\cup (\Pi_{a} R_2)$  \\ \toprule
+\end{tabular}
+\caption{Table des règles de commutativité de la projection $\Pi$}
+\end{table}
+
+\begin{table}[p]
+\centering
+\begin{tabular}{|c|c|c|} \bottomrule
+\rowcolor{hypcolor} Hypothèse & Condition & Résultat \\ \hline
+    $\sigma_c \sigma_{c'} E$ & & $\sigma_{c\wedge c'} E$ \\ \hline
+    $\sigma_c e_{f(b)}^a E$ & $a \not\in attr(c)$ & $e_{f(b)}^a \sigma_c E$ \\ \hline
+    \multirow{2}{*}{$\sigma_c \rho_{y/x} E$} & $x \in attr(c)$ & $\rho_{y/x}\sigma_{\textrm{replace}(x,y,c)}  E$ \\ \cline{2-3}
+    & $x\not\in attr(c)$ & $\rho_{y/x}\sigma_c E$ \\ \hline
+    \multirow{3}{*}{$\sigma_c(R_1\Join_d R_2)$} & $attr(c)\subseteq attr(R_1)\backslash attr(R_2)$ & $(\sigma_c(R_1)) \Join_d R_2$  \\ \cline{2-3}
+    & $attr(c)\subseteq attr(R_2)\backslash attr(R_1)$ & $R_1 \Join_d (\sigma_c(R_2))$ \\ \cline{2-3}
+    & sinon & $R_1 \Join_{d \wedge c} R_2$  \\ \hline
+    \multirow{2}{*}{$\sigma_c S[\alpha,\beta,\gamma]$} & $[\infty]$ & \multirow{2}{*}{$(\sigma_c S)[\alpha,\beta,\gamma]$} \\ \cline{2-2}
+     & $\alpha,\beta,\gamma$ temporels & \\ \hline
+    $\sigma_c \IS(R)$ &  & $\IS(\sigma_c R)$ \\ \hline
+    $\sigma_c \DS(R)$ &  & $\DS(\sigma_c R)$ \\ \hline
+    $\sigma_c \RS{r}(R)$ & & $\RS{r}(\sigma_c R)$ \\ \hline
+    $\sigma_c \D_c^f(R)$ & & $\D_c^f(\sigma_c R)$ \\ \hline
+    $\sigma_c \ {}_{b} G_{f(c)} R$ & $attr(c)\subseteq b$ & $\sigma_c\  {}_{b} G_{f(c)}  \Pi_{b \cup c} R$ \\ \hline
+    $\sigma_c (R_1\cup R_2)$ & &  $(\sigma_c R_1)\cup (\sigma_c R_2)$  \\ \toprule
+\end{tabular}
+\caption{Table des règles de commutativité de la sélection $\sigma$}
+\end{table}
+
 Tableau de projection et de sélection
 
-Associativité de la jointure
+\begin{thm}[Associativité de la jointure]
+L'opération de jointure est associative pour la définition de $\Phi^\times = \textrm{Id}$ donnée.
+\end{thm}
 
-Manipulation temporelle
-
-\subsection{Transmission du temps}
-Le théorème
-
-Le corrolaire fondamental
+\begin{thm}
+L'opérateur de manipulation temporelle est commutatif avec tous les opérateurs relationnels.
+\end{thm}
 
 \subsection{Transposabilité}
 Transposabilités simples

@@ -61,7 +61,7 @@ L'évaluation d'une relation temporelle à un instant donnée est donc une séqu
 La définition des relations temporelles et des flux implique qu'il existe une quantité dénombrable de \textit{batch} présents dans le flux ou en tant que changement d'état de relation. Ainsi, pour tout \textit{batch} $(t,i)$, il existe un autre \textit{batch} infiniment proche de $(t,i)$ sans y être égal. Ce type de \textit{batch} est noté $(t,i)^-$. Par exemple, pour une relation dont l'état change au \textit{batch} $b$, nous pouvons comparer les états $R(b)$ et $R(b^-)$ correspondant à avant et après le changement.
 
 Par la suite, nous utiliserons le terme \textbf{entité} pour désigner un flux ou une relation temporelle. Un opérateur est donc une fonction permettant de transformer des entités en une nouvelle.
-\subsection{Exemple}
+\subsection{Exemple}\label{sec:contrib:astral:definitions:exemple}
 Dans la suite de ce chapitre, nous développerons plusieurs exemples. Ces exemples se baseront sur les sources suivantes issus de l'application du réseau local domestique.
 \begin{itemize}
     \item[\textbf{CPU}] Flux(appId, cpu, $\t$) : flux de relevé des charges processeurs. Un n-uplet de ce flux indique qu'au timestamp $\t$, l'application \textit{appId} indique que sur son équipement hôte, la charge processeur est égale à \textit{cpu}.
