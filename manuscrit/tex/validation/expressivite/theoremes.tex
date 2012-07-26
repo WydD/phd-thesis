@@ -1,6 +1,9 @@
 \section{Propositions et théorèmes}
+Dans cette section, nous explorons les équivalences de requêtes possibles grâce à Astral. Premièrement, nous explorons comment le \textit{timestamp} et les \textit{batchs} sont conservés malgré l'utilisation de \textit{streamers}, et les conséquences que cela implique. Ensuite, nous explorons les relations classiques de commutativité et d'associativité des opérateurs, ce qui a des impacts nets lors de l'optimisation logique. Enfin, nous présentons les résultats de calculs de transposibilité.
+
 \subsection{Transmission du temps}
-La définition~\ref{def:stamping} de la réécriture
+La définition~\ref{def:stamping} de la réécriture des n-uplets des \textit{streamers} implique le changement de son \textit{timestamp} et de son \textit{batch}. Ainsi, lors de l'application successive d'un opérateur de séquence de fenêtre et d'un \textit{streamer} : il n'est pas trivial de voir que ces propriétés seront conservés. Le théorème~\ref{thm:transmission} de transmission temporelle permet d'avoir une condition suffisante pour garantir cette transmission.
+
 \begin{thm}[Transmission temporelle des \textit{streamers}]\label{thm:transmission}
     Soit $S$ un flux,
 
@@ -14,12 +17,12 @@ $$\Psi_{(t,i)}(s,t) \wedge \B{S'}(\Psi_{(t,i)}(s,t)) = (t,i) \im s\in S \wedge \
     Cette propriété est aussi valable pour $\RSu(S[B])$.
 \end{thm}
 
+Le corrolaire à ce théorème est le fait que $\IS$ peut être vu comme l'opération inverse d'une fenêtre $[B]$ par exemple.
 \begin{coro}[Équivalence de la composition fenêtre-\textit{streamer}]
     Sachant une composition de fenêtre-streamers respectant les conditions du théorème~\ref{thm:transmission},
 
     Si $\alpha$ est telle que la séquence de fenêtre contient $[B]$, alors,
 $$S \equiv \IS(S]\!\![\alpha,i+k,1n]) \equiv \IS(S[B]) \equiv \IS(S[\infty]) \equiv \RSu(S[B])$$
-
 \end{coro}
 
 \begin{example}
@@ -115,7 +118,8 @@ $3$ & $v4$ & $12$ \\ \hline
 Ainsi, nous avons bel et bien la relation suivante : $I_S(CPU[T\ 2s\ 2s]) \not\equiv CPU$.
 \end{example}
 
-\subsection{Commutativité et associativité}
+Ce résultat permet de traiter des flux d'une manière pratique. Un flux $S$ n'est pas manipulable a priori par une implémentation car c'est une entité infinie. Par contre, $S[B]$ correspond au \textit{dernier batch} qui est accessible. Ainsi, la lecture d'un flux correspond à la récupération du dernier \textit{batch} et envoyer les n-uplets dans le flux résultant. De plus, lorsque le dernier \textit{batch} est récupéré, il est possible d'y appliquer des opérations simples avant de le renvoyer. Nous définissons les sélections, projections et renommage sur flux par l'application de ces opérations sur la fenêtre \textit{batch}.
+
 \begin{coro}[Définition de la sélection, projection et renommage sur flux]
     Soit $S$ un flux,
 
@@ -125,9 +129,16 @@ Ainsi, nous avons bel et bien la relation suivante : $I_S(CPU[T\ 2s\ 2s]) \not\e
 $$\nu S = \IS(\nu(S[B]))$$
 \end{coro}
 
+Afin de montrer que cette définition est viable, nous facilement démontrer grâce au théorème~\ref{thm:transmission} que la sélection sur flux correspond à la sémantique intuitive. $$\sigma_c(S) = \IS(\nu(S[B])) = \{s\in S, c(s)\}$$
+
+\subsection{Commutativité et associativité}
+Nous voyons désormais les règles de commutativité et d'associativité. Ces règles étaient déjà existantes dans le cadre de l'algèbre relationnelle. Nous les redécouvrons ici. Nous détaillons premièrement les projections.
+
+L'opérateur de projection a peu d'impact dans la sémantique des opérateurs. Les règles sont principalement issues de l'algèbre relationnelle qui nous donne beaucoup de résultats. Comme la projection ne perturbe pas les cardinalités ou les ordres, il n'y a pas d'impact non désirés. De plus, l'opérateur permute facilement avec la fenêtre et les \textit{streamers}. Le tableau~\ref{tab:projection} référence l'ensemble des règles de transformations pour pousser les projections au plus proche des sources.
 
 \begin{table}[p]
 \centering
+($E$ = entité, $R$ = relation temporelle, $S$ = flux)
 \begin{tabular}{|c|c|c|} \bottomrule
 \rowcolor{hypcolor} Hypothèse & Condition & Résultat \\ \hline
     $\Pi_a E$ & $a = attr(E)$ & $E$ \\ \hline
@@ -146,11 +157,11 @@ $$\nu S = \IS(\nu(S[B]))$$
     $\Pi_{a} \ {}_{b} G_{f(c)} R$ & & $\Pi_{a}\  {}_{b} G_{f(c)}  \Pi_{b \cup c} R$ \\ \hline
     $\Pi_{a} (R_1\cup R_2)$ & &  $(\Pi_{a} R_1)\cup (\Pi_{a} R_2)$  \\ \toprule
 \end{tabular}
-\caption{Table des règles de commutativité de la projection $\Pi$}
+\caption{Table des règles de commutativité de la projection $\Pi$}\label{tab:projection}
 \end{table}
-
 \begin{table}[p]
 \centering
+($E$ = entité, $R$ = relation temporelle, $S$ = flux)
 \begin{tabular}{|c|c|c|} \bottomrule
 \rowcolor{hypcolor} Hypothèse & Condition & Résultat \\ \hline
     $\sigma_c \sigma_{c'} E$ & & $\sigma_{c\wedge c'} E$ \\ \hline
@@ -160,7 +171,7 @@ $$\nu S = \IS(\nu(S[B]))$$
     \multirow{3}{*}{$\sigma_c(R_1\Join_d R_2)$} & $attr(c)\subseteq attr(R_1)\backslash attr(R_2)$ & $(\sigma_c(R_1)) \Join_d R_2$  \\ \cline{2-3}
     & $attr(c)\subseteq attr(R_2)\backslash attr(R_1)$ & $R_1 \Join_d (\sigma_c(R_2))$ \\ \cline{2-3}
     & sinon & $R_1 \Join_{d \wedge c} R_2$  \\ \hline
-    \multirow{2}{*}{$\sigma_c S[\alpha,\beta,\gamma]$} & $[\infty]$ & \multirow{2}{*}{$(\sigma_c S)[\alpha,\beta,\gamma]$} \\ \cline{2-2}
+    \multirow{2}{*}{$\sigma_c S[\alpha,\beta,\gamma]$} & $[\alpha,\beta,\gamma]=[\infty]$ & \multirow{2}{*}{$(\sigma_c S)[\alpha,\beta,\gamma]$} \\ \cline{2-2}
      & $\alpha,\beta,\gamma$ temporels & \\ \hline
     $\sigma_c \IS(R)$ &  & $\IS(\sigma_c R)$ \\ \hline
     $\sigma_c \DS(R)$ &  & $\DS(\sigma_c R)$ \\ \hline
@@ -169,18 +180,34 @@ $$\nu S = \IS(\nu(S[B]))$$
     $\sigma_c \ {}_{b} G_{f(c)} R$ & $attr(c)\subseteq b$ & $\sigma_c\  {}_{b} G_{f(c)}  \Pi_{b \cup c} R$ \\ \hline
     $\sigma_c (R_1\cup R_2)$ & &  $(\sigma_c R_1)\cup (\sigma_c R_2)$  \\ \toprule
 \end{tabular}
-\caption{Table des règles de commutativité de la sélection $\sigma$}
+\caption{Table des règles de commutativité de la sélection $\sigma$}\label{tab:selection}
 \end{table}
 
-Tableau de projection et de sélection
 
-\begin{thm}[Associativité de la jointure]
-L'opération de jointure est associative pour la définition de $\Phi^\times = \textrm{Id}$ donnée.
+La sélection est quant à elle plus délicate. En effet, elle perturbe la cardinalité du flux. Ainsi, l'opérateur de fenêtre dans le cas positionnel peut ne pas sélectionner les mêmes n-uplets. Il est possible de fournir un contre-exemple interdisant la permutation avec l'opérateur de fenêtre.
+\begin{example}
+Soit le flux exemple $CPU$, considérons les requêtes suivantes :
+\begin{enumerate}
+	\item $\sigma_{cpu>50} (CPU[N\ 10\ 1])$ est l'ensemble des relevés supérieurs à 50\% des 10 dernières mesures à chaque nouvelle mesure.
+	\item $(\sigma_{cpu>50} CPU)[N\ 10\ 1])$ est l'ensemble des 10 dernières valeurs des relevés supérieurs à 50\% chaque nouvelle mesure >50\%.
+\end{enumerate}
+Les tailles des fenêtres de ces requêtes sont différentes. Dans la seconde requête, la largeur est constante à 10 n-uplets. Alors que dans le premier cas, s'il existe des n-uplets $\leq 50\%$ alors la taille sera $<10$ n-uplets.
+\end{example}
+Le problème dépend du fait que $\tau_{\sigma_c S}$ et $\tau_S$ sont deux fonctions différentes. Ce qui impliquera des changements importants dans le cadre de l'opérateur de fenêtre positionnel. Toutefois, dans le cadre particulier des fenêtres temporelles ainsi que de la fenêtre accumulative $[\infty]$ la commutativité est juste\footnote{Car ces définitions de fenêtres ne dépendent pas de la fonction $\tau_S$}. De façon similaire, la commutativité avec $\RSu$ n'est pas autorisé. Les autres règles autorisant la commutativité sont pour la plupart issues de l'algèbre relationnel. La table~\ref{tab:selection} liste l'ensemble des règles pour pousser les sélections.
+
+Nous abordons maintenant la question de l'associativité. Dans le cadre de nos définitions par défaut, les associativités issues de l'algèbre relationnelles sont toujours vraies.
+\begin{thm}[Associativité des jointures et unions]
+Les opérations de jointure et d'union sont associatives pour les définitions par défaut de $\Phi^\times$ et $\Phi^\cup$.
 \end{thm}
+Ceci est dû au fait que l'ordre lexicographique est lui aussi un ordre associatif. En effet, les ordres lexicographiques induits par $\I\times(\I\times\I)$ ou $(\I\times\I)\times \I$ sont équivalents (démonstration simple). Si une autre fonction est utilisée (par exemple, un des jointures est dans l'ordre lexicographique inversé), il est nécessaire de vérifier que les ordres fournis sont toujours équivalents.
 
+Enfin, une dernière commutativité est notable : la manipulation temporelle. Sa commutativité est intuitive à appréhender.
 \begin{thm}
 L'opérateur de manipulation temporelle est commutatif avec tous les opérateurs relationnels.
 \end{thm}
+En effet, la manipulation temporelle applique une fonction $f$ au \textit{batch} utilisé pour récupérer la relation instantanée d'une relation temporelle. Or, les opérateurs relationnels sont décomposables comme $\nu (R)(b) = \nu' R(b)$. L'application d'une fonction $f$ donne : $\nu (R)(f(b)) = \nu' R(f(b))$, et $R(f(b))$ correspond à l'application de la manipulation temporelle.
+
+Nous avons donc vu plusieurs propriétés utilisables par les implémentations et optimiseurs. Nous avons désormais plusieurs outils pour appliquer une optimisation logique suffisamment efficace. Nous explorons désormais la transposabilité, qui peut avoir un impact dans le cadre des partages de requêtes.
 
 \subsection{Transposabilité}
 Transposabilités simples
@@ -188,6 +215,3 @@ Transposabilités simples
 Théorème général des fenêtres
 
 Application au cas linéaire
-
-\subsection{À la recherche du cœur}
-A voir si on a des trucs sympa... sinon on vire on a assez
