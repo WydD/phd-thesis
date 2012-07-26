@@ -1,10 +1,100 @@
-\section{Comparaison de l'expressivité}
-\subsection{Fenêtres}
-Clarification des évolutions de fenêtres (c.f. article)
+\section{Comparaison de l'expressivité d'Astral}
+L'algèbre Astral a été conçue pour permettre d'exprimer des requêtes continues sans ambiguïté, mais aussi pour introduire de nouveaux opérateurs afin d'étendre la puissance d'expression des requêtes continues. Dans cette section, nous analysons en détail son expressivité. En premier lieu, nous détaillons qu'Astral couvre naturellement un large ensemble des approches actuelles. Ensuite, nous analysons les opérateurs que nous avons particulièrement remodelés : les séquences de fenêtres et la manipulation temporelle.
 
-Clarification des fenêtres multi-domaines
+\subsection{Expressivité générale}
+Astral est inspiré de l'algèbre \textit{ACO} de \textit{STREAM}. Nous avons repris la majeure partie des idées, notamment celle d'avoir des flux et des relations, et avons appliqués nos définitions plus strictes, comme nous l'avons vu dans la section précédente. Nous pouvons affirmer que nous couvrons l'expressivité de \textit{STREAM}.
+
+Sachant que \textit{STREAM} a démontré dans~\cite{Arasu:stream} que son expressivité couvre les approches de l'époque comme \textit{Chronicles}, \textit{Tribeca}, \textit{NiagaraCQ} ou \textit{Aurora}. Nous pouvons considérer qu'Astral est, par transitivité, plus expressive que ces travaux.
+
+Notre formalisation à base de \textit{batch} nous permet de supporter les sémantiques exposées par~\cite{Jain:spread}. Nous avons de même présenté notre interprétation des opérateurs \textit{SPREAD} correspondant aux définitions décrites. Il est toutefois notable que les parties où les auteurs spécifiaient des choix non-déterministes ont été remplacés par des choix sur l'ordre positionnel.
+
+Nous avons vu que Astral couvrait une grande partie des approches actuelles. Nous allons maintenant nous concentrer sur l'opérateur le plus étudié de la littérature : les séquences de fenêtres.
+
+\subsection{Fenêtres}
+Dans cette section, nous analysons l'expressivité des séquences de fenêtres. Afin de voir les capacités de notre formalisation, nous revisitons les expressions de fenêtres présentés dans l'état de l'art. Nous commençons par la sémantique la plus largement utilisé de la fenêtre glissante \textit{RANGE}/\textit{SLIDE}.
+\subsubsection{RANGE $x$ SLIDE $y$}
+Dans le cadre de la fenêtre glissantes, il existe deux descriptions possibles. La définition exacte telle que présente dans plusieurs travaux et telle que spécifiée dans~\cite{Jain:spread} est la suivante :
+
+\DSF{r = y}{\beta(j) = yj+t_0}{\alpha(j) = \max(yj-x,0)+t_0}
+
+Comme spécifié, les premiers états des bornes ont une largeur de fenêtre plus petite que $x$. Dès que $j \geq \frac xy$, alors la largeur temporelle deviendra égale à $x$. Nous pouvons noter que la fonction $\alpha(j) = yj-x+t_0$ n'est pas valide dans notre contexte. La seconde condition des DSF (def~\ref{def:dsf}) nécessite $\alpha \geq t_0$, ce qui n'est pas vraie pour $i=0$. L'insertion de la fonction $\max$ rend la description viable et décrit la sémantique des premières phases, ce qui n'est pas explicite dans sa description textuelle.
+
+La description suivante est aussi valide, mais ne possède pas de phase initiale. Ici, la relation temporelle est vide jusque $\beta(0)$ afin d'assurer que la fenêtre couvre toujours une largeur temporelle de $x$.
+
+\DSF{r = y}
+	{\beta(j) = yj+x+t_0}
+	{\alpha(j) = yi+t_0}
+
+Afin d'illustrer les différences entre les deux sémantiques possibles, la figure~\ref{} représente les différences d'évaluations pour une fenêtre glissante avec $y=2$ et $x=4$. Dans le premier cas ($\max$), il y a deux autres évaluations à $i=0$ et $i=1$. Après cette partie, comme démontré précédemment les deux modèles sont identiques.
+\TODO{FIGURE}
+
+Nous pouvons remarquer que nous avons aussi introduit la notion d'inclusion de bornes. Ce qui permet de clarifier si la borne inférieure est incluse dans le contenu de la fenêtre. Dans le cadre des fenêtres glissantes ce n'est pas le cas~\footnote{Il est intéressant de noter un erratum dans la spécification de cet opérateur où la définition précise que la borne inférieure est incluse alors que les exemples et les expérimentations pratiques indiquent le contraire.}.
+
+\subsubsection{RANGE $x$}
+Dans ses définitions usuelles, RANGE $x$ seule est possible et est similaire à RANGE $x$ SLIDE 1. Dans Astral, le temps n'est pas discret et une telle définition n'a pas de sens. Une définition similaire est possible en supposant que le \textit{chronon} du système d'implémentation est $\varepsilon$, alors : RANGE $x$ = RANGE $x$ SLIDE $\varepsilon$.
+
+Une approche plus propre serait d'utiliser une DSF générique en basant ses instants d'évaluations (fournis par $\gamma$, pour rappel) sur les arrivés et départs d'n-uplets dans la fenêtre. Toutefois une connaissance de $\alpha^{-1}$ et $\beta^{-1}$ est nécessaire et rend son expression plus complexe. Il est intéressant de voir que ce comportement est telle qu'implémenté car un opérateur vérifiant à chaque \textit{timestamp} système si un n-uplet doit sortir de la fenêtre n'est pas efficace. Il est plus efficace de planifier (via le \textit{scheduler}) ses instants d'évaluations.
+
+\subsubsection{Descriptions à bornes linéaires}
+Dans SStreamWare~\cite{Gurgen:sstreamware}, les fenêtres sont définies par un 5-uplet (start, end, rate, start\_adv, end \_adv) :
+\begin{itemize}
+	\item start (resp. end) décrit la borne inférieure (resp. supérieure) de la première fenêtre produite par la séquence
+	\item rate est la fréquence d'évaluation
+	\item start\_adv (resp. end\_adv) décrit la quantité de glissement de la borne inférieure (resp. supérieure) à chaque évaluation.
+\end{itemize}
+
+Dans Astral, ce comportement est facilement représentable sous forme de DSF :
+\DSF{r = \textrm{rate}}
+	{\beta(j) = \textrm{end\_adv}*j+\textrm{end}}
+	{\alpha(j) = \textrm{start\_adv}*j+\textrm{start}}
+
+\subsubsection{Descriptions procédurales}
+Dans les premières versions de TelegraphCQ~\cite{Chandrasekaran:telegraphcq}, les descriptions de fenêtres étaient faites par une boucle \textit{for} procédurale sur un \textit{timestamp} :
+\begin{lstlisting}[language=C]
+for(t = init ; continue(t) ; t = evolution(t))
+	WindowIs(S, begin(t), end(t))
+\end{lstlisting}
+
+Ceci peut être formalisé grâce à une DSF générique. Considérons la suite suivante : $u_0=$ init, $u_n=$ evolution($u_{n-1}$) si continue($u_{n-1}$) est vraie, $u_n = u_{n-1}$ sinon. Alors, nous obtenons la description suivante :
+
+\DSF{\gamma(t,i) = \displaystyle\sum_{i=0}^{+\infty} u_i \indic_{[u_i, u_{i+1}[}(t)}
+	{\beta = \textrm{end}}
+	{\alpha = \textrm{begin}}
+
+La fonction $\gamma$ est définie par une liste de points. Cette définition est courante pour les définitions des fonctions en escaliers. Il est notable que pour des fenêtres avec un taux d'évaluation constant et une position initiale usuelle, une DSF simplifiée est suffisante. 
+\subsubsection{Description multi-domaines}
+Dans certains systèmes d'observations~\cite{Jurdak:sumac}, il est courant de récupérer les données par vague. Ainsi, dans les interfaces d'observations, nous pouvons régulièrement voir des séquences de fenêtres \enquote{les $n$ derniers n-uples toutes les $m$ secondes}. Pour formaliser une telle séquence, il n'est pas nécessaire d'utiliser une DSF générique car l'évaluation reste périodique. Voici la description de la séquence précédemment décrite :
+
+\DSF{r=m}
+	{\beta(j) = \rtau^{-1}(mj+t_0)}
+	{\alpha(j)= \max(\rtau_S(mj+t_0)-n,0)}
+
+Le taux est temporel et les bornes sont positionnelles. Le pont entre les domaines est assuré par l'opérateur grâce aux fonctions $\tau_S$ et $\rtau_S$. Dans ce cas, l'expression $\rtau_S(mi+t_0)$ donne la position à un \textit{timestamp} donné. La remarque concernant le $\max$ que nous avions faite plus tôt reste valable ici.
+
+\subsubsection{Introduction d'un délai}
+Dans les travaux de Patroumpas et Sellis~\cite{Patroumpas:window}, l'introduction d'un délai de traitement a été formalisée. En effet, si un n-uplet possède un \textit{timestamp} légèrement déphasé par rapport à son temps réel, alors la fenêtre peut tout de même l'inclure.
+
+Sa formalisation dans notre cas revient à légèrement changer notre fonction $\gamma$ par $\gamma'$ qui décale l'évaluation de $\delta$. Par exemple, nous obtenons pour une description temporelle : $$\gamma'(t,i) = \gamma(t-\delta,i) = \left\lfloor\frac{t-\beta(0)-\delta}{r}\right\rfloor$$
+
+\subsubsection{Modèle d'exécution de SECRET}
+Enfin, SECRET~\cite{Botan:secret} est un modèle permettant de généraliser les sémantiques d'exécutions des fenêtres. L'approche est de découper l'exécution d'une fenêtre en quatre concepts que nous pouvons retrouver dans Astral.
+\begin{itemize}
+	\item Les \textit{Ticks} décident du moment où le système doit réagir au flux (sémantique basé n-uplet, basé temps ou \textit{batch}).
+	\item Le \textit{Content} défini le contenu global de la fenêtre par son \textit{Scope}, c'est à dire sa description.
+	\item Enfin, un \textit{Report} envoie le résultat final.
+\end{itemize}
+
+Bien que les approches soient différentes : nous retrouvons des notions similaires. Le \textit{Scope} est similaire à $\alpha$, $\beta$. Le \textit{Content} à une fenêtre en particulier. Les \textit{Ticks} et les \textit{Reports} sont faites grâce à la fonction $\gamma$ et le contrôle du mode d'exécution par les opérateurs \textit{SPREAD}. L'avantage de l'approche de SECRET est de pouvoir qualifier rapidement le comportement de l'exécution d'un SGFD en particulier, alors qu'Astral décrit la sémantique exacte du résultat pour l'utilisateur.
+
+Nous avons désormais détaillé le positionnement de l'opérateur de séquence de fenêtre par rapport à la littérature. Nous constatons que l'opérateur permet de couvrir l'ensemble des sémantiques actuellement découvertes. Nous avons clarifié plusieurs descriptions non-triviales telles que les fenêtres RANGE stricte, les fenêtres multi-domaines et l'introduction du délai. Nous présentons maintenant l'analyse de l'opérateur de manipulation temporelle.
 
 \subsection{Manipulation temporelle}
-Modélisation des sources
+L'opérateur de manipulation temporelle (def~\ref{def:manipulation}) permet de transformer le temps \textit{courant} en un temps passé. Ceci permet de transformer le moment d'évaluation de la relation temporelle. Dans l'état actuel de l'art, à notre connaissance, il n'existe pas d'opérateur capable de faire explicitement cette opération. Dans notre cas, il a permit à Asteroid de manipuler facilement la sémantique de mise à jour des relations issues d'un SGBD.
 
-Jointures semi-sensibles
+Cet opérateur nous a permit notamment d'introduire la jointure semi-sensible $\ssjoin$. Cette jointure permet de refléter un comportement qui se retrouve dans plusieurs SGFD : ne réagir que sur les mises à jours d'une seule branche.
+
+Une autre application intéressante de cet opérateur est le calcul de changement d'une relation temporelle. Comme nous l'avons vu, l'opérateur $\IS$ est capable de fournir les nouveaux n-uplets d'une relation. Nous pouvons toutefois avoir un résultat pouvant être très intéressant dans le cadre l'observation de système : \enquote{A partir d'une relation temporelle $R$($id$,$v$), fournir le flux des changements ($id$,$v$,$v_{old}$) avec $v_{old}$ l'ancienne valeur pour l'identifiant $id$}. Cette requête s'écrit ainsi :
+$$\IS(R \Join_{v\neq v_{old}} (D^{(t,i)^-}_{t>t_0}\rho_{v_{old}/v} R))$$
+L'opérateur $D^{(t,i)^-}_{t>t_0}$ retarde la relation temporelle d'un \textit{batch}. Il devient possible d'interroger à un instant donné, une relation temporelle et son état précédent.
+
+Nous avons présenté l'ensemble des aspects novateurs des définitions d'Astral. Nous détaillons maintenant les manipulations possibles grâce à cette algèbre avec un ensemble de propositions et de théorèmes.
