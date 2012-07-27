@@ -1,1 +1,10 @@
 \section{Conclusion}
+Notre algèbre Astral a prouvé qu'elle est plus expressive que les approches actuelles. Mais surtout, elle a permit une réelle désambiguïsation des sémantiques des requêtes. Elle permet ainsi de mieux comprendre le résultat d'une requête sans pour autant être attaché à des concepts liés à une implémentation particulière. Ainsi, Astral devient un bon candidat comme langage universel d'interrogation instantané et continu.
+
+De plus, nous avons pu prouver certains résultats fondamentaux sur les équivalences de requêtes. Tout d'abord, nous avons montré que nos définitions de fenêtres et de \textit{streamers} étaient consistants par le théorème de transmission temporelle. Ensuite, nous avons pu montrer les premiers résultats exploitables pour l'optimisation logique d'une requête. Enfin, nous avons vu les premiers résultats concrêt de transposabilité.
+
+Nous pouvons affirmer que les définitions d'Astral sont valables en terme de positionnement par rapport à l'état de l'art, mais aussi en terme de capacité de manipulation grâce aux théorèmes et propositions.
+
+Toutefois, nous ne sommes pas capable de qualifier formellement l'expressivité d'Astral. En effet, le théorème de Codd~\cite{Codd:theorem} a prouvé que l'algèbre relationnelle est équivalente au \textit{Domain Relational Calculus} correspondant maintenant au \textit{datalog non-récursif}. Toutefois, en l'état, nous n'avons pas de moyen de qualifier la classe logique couverte par la gestion des flux de données.
+
+Nous explorons désormais la validation d'Astronef et d'Asteroid, en terme d'architecture, en mettant en œuvre notre application de surveillance du réseau local domestique.

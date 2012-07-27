@@ -23,7 +23,7 @@ La transposabilité (def~\ref{def:transposabilitereq}) est le fait de changer le
 \begin{defi}[Transposabilité de requête]\label{def:transposabilitereq}
     Soit $(A,t_0)$ une requête,
 
-    $A$ est transposable par $B$ sur $T\subset \T$ si et seulement si : $\forall t\in T$ $$(A,t_0) \equiv (B,t)$$
+    $A$ est transposable par $B$ sur $T\subseteq \T$ si et seulement si : $$\forall t\in T, \quad (A,t_0) \equiv (B,t)$$
 
     $A$ est dite \textit{naturellement} transposable si $B=A$.
 \end{defi}
@@ -33,7 +33,7 @@ Toutefois, cette définition ne fait pas avancer la résolution du problème car
 
     Soit $(Q,t_0)$ une requête transposable par $Q'$ sur $E$,
 
-    $O$ est un opérateur transposable par $O'$ sur $T_{t_0}$ si et seulement si : $$(OQ,t_0) \textrm{ est naturellement transposable par } O'Q' \textrm{ sur } T_{t_0}\cap E$$
+    $O$ est un opérateur transposable par $O'$ sur $T$ si et seulement si : $$(OQ,t_0) \textrm{ est naturellement transposable par } O'Q' \textrm{ sur } T\cap E$$
 
     $O$ est dit \textit{naturellement} transposable si $O'=O$.
 \end{defi}
@@ -48,7 +48,7 @@ Afin d'avancer dans notre réfléxion. Il est absolument nécessaire d'initialis
 \end{hyp}
 Cette affirmation reste toutefois à travailler car lors du déploiement d'une requête, nous instantions aussi le processus d'acquisition, qui est lui dépendant du moment de démarrage. Nous explorerons ces aspects lors de l'exploration de l'expressivité d'Astral dans le chapitre~\ref{chap:validation:expressivite}.
 
-\begin{example}
+\begin{example}\label{ex:transposabilite}
 	En tant qu'exemple, afin d'illustrer les propriétés de transposabilité, nous allons explorer la transposabilité d'une requête simple. Supposons que nous souhaitons obtenir la transposabilité de la requête permettant d'obtenir toutes les 5 secondes la liste des dispositifs actuellement connectés dans la maison : $\RS{5s} (\sigma_{deviceStatus=1} Devices)$. 
 	
 	Ici, nous supposons par l'hypothèse des transposabilités des sources que $Devices$ est naturellement transposable à tout instant. La sélection par la suite est un opérateur qui a la particularité de ne traiter que l'instant présent et est donc naturellement détaché de toute dépendance à $t_0$. Donc $\sigma_{deviceStatus=1} Devices$ est naturellement transposable à tout instant aussi.

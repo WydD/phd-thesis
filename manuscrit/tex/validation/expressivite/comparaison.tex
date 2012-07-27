@@ -1,4 +1,4 @@
-\section{Comparaison de l'expressivité d'Astral}
+\section{Comparaison de l'expressivité d'Astral}\label{sec:valid:expressivite:comparaison}
 L'algèbre Astral a été conçue pour permettre d'exprimer des requêtes continues sans ambiguïté, mais aussi pour introduire de nouveaux opérateurs afin d'étendre la puissance d'expression des requêtes continues. Dans cette section, nous analysons en détail son expressivité. En premier lieu, nous détaillons qu'Astral couvre naturellement un large ensemble des approches actuelles. Ensuite, nous analysons les opérateurs que nous avons particulièrement remodelés : les séquences de fenêtres et la manipulation temporelle.
 
 \subsection{Expressivité générale}
@@ -25,8 +25,32 @@ La description suivante est aussi valide, mais ne possède pas de phase initiale
 	{\beta(j) = yj+x+t_0}
 	{\alpha(j) = yj+t_0}
 
-Afin d'illustrer les différences entre les deux sémantiques possibles, la figure~\ref{} représente les différences d'évaluations pour une fenêtre glissante avec $y=2$ et $x=4$. Dans le premier cas ($\max$), il y a deux autres évaluations à $i=0$ et $i=1$. Après cette partie, comme démontré précédemment les deux modèles sont identiques.
-\TODO{FIGURE}
+Afin d'illustrer les différences entre les deux sémantiques possibles, la figure~\ref{fig:valid:expressivite:slidemax} représente les différences d'évaluations pour une fenêtre glissante avec $y=2$ et $x=4$. Dans le premier cas ($\max$), il y a deux autres évaluations à $i=0$ et $i=1$. Après cette partie, comme démontré précédemment les deux modèles sont identiques.
+
+\begin{figure}[ht]
+\centering
+\def\lgrad#1{\draw [thick] (#1,0) -- (#1,-0.2); \node [below] at (#1,-0.2){#1};}
+\def\seg#1#2#3#4#5{\draw [thick] (#1#40.1,#3+0.25) -- (#1,#3+0.25) -- (#1,#3-0.25) -- (#1#40.1,#3-0.25); \draw [thick] (#1,#3) -- (#2,#3); \draw [thick] (#2#50.1,#3+0.25) -- (#2,#3+0.25) -- (#2,#3-0.25) -- (#2#50.1,#3-0.25);}
+\def\seglbl#1#2#3#4#5#6{\seg{#1}{#2}{#3}{#4}{#5}\node [above] at (0.5*#1+0.5*#2,#3){#6};}
+\begin{tikzpicture}[xscale=1, yscale=0.3, every node/.style={scale=0.8}]
+\node [left] at (0,0) {time};
+\draw [thick,|->] (0,0) -- (10,0);
+
+\seg{0}{0}{3.5}-+\node [right] at (0,3.8){0};
+\seglbl{0}{2}{2}--{1};
+\seglbl{0}{4}{0.5}--{2};
+\seglbl{2}{6}{2}--{3};
+\seglbl{4}{8}{0.5}--{4};
+\draw [dotted] (0,8) -- (0,-0.5); \node [right] at (0.2,8) {$t_0$};
+
+\seglbl{4}{8}{5.5}--{2};
+\seglbl{2}{6}{7}--{1};
+\seglbl{0}{4}{5.5}--{0};
+\draw [dotted] (0,5) -- (10,5);
+\lgrad{0} \lgrad{1} \lgrad{2} \lgrad{3} \lgrad{4} \lgrad{5} \lgrad{6} \lgrad{7} \lgrad{8} \lgrad{9} 
+\end{tikzpicture}
+\caption{Différence entre les sémantiques avec ou sans $\max$ dans la description RANGE 4 SLIDE 2}\label{fig:valid:expressivite:slidemax}
+\end{figure}
 
 Nous pouvons remarquer que nous avons aussi introduit la notion d'inclusion de bornes. Ce qui permet de clarifier si la borne inférieure est incluse dans le contenu de la fenêtre. Dans le cadre des fenêtres glissantes ce n'est pas le cas~\footnote{Il est intéressant de noter un erratum dans la spécification de cet opérateur où la définition précise que la borne inférieure est incluse alors que les exemples et les expérimentations pratiques indiquent le contraire.}.
 
