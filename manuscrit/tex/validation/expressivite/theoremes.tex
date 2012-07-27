@@ -241,7 +241,7 @@ Ces constantes permettent d'exprimer plus aisément les résultats. Le théorèm
 
 Avoir $K$ entier est intuitif car cette constante décrit la synchronisation entre les requêtes. Ainsi, il est possible de prouver que $\gamma'(t,i) = \gamma(t,i) - K$. En considérant ceci, le remplacement de $j$ par $j+K$ devient logique. Il ne reste qu'à limiter la borne inférieure par $B_{t_1}$ et nous obtenons le résultat.
 
-Afin de pouvoir mettre ce théorème en pratique, nous présentons la proposition~\ref{thm:transplineaire} présente les conditions nécessaires et suffisantes à vérifier pour entrer dans le cadre du théorème~\ref{thm:transpwindow}.
+Afin de pouvoir mettre ce théorème en pratique, nous présentons la proposition~\ref{prop:transplineaire} présente les conditions nécessaires et suffisantes à vérifier pour entrer dans le cadre du théorème~\ref{thm:transpwindow}.
 \begin{prop}[Transposabilité des DSF linéaires]\label{prop:transplineaire}
     Si les descriptions sont de la forme suivante :
 $$\begin{array}{ll} \alpha(j) = \max(aj+b,B_{t_0}) & \alpha'(j) = \max(a'j+b',B_{t_1})\\ \beta(j) = cj+d & \beta'(j) = c'j+d' \end{array}$$
