@@ -40,7 +40,7 @@ Dans notre mise en œuvre, nous utilisons le protocole \textit{UPnP} largement r
 
 L'annonce des \textit{Device} \textit{UPnP} sur le réseau produit un flux de donnée \begin{center}\textit{UPnPStatus}(uuid, ip, type, friendlyName, status, $\t$).\end{center} Ce flux indique que le \textit{device} exposé avec l'IP \textit{ip}, ayant pour identifiant unique \textit{uuid}, pour profil \textit{type} et pour description textuelle \textit{friendlyName} a changé son statut au temps $\t$ pour \textit{status} (\textit{active}/\textit{inactive}).
 
-Nous avions exploré en section~\ref{sec:rw:supervision:administration} que les protocoles et agents d'administrations pouvaient être de bons interlocuteurs pour fournir des données. Dans le monde \textit{UPnP}, il existe le profil \textit{DeviceManagement} capable de fournir des données intéressantes. Le tableau~\ref{tab:valid:domvision:upnpdm} indique les données que nous exploitons. 
+Nous avions exploré en section~\ref{sec:rw:supervision:administration} que les protocoles et agents d'administrations pouvaient être de bons interlocuteurs pour fournir des données. Dans le monde \textit{UPnP}, il existe le profil \textit{DeviceManagement} capable de fournir des données intéressantes. Toutefois, ce profil n'est pas déployé sur tous les équipements. Le tableau~\ref{tab:valid:domvision:upnpdm} indique les données que nous exploitons. Les flux produits auront en plus des paramètres les attributs \textit{uuid} correspondant à l'identifiant \textit{UPnP} de l'agent, ainsi que le \textit{timestamp} d'émission $\t$.
 
 \begin{table}
 \centering
@@ -81,5 +81,6 @@ Pour la communication sur \textit{UPnP-DM}, nous souhaitons un profil plus réut
     \caption{Paramètres du composant \textit{DMSource}}\label{tab:valid:domvision:dmsource}
 \end{table}
 
-Ainsi, pour les flux \textit{OperatingSystem} et \textit{IPUsage}, nous y accéderons périodiquement, et pour les autres, ils seront récupérés à chaque arrivée de \textit{Device} de ce profil. Pour cela, nous formons la requête $\sigma_{status=active\wedge type=dm}$ \textit{UPnPStatus}. Cette requête sera injecté dans le puit \textit{SourceNotifier} dont le but est de notifier les \textit{Sources} s'étant inscrit dans un canal d'événement. Ici, toutes les instances de \textit{DMSource} souhaitant être notifiées le seront dans le canal \textit{DM}.
+Ainsi, pour les flux \textit{OperatingSystem} et \textit{IPUsage}, nous y accéderons périodiquement, et pour les autres, ils seront récupérés à chaque arrivée de \textit{Device} de ce profil\footnote{Nous aurions aussi pu faire une représentation à base de manipulation temporelle comme dans Asteroid.}. Pour cela, nous formons la requête $\sigma_{status=active\wedge type=dm}$ \textit{UPnPStatus}. Cette requête sera injecté dans le puit \textit{SourceNotifier} dont le but est de notifier les \textit{Sources} s'étant inscrit dans un canal d'événement. Ici, toutes les instances de \textit{DMSource} souhaitant être notifiées le seront dans le canal \textit{DM}.
 
+Nous avons vu la représentation du système, les données intéressantes, et comment obtenir ces données. Nous présentons désormais des exemples de requêtes que nous posons au système d'observation pour démontrer son expressivité.
