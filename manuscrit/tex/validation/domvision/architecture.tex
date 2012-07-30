@@ -1,5 +1,5 @@
 \section{Ajout d'un opérateur : gestion des préférences} \label{sec:valid:domvision:architecture}
-Dans cette section, nous validons la flexibilité de notre architecture en intégrant un nouvel opérateur. De nombreux efforts ont été consacrés ces dernières années à la personnalisation des réponses lors de l'accès aux bases de données. Dans notre cadre, un de nos objectifs était de pouvoir adapter les résultats en fonction de l'utilisateur. Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les deux opérateurs de personnalisation. Puis, nous présentons un exemple d'application dans notre cadre.
+Dans cette section, nous validons la flexibilité de notre architecture en intégrant un nouvel opérateur. De nombreux efforts ont été consacrés ces dernières années à la personnalisation des réponses lors de l'accès aux bases de données. Dans notre cadre, un de nos objectifs était de pouvoir adapter les résultats en fonction de l'utilisateur. Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous appliquons ceci à notre cadre applicatif. Enfin, nous présentons comment l'intégration dans Astronef est faite.
 
 \subsection{Préférences contextuelles}
 Dans cette section nous présentons les principaux concepts concernant le formalisme logique que nous employons pour spécifier et raisonner avec des préférences. Tout d'abord présentons le concept de préférence contextuelle. Une \textit{préférence contextuelle} est une manière d'exprimer la phrase suivante : \enquote{\it Lorsque $u$ est vrai, je préfère $Q_1$ à $Q_2$ à attributs $W$ égaux}. La définition~\ref{def:pref} définie formellement cette notion.
@@ -21,7 +21,7 @@ La formule $u$ du côté gauche d'une cp-règle $\varphi$ est appelé son \texti
 
 Une \textit{théorie de préférence contextuelle} (\textit{cp-théorie}) sur $A$ est un ensemble fini $\Gamma$ de cp-règles sur $R$. Nous notons par Attr($\Gamma$) l'ensemble d'attributs dans les cp-règles de $\Gamma$.
 
-Ainsi, une cp-règle $\varphi$ sur $A$ induit une \textit{relation binaire} (notée $\succ_\varphi$) sur une séquence d'n-uplet d'attributs $A$, à savoir l'ensemble des paires ($s_1,s_2$) tels que $s_1$ est préféré à $s_2$ par rapport à $\varphi$. Cette relation binaire n'étant pas nécessairement transitive, n'est pas en général une \textit{relation d'ordre}. Nous définissons la notion de \textit{Relation de Préférence} inférée par une cp-théorie $\Gamma$.
+Ainsi, une cp-règle $\varphi$ sur $A$ induit une \textit{relation binaire} (notée $\succ_\varphi$) sur une séquence d'n-uplet d'attributs $A$, à savoir l'ensemble des paires ($s_1,s_2$) tels que $s_1$ est préféré à $s_2$ par rapport à $\varphi$. Cette relation binaire n'est pas nécessairement transitive, ce qui fait que ce n'est pas une \textit{relation d'ordre}. Nous définissons la notion de \textit{Relation de Préférence} inférée par une cp-théorie $\Gamma$.
 
 \begin{defi}[Relation de Préférence]
 Soit $\Gamma$ cp-théorie sur $A$,
@@ -56,7 +56,7 @@ Le \textit{niveau} de $u$, $l(u)$, \textit{par rapport à} $\Gamma$ au \textit{b
  \end{itemize}
 \end{defi}
 
-Il est possible de montrer que si $u \succ u'$ alors $l(u) < l(u')$, la réciproque n'étant pas vrai. La sémantique de l'opérateur \textbf{KBest}$_k$ est présenté dans la définition~\ref{def:kbest}.
+Il est possible de montrer que si $u \succ u'$ alors $l(u) < l(u')$. La réciproque n'est pas vraie. La sémantique de l'opérateur \textbf{KBest}$_k$ est présenté dans la définition~\ref{def:kbest}.
 
 \begin{defi}[KBest]\label{def:kbest}
 Soit $R$ une relation temporelle et $\Gamma$ une cp-th\'eorie sur le schéma de $R$. 

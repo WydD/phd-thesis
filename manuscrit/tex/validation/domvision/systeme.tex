@@ -1,5 +1,5 @@
 \section{Adaptation au système observé}\label{sec:valid:domvision:systeme}
-Dans cette section, nous analysons le système au sens où nous l'avons décrit jusqu'ici dans Astronef et Asteroid. Nous devons modéliser le système pour en extraire son schéma qui permettra de représenter le catalogue dans la base d'Asteroid. Puis nous nous intéressons aux données temps-réel. En enfin, nous présentons les flux à notre disposition dans ce réseau.
+Dans cette section, nous analysons le système au sens où nous l'avons décrit jusqu'ici dans Astronef et Asteroid. Nous devons modéliser le système pour en extraire son schéma qui permet de représenter le catalogue dans la base d'Asteroid. Puis nous nous intéressons aux données temps-réel. En enfin, nous présentons les flux à notre disposition dans ce réseau.
 
 \subsection{Le schéma du système}
 Nous présentons ici la vision que nous avons du système que nous observons. Il est important de voir que cette vision ne doit pas être lié aux sources de données disponibles. Elle a pour but de refléter l'interprétation de ou des experts souhaitant observer le système. Nous définissons ici 3 concepts principaux : les équipements, les applications et les interfaces réseaux.
@@ -20,7 +20,7 @@ Les \textit{interfaces réseaux} sont moins sujets à interprétation que les de
 L'identification de ces interfaces peut être faite via ses adresses, bien que seule l'adresse \textit{MAC} garantisse l'unicité.
 
 \subsubsection{Concepts supplémentaires possibles}
-Ayant une modélisation des concepts principaux du réseau local domestique, nous pouvons maintenant ajouter des concepts supplémentaires. Bien que nous ne les utiliserons pas dans la suite de ce chapitre, il est intéressant d'en voir quelques exemples.
+Ayant une modélisation des concepts principaux du réseau local domestique, nous pouvons maintenant ajouter des concepts supplémentaires. Bien que nous ne les utilisons pas dans la suite de ce chapitre, il est intéressant d'en voir quelques exemples.
 
 Les \textit{services} sont des compositions d'\textit{applications}. Ils permettent de fournir des expériences à l'utilisateur de plus haut niveau. À ces \textit{services}, nous pouvons attacher des contrats de services.
 
@@ -29,7 +29,7 @@ Enfin, pour développer la topologie du réseau, les \textit{liens} relient deux
 \subsection{Les données volatiles intéressantes}
 Les données \textit{volatiles} sont les données temps-réel que nous souhaitons archiver en vue d'une analyse a posteriori. En premier lieu, nous explorons les historiques de métriques. Ces données sont en général utilisées sur des graphiques afin de détecter des comportements anormaux.
 
-Les métriques de charge seront pour nous les données à surveiller. En effet, la surveillance de la santé du réseau local passe avant tout par la surveillance de ses paramètres reflétant sa charge. Pour les équipements, nous surveillons la charge processeur utilisé (en \%) et mémoire occupée (en ko). Pour les interfaces réseaux, le débit est un bon indicateur de sa saturation. Toutefois, même si la donnée est difficile à obtenir, la capacité maximale de l'interface permet de savoir la charge totale de l'interface. Si nécessaire, d'autres métriques plus spécifiques pourront être enregistrées, par exemple : la latence ou la gigue d'une interface réseau .
+Les métriques de charge sont des données à surveiller. En effet, la surveillance de la santé du réseau local passe avant tout par la surveillance de ses paramètres qui reflètent sa charge. Pour les équipements, nous surveillons la charge processeur utilisé (en \%) et mémoire occupée (en ko). Pour les interfaces réseaux, le débit est un bon indicateur de sa saturation. Toutefois, même si la donnée est difficile à obtenir, la capacité maximale de l'interface permet de savoir la charge totale de l'interface. Si nécessaire, d'autres métriques plus spécifiques peuvent être enregistrées, par exemple : la latence ou la gigue d'une interface réseau.
 
 Nous souhaitons aussi être capable de traquer les changements de structure du réseau réseau local. Pour cela, nous pouvons surveiller et historiser les changements d'adresse \textit{IP} des interfaces, ou de statut (actif/inactif) des équipements, applications et interfaces.
 
@@ -40,7 +40,7 @@ Dans notre mise en œuvre, nous utilisons le protocole \textit{UPnP} largement r
 
 L'annonce des \textit{Device} \textit{UPnP} sur le réseau produit un flux de donnée \begin{center}\textit{UPnPStatus}(uuid, ip, type, friendlyName, status, $\t$).\end{center} Ce flux indique que le \textit{device} exposé avec l'IP \textit{ip}, ayant pour identifiant unique \textit{uuid}, pour profil \textit{type} et pour description textuelle \textit{friendlyName} a changé son statut au temps $\t$ pour \textit{status} (\textit{active}/\textit{inactive}).
 
-Nous avions exploré en section~\ref{sec:rw:supervision:administration} que les protocoles et agents d'administrations pouvaient être de bons interlocuteurs pour fournir des données. Dans le monde \textit{UPnP}, il existe le profil \textit{DeviceManagement} capable de fournir des données intéressantes. Toutefois, ce profil n'est pas déployé sur tous les équipements. Le tableau~\ref{tab:valid:domvision:upnpdm} indique les données que nous exploitons. Les flux produits auront en plus des paramètres les attributs \textit{uuid} correspondant à l'identifiant \textit{UPnP} de l'agent, ainsi que le \textit{timestamp} d'émission $\t$.
+Nous avions exploré en section~\ref{sec:rw:supervision:administration} que les protocoles et agents d'administrations pouvaient être de bons interlocuteurs pour fournir des données. Dans le monde \textit{UPnP}, il existe le profil \textit{DeviceManagement} capable de fournir des données intéressantes. Toutefois, ce profil n'est pas déployé sur tous les équipements. Le tableau~\ref{tab:valid:domvision:upnpdm} indique les données que nous exploitons. Les flux produits ont, en plus des paramètres, les attributs \textit{uuid} correspondant à l'identifiant \textit{UPnP} de l'agent, ainsi que le \textit{timestamp} d'émission $\t$.
 
 \begin{table}
 \centering
@@ -67,7 +67,7 @@ Serial & {SerialNumber} & Numéro de série de l'équipement\\\hline
 \subsection{Les sources Astronef}
 Nous avons conçu un composant spécifique pour la formation du flux \textit{UPnPStatus}. Ce composant n'a pas de paramètre et fournit directement l'interface \textit{Source} avec comme attributs ceux mentionnés. Son fonctionnement est événementiel.
 
-Pour la communication sur \textit{UPnP-DM}, nous souhaitons un profil plus réutilisable. Nous avons conçu un composant générique capable d'interroger tous les nœuds de l'arbre et de fonctionner de manière événementielle et périodique. Le mécanisme d'événement ne provient pas du protocole car les paramètres que nous souhaitons observer ne sont pas en \textit{EventOnChange} (production d'une notification en cas de changement). Concernant l'accès à la donnée, le composant devra itérer si nécessaire pour récupérer toutes les instances (\#) d'un chemin et enverra l'ensemble des données dans un seul \textit{batch}. L'ensemble des paramètres de cette source est présenté dans la table~\ref{tab:valid:domvision:dmsource}.
+Pour la communication sur \textit{UPnP-DM}, nous souhaitons un profil plus réutilisable. Nous avons conçu un composant générique capable d'interroger tous les nœuds de l'arbre et de fonctionner de manière événementielle et périodique. Le mécanisme d'événement ne provient pas du protocole car les paramètres que nous souhaitons observer ne sont pas en \textit{EventOnChange} (production d'une notification en cas de changement). Concernant l'accès à la donnée, le composant doit itérer si nécessaire pour récupérer toutes les instances (\#) d'un chemin et envoit l'ensemble des données dans un seul \textit{batch}. L'ensemble des paramètres de cette source est présenté dans la table~\ref{tab:valid:domvision:dmsource}.
 
 \begin{table}[ht]
     \centering
@@ -81,6 +81,6 @@ Pour la communication sur \textit{UPnP-DM}, nous souhaitons un profil plus réut
     \caption{Paramètres du composant \textit{DMSource}}\label{tab:valid:domvision:dmsource}
 \end{table}
 
-Ainsi, pour les flux \textit{OperatingSystem} et \textit{IPUsage}, nous y accéderons périodiquement, et pour les autres, ils seront récupérés à chaque arrivée de \textit{Device} de ce profil\footnote{Nous aurions aussi pu faire une représentation à base de manipulation temporelle comme dans Asteroid.}. Pour cela, nous formons la requête $\sigma_{status=active\wedge type=dm}$ \textit{UPnPStatus}. Cette requête sera injecté dans le puit \textit{SourceNotifier} dont le but est de notifier les \textit{Sources} s'étant inscrit dans un canal d'événement. Ici, toutes les instances de \textit{DMSource} souhaitant être notifiées le seront dans le canal \textit{DM}.
+Ainsi, pour les flux \textit{OperatingSystem} et \textit{IPUsage}, nous y accédons périodiquement, et pour les autres, ils sont récupérés à chaque arrivée de \textit{Device} de ce profil\footnote{Nous aurions aussi pu faire une représentation à base de manipulation temporelle comme dans Asteroid.}. Pour cela, nous formons la requête $\sigma_{status=active\wedge type=dm}$ \textit{UPnPStatus}. Cette requête est injectée dans le puit \textit{SourceNotifier} dont le but est de notifier les \textit{Sources} qui se sont inscrites dans un canal d'événement. Ici, toutes les instances de \textit{DMSource} souhaitant être notifiées le sont par le canal \textit{DM}.
 
 Nous avons vu la représentation du système, les données intéressantes, et comment obtenir ces données. Nous présentons désormais des exemples de requêtes que nous posons au système d'observation pour démontrer son expressivité.
