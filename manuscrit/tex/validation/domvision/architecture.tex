@@ -124,13 +124,4 @@ attribrules([kbest,_,_,[A]], A):- !.
 implrules([kbest,_,_,_], "KBest"):- !.
 \end{lstlisting}
 
-Une fois ce code renseigné dans le service de connaissance d'Astronef, nous pouvons librement utiliser les opérateurs \textbf{Best} et \textbf{KBest} sur toutes relations temporelles. Nous avons aussi développé un composant similaire mais dont l'algorithme est calculé de façon incrémental. Maintenant que les définitions des opérateurs sont renseignés, son intégration est simplifiée avec deux règles :
-\begin{lstlisting}
-dynamicoperator([kbest,B,[C]]):- !,
-    map_get(B, "incremental", "true", "true"), % Mode incremental par defaut
-    dynamicoperator(C). % Si le noeud fils est aussi incremental
-
-implrules([kbest,B,_,_], "DynamicKBest"):- isdynamic(B), !.
-\end{lstlisting}
-
-Nous verrons l'implémentation de ces algorithmes dans le chapitre~\ref{chap:validation:perfs} ainsi qu'une étude sur le choix de l'un ou l'autre algorithme. Il est intéressant de voir que si le SGBD supporte le langage \textit{CPref-SQL}, nous pouvons pousser les opérateurs \textbf{Best} et \textbf{KBest} sur le SGBD via une règle Asteroid. 
+Une fois ce code renseigné dans le service de connaissance d'Astronef, nous pouvons librement utiliser les opérateurs \textbf{Best} et \textbf{KBest} sur toutes relations temporelles. Nous verrons dans le chapitre suivant, les possibilités d'amélioration de cette approche en terme de performances. Il est intéressant de voir que si le SGBD supporte le langage \textit{CPref-SQL}, nous pouvons pousser les opérateurs \textbf{Best} et \textbf{KBest} sur le SGBD via une règle Asteroid. 

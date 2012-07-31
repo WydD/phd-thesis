@@ -72,7 +72,7 @@ dbsourcemode("freeze", {'at': Time}, Config, NewConfig):- !,
 
 Une application intéressante de cet ensemble de règle est le fait de pouvoir traduire une requête Astral relationnelle pure en \textit{SQL}. Notamment, si toutes les sources issues du SGBD sont utilisés sous forme de requête instantanée (ou si l'opérateur $\D^{(t_0,0)}$ est appliqué en tête de la requête) : nous sommes capables d'exécuter nativement une requête instantannée Astral par le SGBD. Notons toutefois que le surcoût induit par l'application de règles ainsi que le surcoût apporté par une requête \textit{SQL} potentiellement plus lourde à analyser fait qu'il sera plus long de faire cette opération par ce biais en la pratique.
 
-\subsection{Cas de la jointure mixte flux-SGBD}
+\subsection{Cas de la jointure mixte flux-SGBD}\label{sec:contrib:asteroid:reecriture:join}
 Nous avons jusqu'ici présenté les optimisations envisageables grâce à la flexibilité de \textit{dbsource}. Toutefois, nous sommes aussi en possession d'un composant opérateur que nous pouvons exploiter : \textit{dbjoin}. Nous avons défini la sémantique de l'opérateur comme capable de supporter toute requête $R_1\ssjoin R_2$ avec $R_2$ exprimé en algèbre relationnelle sur les relations de la base de donnée. Ce composant est donc un macro-bloc que nous pouvons former grâce à une règle.
 
 Afin d'illustrer l'application successives des règles, voici l'ensemble des résultats intermédiaires appliqués lors du raisonnement :
