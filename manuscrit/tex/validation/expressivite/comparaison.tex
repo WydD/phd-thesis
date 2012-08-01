@@ -119,6 +119,6 @@ Cet opérateur nous a permit notamment d'introduire la jointure semi-sensible $\
 
 Une autre application intéressante de cet opérateur est le calcul de changement d'une relation temporelle. Comme nous l'avons vu, l'opérateur $\IS$ est capable de fournir les nouveaux n-uplets d'une relation. Nous pouvons toutefois avoir un résultat pouvant être très intéressant dans le cadre l'observation de système : \enquote{A partir d'une relation temporelle $R$($id$,$v$), fournir le flux des changements ($id$,$v$,$v_{old}$) avec $v_{old}$ l'ancienne valeur pour l'identifiant $id$}. Cette requête s'écrit ainsi :
 $$\IS(R \Join_{v\neq v_{old}} (D^{(t,i)^-}_{t>t_0}\rho_{v_{old}/v} R))$$
-L'opérateur $D^{(t,i)^-}_{t>t_0}$ retarde la relation temporelle d'un \textit{batch}. Il devient possible d'interroger à un instant donné, une relation temporelle et son état précédent.
+L'opérateur $D^{(t,i)^-}_{t>t_0}$ retarde la relation temporelle d'un \textit{batch}. Il devient possible d'interroger à un instant donné, une relation temporelle et son état précédent. Les \textit{streamers} permettent de faire cela en faisant une jointure implicite sur $\varphi$. Cette opération est une décomposition permettant de joindre sur tout attribut.
 
 Nous avons présenté l'ensemble des aspects novateurs des définitions d'Astral. Nous détaillons maintenant les manipulations possibles grâce à cette algèbre avec un ensemble de propositions et de théorèmes.

@@ -5,8 +5,12 @@
 \qauthor{Rainbow Dash}
 \end{savequote}
 
-\chapter{Performances de l'évaluation de requêtes}
+\chapter{Évaluation de performances}
 \chaptertoc
+
+Afin d'effectuer l'observation de systèmes, nous avons présenté dans les chapitres précédent un SGFD extensible capable de se coupler avec un SGBD. Pour permettre le déploiement de cette solution sur tout type de plateforme, nous devons nous assurer que notre système n'est pas trop lourd en terme de performance. Dans ce chapitre, nous analysons les capacités de notre système pour choisir le meilleur plan de requête en fonction de la requête \textit{Astral} que nous lui soumettons.
+
+Tout d'abord, en section~\ref{sec:valid:perfs:cadre}, nous présentons notre cadre expérimental. Ensuite, en section~\ref{sec:valid:perfs:flux}, nous nous intéressons à l'optimisation de la gestion de flux de données en soit avec le support du \textit{benchmark} reconnu \textit{Linear Road}. Nous traitons l'efficacité du couplage avec le SGBD dans la section~\ref{sec:valid:perfs:flux}. Et enfin, nous présentons dans la section~\ref{sec:valid:perfs:prefs} comment nous pouvons ajouter des indications à Astronef pour exploiter au mieux les opérateurs de préférences que nous avons introduit dans le chapitre précédent.
 
 \input{tex/validation/perfs/cadre}
 \input{tex/validation/perfs/flux}
