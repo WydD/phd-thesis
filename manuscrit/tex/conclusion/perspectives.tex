@@ -1,4 +1,13 @@
 \section{Perspectives de recherches}\label{sec:conclusion:perspectives}
 \subsection{De l'analyse d'un système}
+Dans cette thèse, nous avons conçu une méthodologie générique pour gérer les données d'un système. Cette gestion avait pour but de mieux comprendre le système et éventuellement en cas de problème, de pouvoir le diagnostiquer. Nous avons pu mettre en pratique cette solution sur un problème en production chez \textit{Orange France}.
+
+Il a été observé sur quelques centaines de \textit{Livebox} en France un problème récurrent de coupure de service VoIP pour raisons inconnues. Nous avons été contacté pour aider à la résolution de ce problème. Les experts nous ont ainsi donné accès à l'ensemble des données de configuration de l'appareil (un accès \textit{pull} et un accès événementiel), soit environ 10000 paramètres. Nous avons installé notre prototype sur le réseau d'une \textit{Livebox} présentant le problème pour tracer les événements ainsi que les changements des données de configuration, collectées toutes les deux minutes (le temps d'accès coûte environ 30-40 secondes).
+
+Nous avons pu effectuer plusieurs analyses a posteriori grâce au stockage des données sur Asteroid. Nous n'avons toutefois pas pu résoudre le problème. Nous avons pu observer les conséquences du problème en remarquant que le paramètre 
+
+% Comprendre un système ?
+% 
+
 \subsection{De la représentation d'un système}
 \subsection{De la performance de l'observation}
