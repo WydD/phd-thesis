@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto">
+		<pi attributes="T,vid,xway,qid,day,sinit,send,dow,tod">
+			<sigma condition="type=4">
+				<source id="S"/>
+			</sigma>
+		</pi>
+	</query>
+	<handlers>
+		<handler type="StreamSourceHandler" id="TravelTimeReq"/>
+	</handlers>
+</astral>

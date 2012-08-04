@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto">
+		<pi removeAttributes="npos,ndir">
+			<sigma condition="cpos>=4 &amp;&amp; npos==1 &amp;&amp; ndir==1">
+				<aggregation groupBy="vid">
+					<aggregate attribute="pos" function="countd" to="npos"/>
+					<aggregate attribute="pos" function="count" to="cpos"/>
+					<aggregate attribute="dir" function="countd" to="ndir"/>
+					<aggregate attribute="xway" function="max" to="xway"/>
+					<aggregate attribute="pos" function="max" to="pos"/>
+					<aggregate attribute="dir" function="max" to="dir"/>
+					<window partitionedBy="vid">
+						<description wtype="P" a="1" b="0" c="1" d="3" rate="1"/>
+						<sigma condition="lane&gt;=1 &amp;&amp; lane&lt;=3">
+							<source id="PositionReports"/>
+						</sigma>
+					</window>
+				</aggregation> 
+			</sigma>
+		</pi>
+	</query><!--
+	<handlers>
+		<handler type="RelationSourceHandler" id="VoitureStoppee"/>
+	</handlers>-->
+</astral>

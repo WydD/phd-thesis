@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto" name="AverageVelocity">
+		<evaluate expression="Math.floor(avgspeed)" to="avgspeed">
+		    <aggregation groupBy="xway,seg,dir">
+			    <aggregate attribute="speed" function="avg" to="avgspeed"/>
+			    <aggregation groupBy="min,xway,seg,dir">
+				    <aggregate attribute="speed" function="avg" to="speed"/>
+				    <aggregation groupBy="vid,min,xway,seg,dir">
+					    <aggregate attribute="speed" function="avg" to="speed"/>
+					    <window>
+						    <description type="T" range="300" slide="60"/>
+						    <evaluate expression="Math.floor(T/60)+1" to="min">
+        						<source id="PositionReports"/>
+                            </evaluate>
+					    </window>
+				    </aggregation>
+			    </aggregation>
+		    </aggregation>
+        </evaluate>
+	</query>
+	<handlers>
+		<handler type="RelationSourceHandler" id="AverageVelocity"/>
+	</handlers>
+</astral>
+

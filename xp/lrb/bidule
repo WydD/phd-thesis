@@ -1,0 +1,63 @@
+
+astral:set output asd
+astral:prepare Source.xml
+astral:prepare PositionReports.xml
+
+
+astral:prepare SegChange.xml
+astral:prepare CarDensity.xml
+astral:prepare VoitureStoppee.xml
+astral:prepare AccidentInSeg.xml
+
+
+astral:prepare AverageVelocity.xml
+
+astral:prepare Toll.xml
+
+
+astral:launch
+
+scheduler VoitureStoppee
+
+astral:set output asd
+
+astral:prepare AccidentAlert.xml
+
+
+astral:prepare DailyExpenditureReq.xml
+astral:prepare AccountBalanceReq.xml
+astral:prepare TravelTimeReq.xml
+
+
+
+
+
+
+astral:prepare Source.xml
+astral:prepare PositionReports.xml
+astral:prepare AverageVelocity.xml
+
+
+astral:prepare VoitureStoppee.xml
+astral:prepare AccidentInSeg.xml
+astral:prepare SegChange.xml
+
+
+astral:set output asd
+astral:prepare AccidentAlert.xml
+
+
+astral:prepare Source.xml
+astral:prepare PositionReports.xml
+astral:prepare AverageVelocityBench.xml
+
+astral:launch
+
+#awk -F "," '{print $1, $6, $7}' output_velocity | awk '{max[$1] = !($1 in max) ? $2 : ($2 > max[$1]) ? $2 : max[$1]; min[$1] = !($1 in min) ? $3 : ($3 > min[$1]) ? $3 : min[$1];} END {for (i in max) print i, min[i]-max[i];}' | sort -n > test
+
+astral:set output asd
+astral:prepare Source.xml
+astral:prepare PositionReports.xml
+astral:prepare VoitureStoppee.xml
+astral:prepare AccidentInSeg.xml
+astral:launch

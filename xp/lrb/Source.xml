@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<sources>
+		<source file="../udbl2/cardatapoints10.out.S" stype="FileStream" id="S" 
+			parseAttributes="type,T,vid,speed,xway,lane,dir,seg,pos,qid,sinit,send,dow,tod,day" sleepFactor="300" stampAttribute="Ti"/>
+	</sources>
+</astral>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto" name="Toll">
+		<streamer stype="Rsu">
+			<pi attributes="avgspeed,toll,vid,T,Ti">
+				<join defaultOuter="0.0">
+					<pi attributes="dir,seg,xway,toll,vid,T,Ti">
+						<evaluate expression="(seg2 == -1 &amp;&amp; avgspeed &lt; 40 &amp;&amp; cars &gt; 50) ? 2*(cars-50)*(cars-50) : 0" to="toll">
+							<join defaultOuter="-1" 
+								condition="dir == 0 &amp;&amp; (seg &lt;= seg2 &amp;&amp; seg &gt;= (seg2-4)) || dir == 1 &amp;&amp; (seg &gt;= seg2 &amp;&amp; seg &lt;= (seg2+4))">
+								<join defaultOuter="0">
+									<sigma condition="lane != 4">
+										<source id="SegChange"/>
+									</sigma>
+									<join>
+										<sigma condition="avgspeed &lt; 40.0">
+											<source id="AverageVelocity"/>
+										</sigma>
+										<sigma condition="cars &gt; 50">
+											<source id="CarDensity"/>
+										</sigma>
+									</join>
+								</join>
+								<rho>
+									<rename from="seg" to="seg2"/>
+									<source id="AccidentInSeg"/>
+								</rho>
+							</join>
+						</evaluate>
+					</pi>
+					<source id="AverageVelocity"/>
+				</join>
+			</pi>
+		</streamer>
+	<handlers>
+		<handler type="PrintStreamHandler" file="output" stampAttribute="To"/>
+	</handlers>
+	</query>
+</astral>

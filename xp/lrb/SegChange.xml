@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto" name="SegChange">
+		<pi removeAttributes="seg2">
+			<sigma condition="seg2 != seg">
+			<join defaultOuter="-1">
+				<window>
+					<description wtype="B"/>
+    				<source id="PositionReports"/>
+				</window>
+				<domain dtype="previous">
+					<rho>
+						<rename from="seg" to="seg2"/>
+						<pi attributes="vid,seg">
+						<window partitionedBy="vid">
+							<description wtype="L"/>
+							<source id="PositionReports"/>
+						</window>
+						</pi>
+					</rho>
+				</domain>
+			</join>
+			</sigma>
+		</pi>
+	</query>
+	<handlers>
+        <handler type="RelationSourceHandler" id="SegChange"/>
+	</handlers>
+</astral>

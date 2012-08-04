@@ -1,0 +1,7 @@
+set term aqua font "Verdana,24" enhanced
+set key left top
+set linestyle 1 lt 1 lw 2 pt 3 linecolor rgb "red"
+set linestyle 2 lt 1 lw 2 pt 4 linecolor rgb "blue"
+set linestyle 3 lt 1 lw 2 pt 5 linecolor rgb "green"
+set linestyle 4 lt 1 lw 2 pt 6 linecolor rgb "brown"
+set grid xtics ytics mxtics

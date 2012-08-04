@@ -11,7 +11,7 @@ Dans cette section, nous nous intéressons avant tout à la requête de péage $
 \subsection{L'exploitation des commutativités et associativités}
 L'avantage concret de l'optimisation logique à base de commutation prend tout son sens lorsqu'un langage déclaratif est utilisé. En effet, en \textit{SQL}, il est possible d'exprimer une requête Sélection-Projection-Jointure. Chaque partie est clairement défini dans les clauses du \sql{SELECT ... FROM ... WHERE}. Sa traduction en algèbre relationnelle nécessite plusieurs transformations pour obtenir une expression efficace.
 
-A contrario, si l'expert écrit lui même sa requête en algèbre, celle-ci est déjà structurellement efficace. C'est pour cela que l'algèbre est considéré comme un langage impératif. Ainsi, nous n'avons pas pu observer de grandes optimisations avec ou sans l'optimisation logique. Toutefois, lorsqu'un langage déclaratif sera défini, cet aspect aura de l'importance.
+A contrario, si l'expert écrit lui même sa requête en algèbre, celle-ci est déjà structurellement efficace. C'est pour cela que l'algèbre est considéré comme un langage impératif. Ainsi, nous n'avons pas pu observer de grandes optimisations avec ou sans l'optimisation logique. Toutefois, lorsqu'un langage déclaratif sera défini, cet aspect prendra de l'importance.
 
 \subsection{Changement de segment : jointure massive et manipulation temporelle}
 Dans cette partie, nous analysons la requête permettant de sélectionner les n-uplets de $P$ indiquant un changement de segment du véhicule. Cette requête peut s'écrire de cette façon : $$\RSu(P[B] \Join_{seg\neq seg2} \rho_{seg2/seg} \Pi_{xway,vid,seg} \D^{(t,i)^-}_{\t>t_0} P[xway,vid/L])$$
@@ -29,19 +29,26 @@ Cette optimisation permet d'exploiter que le coût de $\DS(P[vid/L])$ est nul si
 
 $$\RSu(P[B] \Join_{seg\neq seg2} \rho_{seg2/seg} \Pi_{xway,vid,seg} P[T\ 30s\ 30s[$$
 
-Nous exploitons désormais qu'un véhicule émet une données toutes les 30s. Nous exploitons aussi que notre description de fenêtre est capable de correctement traiter l'inclusion ou l'exclusion des bornes inférieures et supérieures. Nous obtenons une jointure avec une cardinalité de 30 \textit{batchs} à droite ($\sim$30000 n-uplets pour $L=1$) mais dont la table de hachage n'est calculée qu'une fois toutes les 30 secondes. À la différence, cette optimisation est plus difficile à automatiser car elle dépend des caractéristiques de $P$.
+Nous exploitons désormais qu'un véhicule émet une données toutes les 30s. Nous exploitons aussi que notre description de fenêtre est capable de correctement traiter l'inclusion ou l'exclusion des bornes inférieures et supérieures. Nous obtenons une jointure avec une cardinalité de 30 \textit{batchs} à droite ($\sim$30000 n-uplets pour $L=1$) mais dont la table de hachage n'est calculée qu'une fois toutes les 30 secondes. À la différence, cette optimisation est plus difficile à automatiser car elle dépend des caractéristiques de $P$. Nous notons $B$ la taille d'un batch et $V$ le nombre de $vid$ différents pour une autoroute.
 
-\begin{table}[ht]
+
+\begin{figure}[ht]
 \centering
-\begin{tabular}{|c|c|c|c|}\bottomrule
-\rowcolor{hypcolor} Sous-requête & Coût mémoire & Coût processeur & Latence observée \\ \hline
-$\D^{(t,i)^-}_{\t>t_0} P[xway,vid/L]$ & $\O(L\abs{vid})$ & $\O(L\abs{B}+L\abs{vid})$ & \textbf{TODO}\\\hline
-$\DS(P[xway,vid/L])[B]$ & $\mathcal O(L\abs{vid})$ & $\O(L\abs{B})$ & \textbf{TODO} \\\hline
-$P[T\ 30s\ 30s[$ & $\mathcal O(L\abs{B})$ & $\O(L\abs{B})$ & \textbf{TODO} \\ \toprule
+\begin{minipage}{0.44\textwidth}
+\begin{tabular}{|c|c|c|}\bottomrule
+\rowcolor{hypcolor} Stratégie & Mémoire & Calcul \\ \hline
+$[./L]$ & $\O(LV)$ & $\O(LV+LB)$ \\\hline
+$\DS$ & $\mathcal O(LV)$ & $\O(LB)$  \\\hline
+$[T\ r\ r[$ & $\O(LB)$ & $\O(LB)$\\ \toprule
 \end{tabular}
-\caption{Tableau comparatif des différents opérateurs pour le calcul de vitesse}
-\end{table}
+\end{minipage}
+\begin{minipage}{0.55\textwidth}
+\includegraphics[width=1\textwidth]{valid-perfs-segchange}
+\end{minipage}
+\caption{Complexités et tracé de latence des stratégies du changement de segment}\label{fig:valid:perfs:segchange}
+\end{figure}
 
+La figure~\ref{fig:valid:perfs:segchange} trace les médianes (sur $100s$) des mesures de latences que nous obtenons. La stratégie $\DS$ évolue en fonction de la charge du benchmark alors que $[./L]$ évolue selon le nombre de voiture passé (linéaire dans notre cas). Au final, nous obtenons une latence égal à $60ms$ pour $\DS$ et $210ms$ pour $[./L]$. Enfin, la stratégie utilisant une fenêtre temporelle a une meilleure performance la plupart du temps, toutefois pour les moments où la fenêtre s'évalue ($\t\in 30\N$) alors la latence est quasiment décuplé pour passer à $350-400ms$. Néanmoins sa charge mémoire dépend uniquement de $B$.
 
 \subsection{Calcul de vitesse d'un segment : fenêtre et agrégat}
 Dans cette partie, nous analysons la requête permettant de calculer la vitesse moyenne pour un triplet \textit{(xway,dir,seg)}. Le calcul de l'agrégation telle que la spécification le présente est en trois parties comme la requête suivante le démontre :
@@ -49,23 +56,21 @@ $$\null_{\substack{xway,\\ seg,dir}}\G_{avg(tmp)}^{avgspeed}(\null_{\substack{m,
 
 En supposant que nous appliquons à la lettre ce plan de requête, nous avons chaque minute : un agrégat d'environ 300000 n-uplet à appliquer, suivi de deux agrégats d'une centaine de milliers puis d'une vingtaine de millier. De plus, ce coût n'est pas amorti car l'opérateur de fenêtre est bloquant.
 
-Pour améliorer la performance de cette requête, nous avons implémenté l'opérateur Pane~\cite{Li:pane} capable de faire des agrégations efficaces sur des fenêtres glissantes (son fonctionnement a été présenté dans la section~\ref{sec:rw:sgfd:optim:fenetres}). Notre coût devient amorti puisque le déclenchement d'une nouvelle fenêtre produit quasiment instantanément le résultat. Nous avons un bon gain de performance. Toutefois, les deux autres agrégations restent à calculer. Une manière plus efficace de calculer ceci serait d'avoir un agrégat complexe capable de calculer des moyennes de moyennes directement, mais le coût mémoire reste haut.
+Pour améliorer la performance de cette requête, nous avons implémenté l'opérateur Pane~\cite{Li:pane} capable de faire des agrégations efficaces sur des fenêtres glissantes (son fonctionnement a été présenté dans la section~\ref{sec:rw:sgfd:optim:fenetres}). Le coût d'une fenêtre plus agrégation devient amorti puisque le déclenchement d'une nouvelle fenêtre produit quasiment instantanément le résultat. Toutefois, les deux autres agrégations restent à calculer avec de grandes cardinalités.
 
-\begin{table}[ht]
+Nous avons ainsi implémenté un agrégat complexe capable de composer deux agrégats. Par exemple, l'agrégat $avg(vid/avg(speed))$ calcule la moyenne des moyennes pour chaque véhicules. La complexité en terme de mémoire et de calcul reste le même. Toutefois, il ne nécessite qu'un opérateur et lors de l'évaluation de la fenêtre, les sous-agrégats sont prêt à être calculés ce qui rend l'opération bien plus rapide. Il est de plus possible d'automatiser la réécriture de ce type d'opérations.
+
+\begin{figure}[ht]
 \centering
-\begin{tabular}{|c|c|c|c|}\bottomrule
-\rowcolor{hypcolor} Opérateurs & Latence observée \\ \hline
-Fenêtre + Triple Agrégat & \textbf{TODO}\\\hline
-Pane + Double Agrégat & \textbf{TODO} \\\hline
-Pane (approximatif) & \textbf{TODO} \\ \toprule
-\end{tabular}
-\caption{Tableau comparatif des différents opérateurs pour le calcul de vitesse}
-\end{table}
+\includegraphics[width=0.6\textwidth]{valid-perfs-averagevelocity}
+\caption{Tracé de la latence des stratégies pour le calcul de vitesse}\label{fig:valid:perfs:averagevelocity}
+\end{figure}
+
+La figure~\ref{fig:valid:perfs:averagevelocity} montre la latence observé sur les différentes stratégies. Nous voyons effectivement que Pane avec les deux agrégations bloquantes a des performances similaires à la fenêtre simple (gain 25\%) car peu de données sont présentes par groupes dans la première agrégation. Cependant l'agrégat complexe suit la même tendance mais avec un gain de performance de 10. Enfin, nous pouvons voir que le calcul d'un Pane simple est très efficace même sur de grandes quantités de données. De plus, il est plus stable au niveau de la mémoire car nous remarquons qu'il n'y a pas de pic de latences (dues au travail du \textit{garbage collector}).
 
 \subsection{Allègement des structures internes}
 Enfin, nous pouvons voir que nous pouvons établir des règles sur les comportements des opérateurs nous permettant de faire des économies de mémoires et de calcul en modifiant les structures internes. En effet, il existe plusieurs façon d'implémenter les relations temporelles, les flux et les séquences de n-uplets. Par exemple, il existe des structures pour les relations temporelles supportant un état, ou deux, ou $N$. De même, il existe des relations temporelles incrémentales ou non. Nous pouvons appliquer des règles permettant de décider de la meilleur structure en fonction des opérateurs.
 
-Par exemple, dans le cadre de $\RSu(S)$. Nous pouvons indiquer : un seul état est nécessaire, l'état courant ; si la relation temporelle est incrémentale, alors il faut prévoir un entretien de l'état courant, les $\delta$ n'ont pas besoins d'être conservés. De la même façon, nous pouvons prévoir de supprimer des vérifications de contraintes (le schéma de la séquence est respectée etc...), si l'implémentation les garanties. Sans ces optimisations, nous observons une augmentation de la latence importante (le double dans le cadre de la requête de changement de segment).
+Par exemple, dans le cadre de $\RSu(S)$. Nous pouvons indiquer : un seul état est nécessaire, l'état courant ; si la relation temporelle est incrémentale, alors il faut prévoir un entretien de l'état courant, les $\delta$ n'ont pas besoins d'être conservés. À l'inverse, $\IS$ ne nécessite que des $\delta$ ce qui évite d'entretenir l'état courant, coûteux en mémoire et en calcul.
 
-\subsection{Résultat final}
-Pour la complétude de l'étude, nous avons fait tourner le \textit{benchmark} en entier sur l'ensemble des requêtes \textit{Accident} et \textit{Péage}. Nous réussissons le passage $L=X$, en utilisant les meilleurs plans présentés dans cette section. Ce qui est comparable avec les meilleurs approches centralisés~\cite{Zeitler:massive} (sachant que l'environnement est plus puissant) Ces plans ont été sélectionné automatiquement par Astronef.
+De la même façon, nous pouvons prévoir de supprimer des vérifications de contraintes (le schéma de la séquence est respectée etc...), si l'implémentation les garanti. Sans ces optimisations, nous observons une augmentation de la latence importante (le double dans le cadre de la requête de changement de segment).

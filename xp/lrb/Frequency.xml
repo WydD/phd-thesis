@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto">
+		<streamer stype="Rsu">
+				<aggregation>
+					<aggregate attribute="pos" function="count" to="cpos"/>
+					<window>
+						<description wtype="T" a="1" b="-120" c="1" d="0" rate="1"/>
+						<sigma condition="lane&gt;=1 &amp;&amp; lane&lt;=3">
+							<source id="PositionReports"/>
+						</sigma>
+					</window>
+				</aggregation> 
+</streamer>
+	</query><!--
+	<handlers>
+		<handler type="RelationSourceHandler" id="VoitureStoppee"/>
+	</handlers>-->
+</astral>

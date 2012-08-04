@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astral xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://astral.ligforge.imag.fr/schema/query.xsd">
+	<query t0="auto" name="CarDensity">
+		<aggregation groupBy="xway,seg,dir">
+			<aggregate attribute="vid" function="countd" to="cars"/>
+			<window>
+				<description wtype="T" range="60" slide="60"/>
+				<source id="PositionReports"/>
+			</window>
+		</aggregation>
+	</query>
+	<handlers>
+		<handler type="RelationSourceHandler" id="CarDensity"/>
+	</handlers>
+</astral>
+
