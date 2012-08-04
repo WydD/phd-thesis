@@ -8,7 +8,7 @@ Cette section présente d'abord la structure et la gestion des données issues d
 L'architecture de la gestion des données dans les systèmes classiques d'administration est principalement fondée sur des gestionnaires \enquote{agents}~\cite{CCITT:X700} (voir fig.~\ref{fig:rw:supervision:administration}). Cette architecture est celle utilisée de nos jours dans les protocoles d'administrations tels que TR-069~\cite{BBF:tr069}, UPnP Device Management~\cite{UPnP:DM2}, mais aussi sur des protocoles plus anciens tels que SNMP~\cite{IETF:SNMP}. Le principe est qu'un module logiciel est présent sur les dispositifs devant être administrés. Celui-ci comporte un agent capable de maintenir une petite \enquote{base de données} sous un format particulier représentant les données et états du système. Un gestionnaire est capable par la suite de transmettre les informations de l'agent à un système d'administration global. Ce dernier agrège ainsi l'ensemble des dispositifs.
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.75\textwidth]{fig/rw-supervision-administration}
+    \includegraphics[width=.70\textwidth]{fig/rw-supervision-administration}
     \caption{Architecture d'un système classique d'administration}\label{fig:rw:supervision:administration}
 \end{figure}
 
@@ -28,7 +28,7 @@ Un exemple de modèle de données de ce type de structure est présenté en figu
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.6\textwidth]{rw-supervision-cimcore}
+    \includegraphics[width=.55\textwidth]{rw-supervision-cimcore}
     \caption{Modèle de classe de la partie \textit{Core} de \textit{CIM}}\label{fig:rw:supervision:cimcore}
 \end{figure}
 Toutefois, tous les modèles ne sont pas structurés sous forme de hiérarchie. Par exemple, la DMTF a adopté l'approche objet. En effet, dans les protocoles tels que WBEM~\cite{DMTF:WBEM} ou WS-MAN~\cite{DMTF:WS-MAN}, le modèle \textit{CIM} (\textit{Common Information Model})~\cite{DMTF:CIM} est décrit par un diagramme de classe UML comme présenté en figure~\ref{fig:rw:supervision:cimcore}. Ces protocoles sont notamment utilisés pour l'administration de web-services et applications entreprises. 
