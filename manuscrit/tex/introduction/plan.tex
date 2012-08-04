@@ -1,2 +1,9 @@
 \section{Plan de thèse}\label{sec:intro:plan}
-\TODO{}
+Ce manuscrit est découpé en trois parties majeures :
+\begin{enumerate}
+\item \textbf{L'état de l'art}. Nous analysons d'abord les solutions actuelles capables de faire de l'observation de systèmes génériques dans le chapitre~\ref{chap:rw:supervision}. Ensuite, nous détaillons les travaux existant dans le domaine plus spécifique de la gestion des flux de données dans le chapitre~\ref{chap:rw:sgfd}.
+\item \textbf{Contribution}. Le chapitre~\ref{chap:contrib:astral} présente les définitions d'\textit{Astral}, notre algèbre de gestion de données. Le chapitre~\ref{chap:contrib:astronef} décrit \textit{Astronef}, un intergiciel capable d'interpréter et évaluer une requête \textit{Astral}. Enfin, nous détaillons dans le chapitre~\ref{chap:contrib:asteroid} l'extension capable de manipuler un support persistant relationnel, complétant ainsi notre gestion de données pour l'observation.
+\item \textbf{Validation et mise en pratique}. Le chapitre~\ref{chap:validation:expressivite} analyse en détail l'expressivité offerte par \textit{Astral}, en la comparant à l'état de l'art, puis en démontrant des propriétés non-triviales d'équivalences de requêtes. La mise en œuvre de notre solution d'observation dans le cadre du réseau local domestique est décrite dans le chapitre~\ref{chap:valid:domvision}. Dans ce chapitre, nous introduisons aussi un nouvel opérateur permettant de gérer les préférences utilisateurs pour montrer la flexibilité de l'intergiciel. Puis, nous présentons dans le chapitre~\ref{chap:valid:perfs} des éléments d'évaluation de performances afin de démontrer que notre système de règle permet d'évaluer de manière efficace : des requêtes continues, des requêtes couplés avec un SGBD et des requêtes impliquant un opérateur introduit par l'utilisateur.
+\end{enumerate}
+
+Finalement, le chapitre~\ref{chap:conclusion} conclut ce travail et présente quelques perspectives de recherches.
