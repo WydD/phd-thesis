@@ -27,7 +27,7 @@ Ajoutons désormais la notion d'identifiant physique (def~\ref{def:phy}) au n-up
 \end{defi}
 \begin{defi}[Position d'un n-uplet]\label{def:pos}
     La position d'un n-uplet $s$ dans une séquence $TS$ correspond au nombre d'n-uplet ayant un identifiant physique plus petit que $s$.
-    $$\pos_{TS}(s) = \#\{s'\in TS,\ s'(\varphi) < s(\varphi) \}$$
+    $$\pos_{TS}(s) = \#\{s'\in TS,\ s'(\varphi) \leq s(\varphi) \}$$
 \end{defi}
 
 La gestion des flux de données nécessite de plus le concept de \textit{timestamp} (def~\ref{def:timestamp}) qui sera par la suite associé aux n-uplets d'un flux. Nous adoptons un modèle continu pour le temps car cela nous permet de ne pas faire d'hypothèse sur la plus courte distance entre deux \textit{timestamps} consécutifs.

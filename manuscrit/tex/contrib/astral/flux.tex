@@ -7,16 +7,16 @@ Avant de définir formellement l'opération de fenêtrage, nous avons besoin d'u
 \begin{defi}[Fonction position-\textit{batch}]\label{def:tau}
     Soit $S$ un flux,
 
-    La fonction $\tau_S : \N\cup\{-1\}\to \TN$ est la fonction associant un entier à l'identifiant de \textit{batch} du seul n-uplet présent à cette position.
+    La fonction $\tau_S : \N\to \TN$ est la fonction associant un entier à l'identifiant de \textit{batch} du seul n-uplet présent à cette position.
 
-    Par convention, $\tau_S(-1)=(t_0,0)$.
+    Par convention, $\tau_S(0)=(t_0,0)$.
 \end{defi}
 
 Par corollaire de l'hypothèse fondamentale~\ref{hyp:ordres}, la fonction $\tau_S$ est donc croissante non-stricte. Ainsi, il est possible de définir une pseudo inverse (cor~\ref{cor:rtau}) $\rtau_S$ capable de donner une position (la maximale en l'occurence) pour un \textit{batch} donné.
 \begin{coro}[Fonction pseudo-inverse $\tau$]\label{cor:rtau}
     Soit $S$ un flux,
 
-    La pseudo-inverse $\rtau_S:\TN\to \N\cup\{-1\}$ existe et correspond à la plus grande position du \textit{batch} donné en entrée. Si aucun \textit{batch} n'existe, le plus proche est utilisé. Formellement, $$\forall b \in \TN, \qquad \tau_S^{-1}(b) = \sum_{n=-1}^{+\infty} n \indic_{[\tau_S(n),\tau_S(n+1)[}(b)$$
+    La pseudo-inverse $\rtau_S:\TN\to \N$ existe et correspond à la plus grande position du \textit{batch} donné en entrée. Si aucun \textit{batch} n'existe, le plus proche est utilisé. Formellement, $$\forall b \in \TN, \qquad \tau_S^{-1}(b) = \sum_{n=0}^{+\infty} n \indic_{[\tau_S(n),\tau_S(n+1)[}(b)$$
 \end{coro}
 
 %De par sa nature, la fonction $\tau$ et sa pseudo-inverse partagent des propriétés intéressantes que nous pourrons réutiliser lors de démonstrations formelles.
