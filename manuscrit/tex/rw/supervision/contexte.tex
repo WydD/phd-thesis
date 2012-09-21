@@ -110,7 +110,11 @@ SOCAM implémente deux manières de faire de l'inférence logique de prédicats.
 
 La complexité du traitement des requêtes d'inférence est \textit{PSPACE} et celle du langage de l'ontologie est de \textit{EXPTIME}. Ce qui fait que plus la base de connaissance est conséquente plus son exécution sera difficile.
 \subsection{Synthèse}
-\begin{table}[p]
+En conclusion, le traitement contextuel des données permet de gérer l'hétérogénéité sémantique des données. Les capacités de traitements sont liées à l'inférence logique pour enrichir la base des connaissances accumulées. Ainsi, il est possible de construire un espace de contexte et d'en inférer des situations de haut-niveau. Cette capacité d'abstraction est nécessaire pour l'informatique ubiquitaire qui a besoin de manipuler des concepts humains pour fournir des capacités pervasives au système
+
+Pour notre problématique d'observation, il reste difficile de gérer l'évolution des données au cours du temps. La liberté d'expression des bases de connaissances fait que l'inférence est complexe à manipuler. Plusieurs travaux s’attellent à permettre aux connaissances et aux règles de supporter le dynamisme~\cite{Weikum:webknowledge, Hellerstein:declarative}. L'apport de cette dimension est toutefois difficile d'un point de vue théorique.
+
+\begin{table}[!ht]
 \criteretabDonnee
     {Structure sémantique à base de triplet.}
     {Utilisation d'ontologies. Gestion des contraintes et de l'inférence structurelles variable suivant l'expressivité du langage. En général, \textit{OWL Lite} est utilisé.}
@@ -127,6 +131,3 @@ La complexité du traitement des requêtes d'inférence est \textit{PSPACE} et c
     {La complexité de l'inférence peut aller jusqu'en \textit{EXPTIME}. Toutefois, plusieurs implémentations optimisées permettent de traiter des millions de triplets en quelques secondes.}
 \caption{Synthèse de l'informatique contextuelle}\label{tab:rw:supervision:contexte:synthese}
 \end{table}
-En conclusion, le traitement contextuel des données permet de gérer l'hétérogénéité sémantique des données. Les capacités de traitements sont liées à l'inférence logique pour enrichir la base des connaissances accumulées. Ainsi, il est possible de construire un espace de contexte et d'en inférer des situations de haut-niveau. Cette capacité d'abstraction est nécessaire pour l'informatique ubiquitaire qui a besoin de manipuler des concepts humains pour fournir des capacités pervasives au système
-
-Pour notre problématique d'observation, il reste difficile de gérer l'évolution des données au cours du temps. La liberté d'expression des bases de connaissances fait que l'inférence est complexe à manipuler. Plusieurs travaux s’attellent à permettre aux connaissances et aux règles de supporter le dynamisme~\cite{Weikum:webknowledge, Hellerstein:declarative}. L'apport de cette dimension est toutefois difficile d'un point de vue théorique.
