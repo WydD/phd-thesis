@@ -24,7 +24,7 @@ Les protocoles récents permettent aussi de manipuler des données de manière h
     \caption{Structure hiérarchique du modèle de données d'UPnP-DM}\label{fig:rw:supervision:dmtree}
 \end{figure}
 
-Un exemple de modèle de données de ce type de structure est présenté en figure~\ref{fig:rw:supervision:dmtree}. Une donnée est donc définie de manière unique, tout comme dans une \textit{MIB}, grâce à son chemin complet. Dans le vocabulaire du domaine de l'administration, cette donnée est appelée \textit{paramètre}. Le \textit{chemin} d'un paramètre est la concaténation des noms des nœuds qui le sépare de la racine, avec pour séparateur \enquote{/} dans UPnP ou \enquote{.} dans TR-069. L'implémentation de l'agent permet de créer et de remplir cette base d'information.
+Un exemple de modèle de données de ce type de structure est présenté en figure~\ref{fig:rw:supervision:dmtree}. Une donnée est définie de manière unique, tout comme dans une \textit{MIB}, grâce à son chemin complet. Dans le vocabulaire du domaine de l'administration, cette donnée est appelée \textit{paramètre}. Le \textit{chemin} d'un paramètre est la concaténation des noms des nœuds qui le sépare de la racine, avec pour séparateur \enquote{/} dans UPnP ou \enquote{.} dans TR-069. L'implémentation de l'agent permet de créer et de remplir cette base d'information.
 
 \begin{figure}[ht]
     \centering
@@ -60,7 +60,7 @@ Nous venons de voir comment les systèmes d'administrations sont structurés et 
 Que ce soit au niveau de l'agent comme au niveau du gestionnaire global, les données peuvent être traitées. Cette section détaille les différentes possibilités. Tout d'abord, nous voyons comment l'hétérogénéité des systèmes est traitée et comment l'intégration des multiples agents se fait. Par la suite, nous détaillons l'ajout de nœuds particuliers comme calcul de statistiques ou l'ajout de fonctions tierces.
 
 \subsubsection{L'hétérogénéité par l'uniformisation des modèles}
-La standardisation est un enjeux majeur pour les systèmes d'administrations à grande échelle. Comme présentés précédemment, la spécification les protocoles d'administrations des agents se fait autour de consortiums. Ainsi, l'hétérogénéité des systèmes est gérée par le fait qu'il est supposé acquis que les standards soient respectés. Suivant les dispositifs observés, différents profils existent. Que ce soit pour les profils hiérarchiques ou à objet, des spécifications sont écrites pour décrire le modèle de données.
+La standardisation est un enjeux majeur pour les systèmes d'administrations à grande échelle. Comme présentés précédemment, la spécification les protocoles d'administrations des agents se fait autour de consortiums. Ainsi, l'hétérogénéité des systèmes est gérée par le respect des standards. Suivant les dispositifs observés, différents profils existent. Que ce soit pour les profils hiérarchiques ou à objet, des spécifications sont écrites pour décrire le modèle de données.
 
 Le nombre de spécification augmente énormément pour essayer de limiter l'hétérogénéité. Par exemple, dans le cadre de \textit{TR-069}\footnote{Pour rappel, ce protocole est établit par un consortium d'opérateurs télécoms : le BBF}, il existe seulement 9 profils principaux. Mais lorsque les domaines d'activités s'élargissent le nombre d'entités devient difficile à contrôler, comme dans CIM où le nombre de spécifications est de 16\footnote{Sachant que les spécifications CIM sont bien plus complexes et possèdent plus d'entités.}, ou dans les MIB qui sont au nombre de 318 spécifiées par l'IETF.
 
