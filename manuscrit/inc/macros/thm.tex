@@ -18,8 +18,13 @@
 % #3 = style (S - M)
 \def\newthmtype#1#2#3#4{
         \DeclareCaptionFormat*{#1label}{\hspace{1.5em}{\ifx#3S\it\else\bf\fi ##1}\hfill \phantom{p}  {\bf ##3}}\floatstyle{plaintop}
+        \ifthenelse{\equal{#4}{}}{
+        \newfloat{#1float}{ht}{#1toc}\floatname{#1float}{#2}
+	\expandafter\def\csname the#1float\endcsname{\arabic{#1float}}
+        }{
         \newfloat{#1float}{ht}{#1toc}[#4]\floatname{#1float}{#2}
 	\expandafter\def\csname the#1float\endcsname{\csname #4arabic\endcsname{#1float}}
+	}
         \captionsetup[#1float]{position=top,aboveskip=0pt,format=#1label,textformat=spaced}
 	\newenvironment{#1}[1][]
 		{ 

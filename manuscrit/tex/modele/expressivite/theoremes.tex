@@ -120,7 +120,7 @@ Ainsi, nous avons bel et bien la relation suivante : $I_S(CPU[T\ 2s\ 2s]) \not\e
 
 Ce résultat permet de traiter des flux d'une manière pratique. Un flux $S$ n'est pas manipulable a priori par une implémentation car c'est une entité infinie. Par contre, $S[B]$ correspond au \textit{dernier batch} qui est accessible. Ainsi, la lecture d'un flux correspond à la récupération du dernier \textit{batch} et envoyer les n-uplets dans le flux résultant. De plus, lorsque le dernier \textit{batch} est récupéré, il est possible d'y appliquer des opérations simples avant de le renvoyer. Nous définissons les sélections, projections et renommage sur flux par l'application de ces opérations sur la fenêtre \textit{batch}.
 
-\begin{coro}[Définition de la sélection, projection et renommage sur flux]
+\begin{coro}[Définition de la sélection, projection et renommage sur flux]\label{cor:defunary}
     Soit $S$ un flux,
 
     Soit $\nu$ un opérateur pouvant être $\sigma$, $\Pi$ ou $\rho$,
