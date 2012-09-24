@@ -2,7 +2,7 @@
 Comme présenté dans la figure~\ref{fig:contrib:astronef:optimisation}, l'optimisation physique travaille sur l'arbre produit par l'optimisation logique. Les composants opérateurs suivant leur configuration implémentent différentes sémantiques. Cette sémantique peut-être traduite grâce à Astral. Une fois ces liens entre théorie et implémentation établis, il est nécessaire de sélectionner les meilleurs composants.
 
 \subsection{Macro-blocs}
-Afin d'exécuter des sous-parties de la requête de façon plus optimales, nous utilisons le concept de macro-blocs. Un macro-bloc est une composition d'opérateurs pouvant être réunis en un seul bloc, considéré plus efficace. Par exemple, la combinaison agrégation-fenêtre $\G S[W]$ largement étudié dans la littérature est un macro-bloc. Sachant que des composants seront capables d'exécuter cet opérateur composite, nous pouvons effectuer cette transformation. Nous supposons ici l'hypothèse~\ref{hyp:macro} permettant d'appliquer des macro-blocs dès que possible.
+Afin d'exécuter des sous-parties de la requête de façon plus optimales, nous utilisons le concept de macro-blocs. Un macro-bloc est une composition d'opérateurs pouvant être réunis en un seul bloc, considéré plus efficace. Par exemple, la combinaison agrégation-fenêtre $\G S[W]$ largement étudié dans la littérature est un macro-bloc. Sachant que des composants sont capables d'exécuter cet opérateur composite, nous pouvons effectuer cette transformation. Nous supposons ici l'hypothèse~\ref{hyp:macro} permettant d'appliquer des macro-blocs dès que possible.
 \begin{hyp}[Heuristique des macros-blocs]\label{hyp:macro}
     Plus le nombre de composants opérateurs utilisés pour exécuter une requête est petit, plus son exécution est efficace.
 \end{hyp}
@@ -16,7 +16,7 @@ La réécriture d'un groupe de nœud $[AIn,BIn,CIn]$ en un macro-bloc $[AOut,BOu
 L'application de ce prédicat est faite de manière itérative.
 \end{regle}
 \begin{example}
-    Reprenons la composition agrégation-fenêtre $\G S[W]$ dont il existe plusieurs implémentations. Nous allons combiner les deux opérateurs \textbf{aggregate} et \textbf{window} pour former un nouveau nœud \textbf{windowaggregate}. Celui-ci pourra avoir plusieurs implémentations.
+    Reprenons la composition agrégation-fenêtre $\G S[W]$ dont il existe plusieurs implémentations. Nous allons combiner les deux opérateurs \textbf{aggregate} et \textbf{window} pour former un nouveau nœud \textbf{windowaggregate}. Celui-ci peut avoir plusieurs implémentations.
     \begin{lstlisting}
 macrobloc(
     [aggregate, ArgAgg, [
@@ -44,7 +44,7 @@ Ces opérateurs ont pour propriété de vérifier le corollaire~\ref{cor:defunar
     La composition d'opérateurs d'n-uplet est égale à l'opérateur d'n-uplet définit par la composition de leurs fonctions partielles.
 \end{prop}
 
-Ainsi, il est possible de regrouper tous les opérateurs d'n-uplets en un seul composant efficace. La règle pour appliquer cette opération utilisera le prédicat \textbf{macrogroup}. Afin de simplifier les règles de type, d'implémentation et de macro-bloc, nous créons un prédicat pour déclarer les opérateurs d'n-uplets.
+Ainsi, il est possible de regrouper tous les opérateurs d'n-uplets en un seul composant efficace. La règle pour appliquer cette opération utilise le prédicat \textbf{macrobloc}. Afin de simplifier les règles de type, d'implémentation et de macro-bloc, nous créons un prédicat pour déclarer les opérateurs d'n-uplets.
 \begin{regle}[Déclaration d'opérateurs d'n-uplets]
 La déclaration que le nœud de nature $A$ avec la configuration $B$ peut se traiter n-uplet par n-uplet avec le composant $Impl$ se fait via le prédicat :
 \begin{center}\textbf{unaryimpl}($A$,$B$,$Impl$)\end{center}
@@ -83,27 +83,28 @@ Nous obtenons après encapsulation, le résultat suivant :
 
 
 \subsection{Sélection des composants}
-Nous en venons désormais à la dernière règle : la sélection du meilleur composants exécuter l'arbre. Nous avons un arbre structuré de manière efficace. Il nous faut trouver la meilleure implémentation pour exécuter au mieux la requête. Ce choix pourra être seulement basé sur la nature du nœud dans le cas où il n'existe pas d'autres alternatives. Mais dans la plupart des cas, il faudra sélectionner selon la configuration.
+Nous en venons désormais à la dernière règle : la sélection du meilleur composants exécuter l'arbre. Nous avons un arbre structuré de manière efficace. Il nous faut trouver la meilleure implémentation pour exécuter au mieux la requête. Ce choix pourra être seulement basé sur la nature du nœud dans le cas où il n'existe pas d'autres alternatives. Mais dans la plupart des cas, il est nécessaire de sélectionner selon sa configuration.
 
 \subsubsection{Calcul incrémental}
 Dans la section~\ref{sec:rw:sgfd:optimisation:flux}, nous avons présenté le calcul incrémental et son intérêt dans l'optimisation du traitement des flux. Ce principe reste applicable naturellement dans Astral, il est toujours possible de définir à partir d'une relation temporelle $R$ les deux $\Delta_R^+$ et $\Delta_R^-$. Ces deux objets indiquent les différences de $R$ à chaque \textit{batch} (resp. ajout et suppression). 
 
-Certains composants sont donc capables de traiter une relation en utilisant uniquement ces $\Delta_R$. Et certains opérateurs sont capables de fournir nativement les $\Delta_R$. Ainsi, il devient nécessaire de sélectionner les composants les plus capables d'exploiter ce mode.
+Certains composants sont capables de traiter une relation en utilisant uniquement ces $\Delta_R$. Et certains opérateurs sont capables de fournir nativement les $\Delta_R$. Ainsi, il devient nécessaire de sélectionner les composants les plus capables d'exploiter ce mode.
 
 \subsubsection{Le prédicat de sélection}
-La sélection du meilleur composant est important car les performances peuvent être différentes en fonction des implémentations. Par exemple, les opérateurs de séquences de fenêtres $[L]$ (dernier n-uplet) et $[B]$ (dernier batch) peuvent se définir avec une description de séquence de fenêtre générique. Toutefois, leur implémentation ne nécessite pas d'utiliser un opérateur générique car leur calcul est très simple. Utiliser un composant qui calculera une description de fenêtre linéaire générique serait inutile.
+La sélection du meilleur composant est important car les performances peuvent être différentes en fonction des implémentations. Par exemple, les opérateurs de séquences de fenêtres $[L]$ (dernier n-uplet) et $[B]$ (dernier batch) peuvent se définir avec une description de séquence de fenêtre générique. Toutefois, leur implémentation ne nécessite pas d'utiliser un opérateur générique car leur calcul est très simple. Utiliser un composant qui calcule une description de fenêtre linéaire générique serait inutile.
 
 \begin{regle}[Sélection d'implementations]
-La sélection du composant nommé $Impl$ pour le nœud $[A,B,C]$ auxquels seront rajouté les propriétés optionnelles $Props$ est décidé par le prédicat :
+La sélection du composant nommé $Impl$ pour le nœud $[A,B,C]$ auxquels sont ajoutées les propriétés optionnelles $Props$ est décidé par le prédicat :
 \begin{center} \textbf{implrules}($[A,B,C]$,$Impl$,$Props$).\end{center}
 L'application de ce prédicat est faite de manière récursive.
 \end{regle}
 
-Les propriétés optionnelles permettrons d'indiquer certaines informations au composant qui utilisera ce nœud. Par exemple, il est possible d'indiquer que cette implémentation fournit une relation incrémentale.
+Les propriétés optionnelles permettent d'indiquer certaines informations au composant qui utilise ce nœud. Par exemple, il est possible d'indiquer que cette implémentation fournit une relation incrémentale.
 \begin{example}
-	Nous souhaitons implémenter les règles pour choisir les meilleures fenêtres. Nous utilisons un prédicat capable d'identifier les fenêtres particulières $[L]$ et $[B]$. Si la description correspond à ces fenêtres, alors \textit{LastBatchWindow} sera utilisée, sinon \textit{WindowImpl} sera utilisé par défaut.
+	Nous souhaitons implémenter les règles pour choisir les meilleures fenêtres. Nous utilisons un prédicat capable d'identifier les fenêtres particulières $[L]$ et $[B]$. Si la description correspond à ces fenêtres, alors \textit{LastBatchWindow} est sélectionnée, sinon \textit{WindowImpl} est utilisé par défaut.
 \begin{lstlisting}
-implrules([window,{description: [D]},_], "LastBatchWindow", {incremental: 1}):-
+implrules([window,{description: [D]},_], "LastBatchWindow", 
+        {incremental: 1}):- % support de l'incremental
     lastbatchorlasttuple(D), !.
 implrules([window,_,_], "WindowImpl", {incremental: 1}):- !.
 \end{lstlisting}
@@ -112,13 +113,12 @@ implrules([window,_,_], "WindowImpl", {incremental: 1}):- !.
 \begin{example}
 Par la suite, le streamer $\IS$ lui est capable de supporter les deux modes. Il est important de noter que le calcul incrémental pour les streamers $\IS$ et $\DS$ est très important car leur coût devient quasi-nul en utilisant directement les $\Delta_R$. Ces deux modes sont gérés par deux implémentations différentes, ce qui se traduit par :
 \begin{lstlisting}
-implrules([streamer,{stype: "Is"},[[_,{incremental:1},_]]], "DynamicIsImpl"):- !.
-implrules([streamer,{stype: "Is"},_], "IsImpl"):- !. %Par defaut, nous utilisons IsImpl
+implrules([streamer,{stype: "Is"}, [[_,{incremental:1},_]]], 
+    "DynamicIsImpl"):- !. % Si Is et incremental
+implrules([streamer,{stype: "Is"},_], "IsImpl"):- !. %Par defaut
 \end{lstlisting}
 \end{example}
 
 L'arbre fournit par l'application finale de la sélection des composants est ensuite donné à un service capable d'instancier les différents composants qui constituent le plan de requête. Il est intéressant de noter que ce service est lui-même écrit en \textit{Prolog} par facilité d'implémentation.
 
-Nous avons vu comment, par le renseignement de règles logiques, nous pouvons construire un plan de requête efficace. Ce plan est construit par sa restructuration logique et par la sélection des meilleurs composants pour mettre en œuvre cet arbre. Une évolution dans la même ligné que le calcul incrémental serait de raffiner les structures utilisées dans les résultats intermédiaires.
-
-Nous détaillons désormais les capacités de cette base de règle en terme d'extensibilité.
+Nous avons vu comment, par le renseignement de règles logiques, nous pouvons construire un plan de requête efficace. Ce plan est construit par sa restructuration logique et par la sélection des meilleurs composants pour mettre en œuvre cet arbre. Une évolution dans la même ligné que le calcul incrémental serait de raffiner les structures utilisées dans les résultats intermédiaires. Nous détaillons désormais les capacités de cette base de règle en terme d'extensibilité.

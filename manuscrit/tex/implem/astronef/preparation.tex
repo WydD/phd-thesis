@@ -14,7 +14,7 @@ Pour atteindre ce but, nous avons choisi de mettre en place une approche à base
 \subsubsection{Optimisation par heuristiques}
 Afin de mettre en œuvre cet ensemble de règle pour obtenir un plan de requête efficace, nous introduisons une optimisation logique et physique à l'image des optimisations des SGBD. Nous restructurons la structure de l'expression algébrique dans la section~\ref{sec:contrib:astronef:logique} pour qu'elle soit plus optimisé. Ensuite, nous sélectionnons les meilleurs composants et les meilleures configurations pour mettre en œuvre cette nouvelle expression, dans la section~\ref{sec:contrib:astronef:physique}.
 
-Toutefois, dans notre contexte, nous ne pouvons pas appliquer directement certaines optimisations des SGBDs. Contrairement aux règles habituelles, nous ne réordonnons pas les jointures du fait du théorème~\ref{thm:asymetrie}. De plus, la notion d'entrée-sortie est réduite à une notion de résultats intermédiaires, même au niveau des sources (donc l'utilisation des index est moins pertinent que sur disque). En effet, la performance se mesure généralement en débit supporté et les débits de sources sont a priori inconnus. Au total, un gain de performance est mesuré sur un gain de consommation processeur et, à moindre mesure, sur une consommation mémoire contrôlée (ou bornée).
+Toutefois, dans notre contexte, nous ne pouvons pas appliquer directement certaines optimisations des SGBDs. Contrairement aux règles habituelles, nous ne réordonnons pas les jointures du fait du théorème~\ref{thm:asymetrie}. De plus, la notion d'entrée-sortie est réduite à une notion de résultats intermédiaires, même au niveau des sources (rendant l'utilisation des index moins pertinent que sur disque). En effet, la performance se mesure généralement en débit supporté et les débits de sources sont a priori inconnus. Au total, un gain de performance est mesuré sur un gain de consommation processeur et, à moindre mesure, sur une consommation mémoire contrôlée (ou bornée).
 
 De plus, Astral possède plus d'opérateurs et de restrictions que l'algèbre relationnelle ce qui rend l'espace de recherche plus large. Ainsi, nous développons plusieurs heuristiques nous permettant de faire les différentes réécritures par applications de règles.
 
@@ -36,7 +36,7 @@ Nous utilisons un moteur capable d'exécuter du Prolog~\footnote{En réalité, l
 ]]
 	\end{lstlisting}
 \end{example}
-Nous remarquons que cette syntaxe est très similaire au \textit{XML} : chaque nœud possède un nom, un ensemble de propriétés et un ensemble de fils, tout comme les balises \textit{XML}. C'est pour cela que ce langage est celui utilisé en pratique pour spécifier des requêtes dans le prototype. Il est ensuite traduit en expression utilisable en Prolog. L'ensemble des nœuds possibles corresponds aux différents opérateurs de l'algèbre. Nous ne détaillerons pas ceci dans ce manuscrit. Le lecteur pourra consulter le manuel sur la page web suivante \url{http://code.google.com/p/astral/wiki/XMLSyntax} pour trouver les expressions exactes supportées.
+Nous remarquons que cette syntaxe est très similaire au \textit{XML} : chaque nœud possède un nom, un ensemble de propriétés et un ensemble de fils, tout comme les balises \textit{XML}. C'est pour cela que ce langage est celui utilisé en pratique pour spécifier des requêtes dans le prototype. Il est ensuite traduit en expression utilisable en Prolog. L'ensemble des nœuds possibles corresponds aux différents opérateurs de l'algèbre. Nous ne détaillons pas cet aspect dans ce manuscrit. Le lecteur peut consulter le manuel sur la page web suivante \url{http://code.google.com/p/astral/wiki/XMLSyntax} pour trouver les expressions exactes supportées.
 
 
 \subsection{Préparation de la requête}
@@ -51,7 +51,7 @@ Ce prédicat est appliqué tant qu'il peut l'être (de manière itérative).
 \end{regle}
 
 \begin{example}
-	Nous nous proposons de remplacer le sucre syntaxique $R^{t_0}$ en $D^{t0} (R)$. $R^{t_0}$ est exprimée par le nœud \textit{freeze} possédant le paramètre \enquote{at} et $\D$ est exprimée par un nœud \textit{domain} possédant un paramètre \enquote{description}. Voici l'expression de ce remplacement :
+	Nous nous proposons de remplacer le sucre syntaxique $R^{t_0}$ en $\D^{t0} (R)$. $R^{t_0}$ est exprimée par le nœud \textit{freeze} possédant le paramètre \enquote{at} et $\D$ est exprimée par un nœud \textit{domain} possédant un paramètre \enquote{description}. Voici l'expression de ce remplacement :
 	\begin{lstlisting}
 sugar(
 	[freeze, % Lorsqu'il existe un noeud freeze
@@ -68,10 +68,10 @@ sugar(
 	\end{lstlisting}
 \end{example}
 
-Ce prédicat sera de plus utilisé pour analyser les chaînes de caractères ce qui permet, par exemple, d'extraire la liste des attributs de conditions ou d'expressions.
+Ce prédicat est de plus utilisé pour analyser les chaînes de caractères ce qui permet, par exemple, d'extraire la liste des attributs de conditions ou d'expressions.
 
 \subsubsection{Inférences des types et attributs}
-Afin de pouvoir traiter correctement les différents nœuds, il nous faut inférer les deux propriétés majeures de chaque nœud d'une requête qui va définir la nature de son résultat intermédiaire : son type (\textit{flux} ou \textit{relation}) et ses attributs. Pour cela, il faut être garanti que les sources exposent leurs attributs et types dans leurs propriétés. Par la suite, un programme appliquera ces règles de façon récursive. Les résultats seront stockés dans les propriétés \textit{type} et \textit{attributes}.
+Afin de pouvoir traiter correctement les différents nœuds, il nous faut inférer les deux propriétés majeures de chaque nœud d'une requête qui va définir la nature de son résultat intermédiaire : son type (\textit{flux} ou \textit{relation}) et ses attributs. Pour cela, il faut être garanti que les sources exposent leurs attributs et types dans leurs propriétés. Par la suite, un programme applique ces règles de façon récursive. Les résultats sont stockés dans les propriétés \textit{type} et \textit{attributes}.
 
 \begin{regle}[Inférences des types]
 L'inférence du type $Type$ de l'expression $[A,B,C]$ dont les types fils sont $TypesFils=[T1,...]$ se fait par le prédicat :

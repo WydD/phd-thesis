@@ -1,12 +1,12 @@
 \section{Optimisation logique}\label{sec:contrib:astronef:logique}
-Cette première application de règles permet de restructurer l'expression de la requête pour avoir la structure la plus adéquate. Dans cette section, nous pourrons exploiter les connaissances accumulés grâce aux théorèmes d'Astral que nous pouvons retrouver dans le chapitre~\ref{chap:validation:expressivite}.
+Cette première application de règles permet de restructurer l'expression de la requête pour avoir la structure la plus adéquate. Dans cette section, nous exploitons les connaissances accumulés grâce aux théorèmes d'Astral que nous pouvons retrouver dans le chapitre~\ref{chap:validation:expressivite}.
 
 \subsection{Projection et sélection}
 Nous faisons l'hypothèse~\ref{hyp:optimpush} qui permet d'intégrer des projections et sélections à tout endroit de l'arbre de requête. Les conséquences de cela est de pouvoir placer des sélections et projections au plus près des sources. 
 \begin{hyp}[Heuristique du coût de sélection et projection]\label{hyp:optimpush}
     Le coût processeur de la sélection et de la projection peuvent être considérés comme négligeables.
 \end{hyp}
-Cette optimisation permet de réduire l'empreinte mémoire des résultats intermédiaires ce qui de plus réduira les temps de calculs des opérateurs. Pour atteindre ce résultat, il est nécessaire d'appliquer les résultats que nous donne Astral. Ces résultats ont été présentés dans le chapitre~\ref{chap:validation:expressivite}. Voici les deux prédicats permettant une telle optimisation :
+Cette optimisation permet de réduire l'empreinte mémoire des résultats intermédiaires ce qui de plus réduit les temps de calculs des opérateurs. Pour atteindre ce résultat, il est nécessaire d'appliquer les résultats que nous donne Astral. Ces résultats ont été présentés dans le chapitre~\ref{chap:validation:expressivite}. Voici les deux prédicats permettant une telle optimisation :
 \begin{regle}[Optimisation des projections]
 La transformation d'un nœud contenant une projection afin de l'appliquer sur ses nœuds fils est gérée par le prédicat suivant :
 \begin{center} \textbf{pushprojectionrule}($[pi,BPi,[[A,B,C]]],[AOut,BOut,COut]$).\end{center}

@@ -27,9 +27,9 @@ Ce choix est argumenté par le fait que le SGBD a sûrement pré-calculé des in
 D'un point de vue théorique, nous avons décrit que le composant \textit{dbsource} supporte la classe des opérateurs relationnels ainsi que l'application de l'opérateur $\D^f_c$. 
 
 \subsection{Règles de macro-blocs pour le placement d'opérateurs}
-L'application de l'heuristique consiste à transformer un bloc \lstinline|[A,B,[[dbsource,Config,[]],...]]| avec \lstinline|[A,B,_]| opérateur supporté par \textit{dbsource} en un seul \lstinline|[dbsource,NewConfig,[]]|. Ceci correspond à la spécification de macro-blocs. Il existe deux types de transformations : celles modifiant la requête, celles modifiants le mode. Pour mettre en œuvre, nous utilisons le prédicat \textbf{macrogroup} faisant appel à deux prédicats modifiant la requête ou le mode.
+L'application de l'heuristique consiste à transformer un bloc \lstinline|[A,B,[[dbsource,Config,[]],...]]| avec \lstinline|[A,B,_]| opérateur supporté par \textit{dbsource} en un seul \lstinline|[dbsource,NewConfig,[]]|. Ceci correspond à la spécification de macro-blocs. Il existe deux types de transformations : celles modifiant la requête, celles modifiants le mode. Pour mettre en œuvre, nous utilisons le prédicat \textbf{macrobloc} faisant appel à deux prédicats modifiant la requête ou le mode.
 
-Voyons tout d'abord la modification de requête dans \textit{dbsource}. Nous définissons un prédicat capable de transformer les requêtes des sources en une nouvelle. Naturellement, la règle \textbf{macrogroup} devra transmettre les attributs et conserver les anciens paramètres de configuration.
+Voyons tout d'abord la modification de requête dans \textit{dbsource}. Nous définissons un prédicat capable de transformer les requêtes des sources en une nouvelle. Naturellement, la règle \textbf{macrobloc} devra transmettre les attributs et conserver les anciens paramètres de configuration.
 \begin{regle}[Modification de la requête de dbsource]
     Soit $[A,B,C]$ un nœud dont tous les fils sont de type \textit{dbsource} avec pour requêtes \textit{Queries},
 
@@ -83,10 +83,10 @@ R_1\ssjoin_c R_2 &= \sigma_c \left(R_1 \Join \D^{\mathrm{change}}_{R_1} R_2\righ
 & =  R_1 \Join_c \textbf{dbsource}_{notify(R_1)}^{Q} & \text{(via \textbf{dbsourcemode})}
 \end{align*}
 
-Enfin, l'application d'une dernière règle va nous permettre de transformer cette jointure en : $\textbf{dbjoin}^Q_c (R_1)$. Cette règle est exprimée grâce au prédicat \textbf{macrogroup} :
+Enfin, l'application d'une dernière règle va nous permettre de transformer cette jointure en : $\textbf{dbjoin}^Q_c (R_1)$. Cette règle est exprimée grâce au prédicat \textbf{macrobloc} :
 
 \begin{lstlisting}
-macrogroup(
+macrobloc(
     [join,JoinConfig,[
         [A,LeftConfig,C],
         [dbsource,DBConfig,[]]
