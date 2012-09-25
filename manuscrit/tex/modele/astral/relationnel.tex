@@ -1,16 +1,16 @@
 \section{Héritages du modèle relationnel}\label{sec:contrib:astral:relationnel}
-La définition de relation temporelle que nous avons exposé comporte la notion de séquence d'n-uplet. Cette notion est certes proche des relations classiques mais possède un point majeur supplémentaire étant l'ordre. Dans cette section, nous verrons comment réutiliser les opérateurs de l'algèbre relationnelle.
+La définition de relation temporelle que nous avons proposée repose sur la notion de séquence d'n-uplet. Cette notion est certes proche des relations classiques mais diffère par un point majeur : l'ordre. Dans cette section, nous voyons comment les opérateurs classiques de l'algèbre relationnelle peuvent être définis sur les relations temporelles.
 
 \subsection{Opérateurs unaires simples}
-Tout d'abord explorons le domaine des opérateurs unaires relationnels : sélection, projection et renommage. Comme ces opérateurs sont agnostiques de l'ordre dans lesquels sont les n-uplets, le principe de l'héritage est d'appliquer les définitions sur l'évaluation instantanée de la relation.
+Tout d'abord explorons le domaine des opérateurs unaires relationnels : sélection, projection et renommage. Comme ces opérateurs sont indépendant de l'ordre des n-uplets, le principe est d'appliquer les définitions sur la relation temporelle à un instant donnée.
 
-Par exemple, notons la sélection relationnelle classique $\Sigma$. Alors, pour un batch $b$ quelconque, l'expression suivante : $\Sigma(R(b))$, exprime bien la sélection des n-uplets. Ainsi l'application de l'opérateur relationnel standard sur le batch présent permet de définir la sélection (def~\ref{def:selection}). L'identifiant physique n'est pas altéré donc l'ordre ne l'est pas non plus.
+Par exemple, notons la sélection relationnelle classique $\Sigma$. Alors, pour un batch $b$ quelconque, l'expression suivante : $\Sigma(R(b))$, exprime bien la sélection des n-uplets. Ainsi l'application de l'opérateur relationnel standard sur le batch présent permet de définir la sélection (def~\ref{def:selection}). L'identifiant physique n'est pas modifié par l'opérateur, ainsi l'ordre ne l'est pas non plus.
 \begin{defi}[Sélection]\label{def:selection}
 Soit $R$ une relation temporelle,
 
 Soit $c$ une expression booléenne applicable sur tout n-uplet de $R$,
 
-Alors la sélection est définie comme suit :
+Alors la sélection sur une relation temporelle est définie comme suit :
 $$\sigma_{c}(R) : b \mapsto \{s\in R(b), c(s)\} = \Sigma_c(R(b))$$
 \end{defi}
 
@@ -19,19 +19,19 @@ Nous pouvons remarquer d'ores et déjà que la définition d'inclusion de requê
 Soit $R$ une relation temporelle, et $c$ une condition de sélection, alors $$\sigma_c R \subseteqq R$$
 \end{prop}
 
-La projection et le renommage se définissent de façon similaire. Toutefois, il existe des cas pouvant altérer l'identifiant physique. Par exemple, la projection sur des attributs ne comprennant pas $\varphi$ le supprimerait. Nous instaurons donc des règles supplémentaires (def~\ref{def:projection}) pour éviter ces cas. De façon similaire, nous pourrions définir l'opérateur d'évaluation d'expressions $e_f^c$ permettant d'évaluer une expression $f$ dont le résultat serait placé dans l'attribut $c$.
+La projection et le renommage se définissent de façon similaire. Toutefois, il existe des cas pouvant modifier l'identifiant physique. Par exemple, la projection sur des attributs ne comprennant pas $\varphi$ le supprimerait. Nous instaurons des règles supplémentaires (def~\ref{def:projection}) pour éviter ces cas. De façon similaire, nous pourrions définir l'opérateur d'évaluation d'expressions $e_f^a$ permettant d'évaluer une expression $f$ dont le résultat serait placé dans l'attribut $a$ comme par exemple $e_{x+y}^z$.
 \begin{defi}[Projection et renommage]\label{def:projection}
-La projection $\Pi_p$ et le renommage $\rho_{b/a}$ sont défini par héritage de l'algèbre relationnelle à l'exception de ces deux règles :
+La projection $\Pi_p$ et le renommage $\rho_{b/a}$ sont défini par extension de l'algèbre relationnelle à l'exception de ces deux règles :
 \begin{itemize}
 \item Une projection $\Pi_p$ est strictement égale à $\Pi_{p\cup \{\varphi\}}$
 \item Le renommage $\rho_{b/\varphi}$ correspond a une copie de $\varphi$ dans $b$.
 \end{itemize}
 \end{defi}
 
-Nous avons donc réussi à appliquer les définitions des 3 premiers opérateurs de l'algèbre relationnelle dans notre contexte. Il nous faut maintenant explorer les opérateurs binaires, en commençant par la jointure.
+Nous avons réussi à appliquer les définitions des 3 premiers opérateurs de l'algèbre relationnelle dans notre contexte. Il est nécessaire maintenant d'explorer les opérateurs binaires, en commençant par le produit cartésien.
 
 \subsection{Produit cartésien}
-La contrainte de l'ordre tend à se faire pesante dans le cadre des opérations binaires. En effet, il nous faut établir un ordre strict sur la séquence d'n-uplets résultants du produit des deux relations. Il est important de noter que cette notion de séquence d'n-uplet est primordiale même pour les relations temporelles (voir notamment les \textit{streamers} def~\ref{def:streamers}).
+La contrainte de l'ordre tend est plus délicate à gérer dans le cadre des opérations binaires. En effet, il est nécessaire d'établir un ordre strict sur la séquence d'n-uplets résultants du produit des deux relations. Il est important de noter que cette notion de séquence d'n-uplet est primordiale même pour les relations temporelles (voir notamment la définition~\ref{def:streamers} des \textit{streamers}). Voyons désormais le problème sur un exemple concret.
 \begin{example}\label{ex:asymetrie}
 Soit $TS$ la relation groupant les 60 dernières secondes du flux \textbf{CPU}. Voici un exemple de données instantannées pour la relation temporelle \textbf{Applications} et de $TS$ :
 \begin{center}
@@ -51,8 +51,9 @@ Soit $TS$ la relation groupant les 60 dernières secondes du flux \textbf{CPU}. 
 \end{tabular}
 \end{center}
 
-Supposons que l'utilisateur souhaite obtenir la charge \textit{cpu} des équipements. L'opération demandé est donc une jointure entre ces deux relations. Toutefois, deux solutions sont envisageables.
+Supposons que l'utilisateur souhaite obtenir la charge \textit{cpu} des équipements. L'opération demandé est une jointure entre ces deux relations. Toutefois, deux solutions sont envisageables.
 \begin{center}
+\textbf{Solution 1 }
 \begin{tabular}{cccc} 
         deviceId & cpu & $\t$ \\ \hline 
         1&  11&  32  \\
@@ -60,7 +61,7 @@ Supposons que l'utilisateur souhaite obtenir la charge \textit{cpu} des équipem
         4&  12&  21 \\
         4&  13&  54\\
 \end{tabular}
-\quad \quad \quad
+\quad \quad \quad\textbf{Solution 2 }
 \begin{tabular}{cccc}
         deviceId & cpu & $\t$ \\ \hline 
         4&  12&  21\\
@@ -70,12 +71,10 @@ Supposons que l'utilisateur souhaite obtenir la charge \textit{cpu} des équipem
 \end{tabular}
 \end{center}
 
-Dans le premier cas, les n-uplets sont listés par dispositifs, puis par \textit{timestamp}. Dans le second cas, les n-uplets sont listés par \textit{timestamp}. Si ce résultat est transformé en flux, il peut y avoir des impacts sémantiques lourds : fenêtres positionnelles ou \textit{load-shedding} différents. Mais de plus, le coût d'aggrégation éventuel sera lui aussi impacté (tri par groupement déjà effectué).
+Dans le premier cas, les n-uplets sont listés par dispositifs, puis par \textit{timestamp}. Dans le second cas, les n-uplets sont listés par \textit{timestamp}. Si ce résultat est transformé en flux, il peut y avoir des impacts sémantiques lourds : fenêtres positionnelles ou \textit{load-shedding} différents. Mais de plus, le coût d'aggrégation éventuel est lui aussi impacté (tri par groupement déjà effectué).
 \end{example}
 
-Ainsi, il est important de clarifier l'ambiguïté latente à la gestion de l'ordre dans les opérations binaires. Intéressons nous au produit cartésien étant au centre des opérations binaires les plus utilisés. En effet, la jointure dite naturelle $\Join$ entre deux relations temporelles est définie comme le produit cartésien avec sélection sur l'égalité des attributs commun. Toute jointure est donc un opérateur composite centré sur le produit cartésien et sur des projections-renommage-sélection.
-
-L'utilisation obligatoire de l'identifiant physique force la définition de l'ordre à tout niveau. Ainsi, le produit cartésien (def~\ref{def:produit}) est similaire au produit classique nonobstant l'utilisation d'une application $\Phi^\times$ à définir permettant la création du nouvel identifiant.
+Ainsi, il est important de clarifier l'ambiguïté latente à la gestion de l'ordre dans les opérations binaires. Intéressons nous au produit cartésien qui est au centre des opérations binaires les plus utilisés. L'utilisation de l'identifiant physique force la définition de l'ordre à tout niveau. Ainsi, la définition~\ref{def:produit} du produit cartésien est similaire au produit classique nonobstant l'utilisation d'une application $\Phi^\times$ à définir permettant la création du nouvel identifiant.
 \begin{defi}[Produit Cartésien]\label{def:produit}
 Soient $R_1$ et $R_2$ deux relations temporelles telles que $Attr(R_1) \cap Attr(R_2) = \{\varphi\}$, soit $b$ un identifiant de \textit{batch},
 
@@ -85,25 +84,27 @@ Le produit cartésien de $R_1$ par $R_2$ au \textit{batch} $b$ est : $(R_1\times
 $$\bigcup_{\begin{array}{c}  r \in R_1(b)\\ s \in R_2(b)\end{array}} \{(\varphi, \Phi^\times(r(\varphi), s(\varphi))) \ \cup \ r[Attr(R_1)\backslash \varphi]\ \cup\ s[Attr(R_2)\backslash \varphi]\}$$
 \end{defi}
 
-Sauf mention contraire, dans Astral, nous considérons que $$\Phi^\times : \varphi_1, \varphi_2 \mapsto (\varphi_1,\varphi_2)\in \I^\times=\I_{R_1}\times \I_{R_2}$$ avec $\I^\times$ étant lexicographiquement ordonné (d'abord $R_1$ puis $R_2$). Aucun critère évident ne permet d'affirmer que cette application est meilleure qu'une autre. Ce choix est dirigé par le fait qu'il soit intuitif et qu'il reflete le comportement de l'algorithme usuel de boucles imbriqués (itération sur $R_1$ puis pour chaque n-uplet itération sur $R_2$). Les caractéristiques de cette fonction supplémentaire ont des implications concrêtes sur les propriétés du produit cartésien comme : la propriété d'asymétrie (théorème~\ref{thm:asymetrie}). 
+Sauf mention contraire, dans Astral, nous considérons que $$\Phi^\times : \varphi_1, \varphi_2 \mapsto (\varphi_1,\varphi_2)\in \I^\times=\I_{R_1}\times \I_{R_2}$$ avec $\I^\times$ lexicographiquement ordonné (d'abord $R_1$ puis $R_2$). Aucun critère évident ne permet d'affirmer que cette fonction est meilleure qu'une autre. Ce choix est dirigé par le fait qu'il est intuitif et qu'il reflète le comportement de l'algorithme usuel de boucles imbriqués (itération sur $R_1$ puis pour chaque n-uplet itération sur $R_2$). Les caractéristiques de cette fonction supplémentaire ont des implications concrètes sur les propriétés du produit cartésien comme : la propriété d'asymétrie (théorème~\ref{thm:asymetrie}). 
 \begin{thm}[Asymétrie du produit cartésien]\label{thm:asymetrie}
     Le produit cartésien ne peut être symétrique dans le cadre général.
 \end{thm}
 
 \begin{demo}[du théorème~\ref{thm:asymetrie}]
-    Tout $\Phi$-espace est isomorphe à $\N$, par mesure de simplification, nous travaillerons donc dans cet espace. Supposons qu'il existe un ordre total et symétrique $<^2$ sur $\N^2$.
+    Tout $\Phi$-espace est isomorphe à $\N$, par mesure de simplification, nous travaillons dans cet espace. Supposons qu'il existe un ordre total $<^2$ sur $\N^2$, qui de plus est conservateur par symétrique du couple d'entier.
 
-    Soient $a,b\in \N^2$ tels que $a \neq b$. Puisque l'ordre est total, alors $(a,b) <^2 (b,a)$ (ou inversement). Puisque l'ordre est symétrique alors, $(b,a) <^2 (a,b)$ ce qui est absurde.
+    Soient $a,b\in \N^2$ tels que $a \neq b$. Puisque l'ordre est total, alors $(a,b) <^2 (b,a)$ (ou inversement). Puisque l'ordre est conservateur par symétrie du couple alors, $(b,a) <^2 (a,b)$ ce qui est absurde.
 \end{demo}
 
-Ainsi, dans l'exemple~\ref{ex:asymetrie}, nous avions défini deux réponses à l'opération de jointure. Ces résultats correspondent aux opérations $Applications\Join TS$ et $TS \Join Applications$, ce qui illustre bien les problème d'asymétrie. Ce premier résultat est \textbf{majeur} car le choix de l'ordre des jointures est déterminant pour l'optimisation de requête. Toutefois, il est possible de redéfinir les ordres de jointures et obtenir $R_1 \times^1 R_2 = R_2 \times^2 R_1$ mais la définition de chacun des produits cartésiens n'est pas la même du fait d'un choix de $\Phi^\times$ différent. En pratique cela pourra se concrétiser par un tri a posteriori, ce qui peut introduire un surcoût.
+Ainsi, dans l'exemple~\ref{ex:asymetrie}, nous avions défini deux réponses à l'opération de jointure. Ces résultats correspondent aux opérations $Applications\Join TS$ et $TS \Join Applications$, ce qui illustre bien le problème d'asymétrie. Ce premier résultat est \textbf{important} car le choix de l'ordre des jointures est déterminant pour l'optimisation de requête. Toutefois, il est possible de redéfinir les ordres de jointures pour deux produits cartésien $\times^1$ et $\times^2$ et obtenir $R_1 \times^1 R_2 = R_2 \times^2 R_1$ mais la définition de chacun des produits cartésiens n'est pas la même du fait d'un choix de $\Phi^\times$ différent. En pratique cela pourra se concrétiser par un tri a posteriori, ce qui peut introduire un surcout.
+
+Nous notons que la jointure dite naturelle $\Join$ entre deux relations temporelles est définie comme le produit cartésien avec sélection sur l'égalité des attributs commun. Toute jointure est un opérateur composite centré sur le produit cartésien et sur des projections-renommage-sélection.
 
 \subsection{Union}
-La définition de l'union de relations temporelles est aussi complexe à cause de l'identifiant physique encore. En effet, lors de l'union de deux séquences d'n-uplets, il n'est pas directement possible d'extraire une nouvelle séquence. Il est donc nécessaire réécrire sa définition. Le principe réside encore une fois dans une application particulière de réécriture $\Phi^\cup$ qui a pour but de réordonner.
-\begin{defi}[Union relationnelle]
+La définition~\ref{def:union} de l'union de relations temporelles est aussi complexe à cause de l'identifiant physique. En effet, lors de l'union de deux séquences d'n-uplets, il n'est pas directement possible d'extraire une nouvelle séquence. Il est nécessaire réécrire sa définition. Le principe réside encore une fois dans une application particulière de réécriture $\Phi^\cup$ qui a pour but de réordonner.
+\begin{defi}[Union relationnelle]\label{def:union}
     Soient $R_1$ et $R_2$ deux relations temporelles avec le même schéma $A$,
 
-    Soient $\I^{\cup}$ un $\Phi$-espace et $\Phi^\cup$ une application de $\I_{R_1}\cup\{\emptyset\}\times\{\emptyset\}\cup\I_{R_2}$ vers $\I^\cup$, soit $b$ un identifiant de \textit{batch},
+    Soient $\I^{\cup}$ un $\Phi$-espace et $\Phi^\cup$ une application de $(\I_{R_1}\cup\{\emptyset\})\times(\{\emptyset\}\cup\I_{R_2})$ vers $\I^\cup$, soit $b$ un identifiant de \textit{batch},
 
     L'union de $R_1$ et $R_2$ au \textit{batch} $b$ est définie par : $(R_1\times R_2)(b)=$ 
 
@@ -113,26 +114,26 @@ La définition de l'union de relations temporelles est aussi complexe à cause d
         \end{array}$$
 \end{defi}
 
-Deux sémantiques principales peuvent s'appliquer dans le cadre de l'union. Tout d'abord, la sémantique générique que nous appliquons par défaut dans l'algèbre Astral : nous selectionnons d'abord les n-uplets de la séquence de gauche et ensuite ceux de la séquence de droite. $\I^\cup$ est donc égal à $(\I_{R_1}\cup \{\emptyset\})\times (\I_{R_2}\cup \{\emptyset\})$ avec un ordre naturel lexicographique ($\emptyset$ étant la valeure la plus petite possible) et l'application $\Phi^\cup$ est définie par : $$\Phi^\cup(\varphi_1,\varphi_2) = (\varphi_1,\varphi_2)$$
+Deux sémantiques principales peuvent s'appliquer dans le cadre de l'union. Tout d'abord, la sémantique générique que nous appliquons par défaut dans l'algèbre Astral : nous selectionnons d'abord les n-uplets de la séquence de gauche et ensuite ceux de la séquence de droite. $\I^\cup$ est égal à $(\I_{R_1}\cup \{\emptyset\})\times (\I_{R_2}\cup \{\emptyset\})$ avec un ordre naturel lexicographique ($\emptyset$ est la valeur la plus petite possible) et l'application $\Phi^\cup$ est définie par : $$\Phi^\cup(\varphi_1,\varphi_2) = (\varphi_1,\varphi_2)$$
 
-Nous remarquons que cette définition de l'union est elle aussi \textbf{asymétrique} car ce n'est pas une simple union ensembliste. Dans certains cas, il est possible d'avoir une union symétrique. Si l'union de $\I_{R_1}$ et $\I_{R_2}$ forment naturellement un $\Phi$-espace $\I$ et que pour tout \textit{batch} $b$, $R_1(b)$ et $R_2(b)$ ne partagent pas d'identifiant physiques, alors il est possible de définir une union naturelle qui conserve les identifiants physiques : $$\Phi^\cup(\varphi_1,\varphi_2) = \begin{cases} \varphi_1 & ,\ \varphi_1 \neq \emptyset \\\varphi_2 &,\ \varphi_2 \neq \emptyset\end{cases}$$
-Ce cas se présente souvent lorsqu'une entité est partagée en multiples sous-entités (souvent appelé partitionnement). Ainsi, les identifiants physiques proviennent du même $\Phi$-espace et sont répartis sur plusieurs relations qui devront subir une union. Nous reverrons l'importance de ces définitions lors de l'établissement des fenêtres.
+Nous remarquons que cette définition de l'union est elle aussi \textbf{asymétrique} car ce n'est pas une simple union ensembliste. Dans certains cas, il est possible d'avoir une union symétrique. Si l'union de $\I_{R_1}$ et $\I_{R_2}$ forment naturellement un $\Phi$-espace $\I$ et que pour tout \textit{batch} $b$, $R_1(b)$ et $R_2(b)$ ne partagent pas d'identifiant physiques, alors il est possible de définir une union naturelle qui conserve les identifiants physiques : $$\Phi^\cup(\varphi_1,\varphi_2) = \begin{cases} \varphi_1 & \textrm{, si }\varphi_1 \neq \emptyset \\\varphi_2 &\textrm{, si }\varphi_2 \neq \emptyset\end{cases}$$
+Ce cas se présente souvent lorsqu'une entité est partagée en multiples sous-entités (souvent appelé partitionnement). Ainsi, les identifiants physiques proviennent du même $\Phi$-espace et sont répartis sur plusieurs relations dont l'union est naturelle. Nous remarquons l'importance de ces définitions lors de la définition des fenêtres partitionnés en section~\ref{sec:contrib:astral:flux}.
 
-\textbf{Note} : La différence entre deux relations temporelles est délicate car pour être capable de retrancher un n-uplet d'une séquence, il est nécessaire de l'identifier exactement. L'identifiant physique $\varphi$ est effectivement présent pour ce point. La différence est donc une différence \textbf{ensembliste} pure. Toutefois, il est nécessaire de correctement gérer les identifiants physiques de la séquence à retrancher pour que les $\Phi$-espaces des deux séquences soient identiques et que les identifiants soient pertinents. Par exemple, $(R_1\cup R_2)-R_2$ donnera $R_1\cup R_2$ car les identifiants sont de natures différentes. Par contre, $(R_1\cup R_2)-(\Omega \cup R_2)=R_1$ (avec $\Omega$ la relation temporelle vide).
+\textbf{Note} : L'opérateur de différence entre deux relations temporelles est délicate car pour être capable de retrancher un n-uplet d'une séquence, il est nécessaire de l'identifier exactement. L'identifiant physique $\varphi$ est effectivement présent pour ce point. La différence est une différence \textbf{ensembliste} pure. Toutefois, il est nécessaire de correctement gérer les identifiants physiques de la séquence à retrancher pour que les $\Phi$-espaces des deux séquences soient identiques et que les identifiants soient pertinents. Par exemple, $(R_1\cup R_2)-R_2$ donne $R_1\cup R_2$ car les identifiants sont de natures différentes. Par contre, $(R_1\cup R_2)-(\Omega \cup R_2)=R_1$ (avec $\Omega$ la relation temporelle vide).
 
 \subsection{Agrégation}
-L'agrégation est une opération qui n'a pas été définie dans l'algèbre relationnelle standarde. Toutefois, vu son utilisation fréquente notamment dans le contexte des flux de données, il nous semble pertinent d'en exposer la définition exacte. L'opération consiste en l'application de fonctions d'agrégations sur des sous-groupes formés grâces à un regroupement par attributs égaux. Par exemple, la moyenne des valeurs de charge processeur calculée pour chaque identifiant d'équipement. 
-\begin{defi}[Fonction d'agrégation]
+L'agrégation est une opération qui n'a pas été définie dans l'algèbre relationnelle classique. Toutefois, vu son utilisation fréquente notamment dans le contexte des flux de données, il nous semble pertinent d'en exposer la définition précise. L'opération consiste en l'application de fonctions d'agrégations décrites dans la définition~\ref{def:aggfunc}sur des sous-groupes formés grâces à un regroupement par attributs égaux. Par exemple, la moyenne des valeurs de charge processeur calculée pour chaque identifiant d'équipement. 
+\begin{defi}[Fonction d'agrégation]\label{def:aggfunc}
     Une fonction d'agrégation $f$ est une application associant : une séquence d'n-uplet $S$ et un attribut $A$ à une valeur agrégée $f(S,A)$.
 \end{defi}
 \begin{example}
     La fonction d'agrégation de moyenne ($\avg$) est définie par $$\avg(S,A) = \frac{\sum_{s\in S} s(A)}{\# S}$$
 \end{example}
 
-Comme tout opérateur d'Astral, il est nécessaire de manipuler proprement l'identifiant physique. Celui-ci est défini par un agrégat particulier aux séquences d'n-uplets : 
+À nouveau, il convient de définir un nouvel identifiant physique. Celui-ci est défini par un agrégat particulier aux séquences d'n-uplets : 
 $$\last(S,A) = s(A) \qquad \textrm{ avec } s\in S \textrm{ tel que }\pos_{S}(s) = \#S-1$$
-Nous pouvons désormais définir l'opérateur d'agrégation comme l'application de fonctions d'agrégations aux sous-groupes créés et dont l'identifiant physique est calculé par l'application de la fonction $\last$.
-\begin{defi}[Opérateur d'agrégation]
+Nous pouvons désormais écrire la définition~\ref{def:aggregation} de l'opérateur d'agrégation comme l'application de fonctions d'agrégations aux sous-groupes créés et dont l'identifiant physique est calculé par l'application de la fonction $\max$.
+\begin{defi}[Opérateur d'agrégation]\label{def:aggregation}
     Soit $R$ une relation temporelle de schéma $A$,
 
     Soient $a_1,...,a_n$, $n$ attributs de $A$,
@@ -141,11 +142,11 @@ Nous pouvons désormais définir l'opérateur d'agrégation comme l'application 
 
     L'opérateur d'agrégat $_{a_1,...,a_n}\G_{{f_1}_{b_1}^{c_1},...,{f_m}_{b_m}^{c_m}}$ au \textbf{batch} $b$ est égal à :
 $$\left\{g(\sigma_{a_1=v_1,...,a_1=v_n} R(t,i),v_1,...,v_n), v_1 \in \mathrm{Dom}(a_1), ..., v_n \in \mathrm{Dom}(a_n)\right\} $$
-$$\begin{array}{c}\textrm{avec } g(S,v_1,...,v_n) = \{(\varphi,\last(S,\varphi))\}\cup_{i=1}^n \{(a_i, v_i)\} \cup_{i=1}^m \{(c_i,f_i(S,b_i))\}\\ \textrm{ if } A \neq \emptyset,\ \emptyset\textrm{ else}\end{array}$$
+$$\begin{array}{c}\textrm{avec } g(S,v_1,...,v_n) = \{(\varphi,\max(S,\varphi))\}\cup_{i=1}^n \{(a_i, v_i)\} \cup_{i=1}^m \{(c_i,f_i(S,b_i))\}\\ \textrm{ si } A \neq \emptyset,\ \emptyset\textrm{ sinon}\end{array}$$
 \end{defi}
 
 \begin{example}
-    La requête continue calculant les valeurs moyennes sur la relation temporelle $CPU$ est donc $_{id}\G_{\avg_{cpu}^{moyenne}}(CPU)$.
+    La requête continue calculant les valeurs moyennes sur la relation temporelle $CPU$ est $_{id}\G_{\avg_{cpu}^{moyenne}}(CPU)$.
 \end{example}
 
-Nous avons donc présenté tous les opérateurs définis originellement dans l'algèbre relationnelle pour être applicables dans notre formalisme. Nous allons désormais développer les opérateurs applicables sur les flux.
+Nous avons adapté tous les opérateurs classiquement définis dans l'algèbre relationnelle pour être applicables dans notre formalisme. Nous allons désormais développer les opérateurs applicables sur les flux.

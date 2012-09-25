@@ -52,18 +52,18 @@ Comme présenté dans le chapitre~\ref{chap:rw:sgfd}, la notion de batch est int
     Par mesure de commodité, sauf mention contraire, nous écrivons $S$ pour désigner le couple $(S,\BS)$.
 \end{defi}
 
-Notre algèbre définie les deux concepts comme présenté dans la section~\ref{sec:rw:sgfd:modeles}. Nous définissons donc une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble d'n-uplet. Dans notre cas, le temps est définit comme un identifiant de batch, et l'ensemble d'n-uplet est en réalité une séquence. 
+Notre algèbre définie les deux concepts comme présenté dans la section~\ref{sec:rw:sgfd:modeles}. Nous définissons une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble d'n-uplet. Dans notre cas, le temps est définit comme un identifiant de batch, et l'ensemble d'n-uplet est en réalité une séquence. 
 \begin{defi}[Relation temporelle]\label{def:relation}
 	Une relation temporelle $R$ est une fonction en escalier associant un identifiant de batch $(t,i)\in\TN$ à une séquence d'n-uplet $R(t,i)$
 \end{defi}
-L'évaluation d'une relation temporelle à un instant donnée est donc une séquence (ou \textit{relation instantannée}) avec donc un ordre strict sur les n-uplets. Par abus de langage, nous utiliserons le terme \textit{relation} pour désigner une relation temporelle.
+L'évaluation d'une relation temporelle à un instant donnée est une séquence (ou \textit{relation instantannée}) avec un ordre strict sur les n-uplets. Par abus de langage, nous utilisons le terme \textit{relation} pour désigner une relation temporelle.
 
 La définition des relations temporelles et des flux implique qu'il existe une quantité dénombrable de \textit{batch} différents dans le flux ou dans une relation temporelle. Ainsi, pour tout \textit{batch} $(t,i)$, il existe un autre \textit{batch} proche de $(t,i)$ sans y être égal même si $t$ est assimilable à un réel\footnote{Au final, $(t,i)^- = (t,i-1)$ si $i\neq 0$ et $(t^-,0)$ sinon}. Ce type de \textit{batch} est noté $(t,i)^-$. Par exemple, pour une relation temporelle dont l'état change au \textit{batch} $b$, nous pouvons comparer les états $R(b)$ et $R(b^-)$ correspondant à avant et après le changement.
 
-Par la suite, nous utilisons le terme \textbf{relation} pour relation temporelle. Les relations classiques sont mentionnées par l'appellation \textit{relation instantanée} ou par \textit{séquence d'n-uplet} si le contexte s'y prête. Enfin, nous appelons \textbf{entité} tout objet pouvant être une relation ou un flux.
+Nous appelons \textbf{entité} tout objet pouvant être une relation ou un flux.
 
 \subsection{Exemple}\label{sec:contrib:astral:definitions:exemple}
-Dans la suite de ce chapitre, nous développons plusieurs exemples. Ces exemples se baseront sur les entités suivantes issus de l'application du réseau local domestique.
+Dans la suite de ce chapitre, nous développons plusieurs exemples. Ces exemples se basent sur les entités suivantes issus de l'application du réseau local domestique.
 \begin{itemize}
     \item[\textbf{CPU}] Flux(appId, cpu, $\t$) : flux de relevé des charges processeurs. Un n-uplet de ce flux indique qu'au timestamp $\t$, l'application \textit{appId} indique que sur son équipement hôte, la charge processeur est égale à \textit{cpu}.
     \item[\textbf{Applications}] Relation(appId, appName, deviceId) : catalogue des applications. Un n-uplet de cette relation indique que l'application \textit{appId} appelée \textit{appName} est déployée sur le l'équipement \textit{deviceId}.
@@ -83,14 +83,14 @@ $$\begin{array}{lcrcl}
 \end{array}$$
 \end{defi}
 
-Nous supposons maintenant que nos flux sont correctement ordonnés (hyp~\ref{hyp:ordres}). Si un n-uplet est positionnellement avant un autre, alors son batch est inférieur ou égal. Et par conséquent son \textit{timestamp} est lui aussi inférieur ou égal.
+Nous supposons maintenant que nos flux sont correctement ordonnés avec l'hypothèse~\ref{hyp:ordres}. Si un n-uplet est positionnellement avant un autre, alors son batch est inférieur ou égal. Et par conséquent son \textit{timestamp} est lui aussi inférieur ou égal.
 \begin{hyp}[Cohérence temporelle]\label{hyp:ordres}
 L'ordre positionnel implique l'ordre des batchs.
 $$\forall s, s'\in S^2, \qquad s <_\varphi s' \im s \leq_{\B{}} s'$$
 \end{hyp}
 
 \subsubsection{Requêtes}
-Tout d'abord, il nous faut définir le fait que dans la gestion de flux de données, une entité n'a pas d'existence avant la création de son instance à $t_0$. En effet, lorsqu'une requête est déployée sur un système, sauf opération explicite, le flux arrivant n'a pas d'informations sur les données passées. D'un point de vue algébrique, une entité est initialisée (def~\ref{def:init}) à un \textit{timestamp} donné si toutes ses données sont accessibles pour un \textit{timestamp} supérieur à celui-ci.
+Tout d'abord, il est nécessaire de définir que dans la gestion de flux de données, une entité n'a pas d'existence avant la création de son instance à $t_0$. En effet, lorsqu'une requête est déployée sur un système, sauf opération explicite, le flux arrivant n'a pas d'informations sur les données passées. D'un point de vue algébrique, la définition~\ref{def:init} affirme qu'une entité est initialisée à un \textit{timestamp} donné si et seulement si toutes ses données sont accessibles pour un \textit{timestamp} supérieur à celui-ci.
 \begin{defi}[Entité initialisée]\label{def:init}
 	Une entité $E$ initialisée à un timestamp $t_0$ est une entité vérifiant :
 	\begin{itemize}
@@ -99,33 +99,28 @@ Tout d'abord, il nous faut définir le fait que dans la gestion de flux de donn�
 	\end{itemize}
 \end{defi}
 
-La notion de requête s'appuie directement sur cette notion d'entité initialisée. Ainsi, la requête (def~\ref{def:requete}) est une composition d'opérateurs appliqués sur ces entités initialisées. Il est important de voir que les opérateurs sont potentiellement dépendants du timestamp d'initialisation.
+La notion de requête s'appuie directement sur cette notion d'entité initialisée. Ainsi, la requête (definition~\ref{def:requete}) est une fonction transformant ces entités initialisées en une nouvelle. Il est important de voir que cette fonction sont potentiellement dépendants du \textit{timestamp} d'initialisation.
 \begin{defi}[Requête]\label{def:requete}
 	Soient $E=(E_1, ..., E_n)$, $n$ entités,
 	
-	Une requête continue sur $E$ démarrée au temps $t_0$ est défini comme une composition d'opérateurs $Q$ appliqués sur les éléments de $E$ initialisés à $t_0$. Cette requête est noté $(Q(E),t_0)$.
+	Une requête continue sur $E$ démarrée au temps $t_0$ est définie comme une fonction $Q$ appliquée sur les éléments de $E$ initialisés à $t_0$ et produisant une nouvelle entité. Cette requête est noté $(Q(E),t_0)$.
 \end{defi}
 
 \subsubsection{Équivalences de requêtes}
-La séquence d'n-uplet est le type central de notre algèbre car elle seule établit la notion d'ensemble d'n-uplets. Nous définissons l'inclusion de séquences (def~\ref{def:inclusion}) de manière similaire à la notion de suites extraites. La notion d'\textbf{équivalence} de deux séquences est donc définie naturellement par la double inclusion. 
+Avec la définition~\ref{def:inclusion}, nous définissons l'inclusion de séquences de manière similaire à la notion de suites extraites. La notion d'\textbf{équivalence} de deux séquences est quant à elle définie par la double inclusion. 
 \begin{defi}[Inclusion et équivalences de séquences d'n-uplets]\label{def:inclusion}
 	Soient $TS_1$ et $TS_2$ deux séquences possédant le même schéma $A$,
 	
 	$TS_1$ est inclue dans $TS_2$ ($TS_1 \subseteqq TS_2$) si et seulement si : 
 	
 	\quad \quad $\exists f:\I \mapsto \I$ strictement croissante telle que 
-$$\forall s\in TS_1, \exists s'\in TS_2, \textrm{ tel que } \forall a \in A, s'(a) = \begin{cases} f(s(\varphi)) & a = \varphi \\ s(a) & \textrm{sinon}\end{cases}$$
+$$\forall s\in TS_1, \exists s'\in TS_2, \textrm{ tel que } \forall a \in A, s'(a) = \begin{cases} f(s(\varphi)) & \textrm{si } a = \varphi \\ s(a) & \textrm{sinon}\end{cases}$$
 	L'équivalence ($TS_1 \equiv TS_2$) est définie par $TS_1 \subseteqq TS_2$ et $TS_1 \supseteqq TS_2$. 
 \end{defi}%
 
 
 \begin{example}
-La table~\ref{tab:contrib:astral:exequivalence} représente quatre exemple de séquences d'une instance figée de la relation temporelle \textbf{Device}. Ces séquences pourraient être équivalentes d'un point de vue algèbre relationnelle (en substituant $\varphi$).
-
-Les séquences (a) et (b) sont équivalentes car leurs identifiants physiques sont différentes mais représentent le même ordre des n-uplets. Selon la définition, nous pouvons effectivement trouver une fonction $f$ strictement croissante pour transformer les $\varphi$ de (a) en (b) et inversement. 
-
-Les séquences (a) et (c) ne sont pas équivalentes car l'ordre des n-uplets est inversé. Il est en effet impossible de trouver une transformation $f$ de $\varphi$ \textbf{croissante} telle que l'égalité des n-uplets soit exacte. Nous remarquons que la valeur de $\varphi$ n'a que peut d'importance car même (b) et (d) ne sont pas équivalentes malgré l'égalité notoire des identifiants. Bien évidemment, (c) et (d) sont équivalentes.
-\end{example}
+La table~\ref{tab:contrib:astral:exequivalence} représente quatre exemple de séquences d'une instance figée de la relation temporelle \textbf{Device}. Ces séquences pourraient être équivalentes d'un point de vue algèbre relationnelle (en ne tenant pas compte de $\varphi$).
 
 \begin{table}[ht]
 \centering
@@ -162,6 +157,11 @@ Les séquences (a) et (c) ne sont pas équivalentes car l'ordre des n-uplets est
 \caption{Quatre séquences représentant une instance figée de \textbf{Device}}\label{tab:contrib:astral:exequivalence}
 \end{table}
 
+Les séquences (a) et (b) sont équivalentes car leurs identifiants physiques sont différents mais représentent le même ordre des n-uplets. Selon la définition, nous pouvons effectivement trouver une fonction $f$ strictement croissante pour transformer les $\varphi$ de (a) en (b) et inversement. 
+
+Les séquences (a) et (c) ne sont pas équivalentes car l'ordre des n-uplets est inversé. Il est en effet impossible de trouver une transformation $f$ de $\varphi$ \textbf{croissante} telle que l'égalité des n-uplets soit exacte. Nous remarquons que la valeur de $\varphi$ n'a que peut d'importance car même les séquences (b) et (d) ne sont pas équivalentes malgré l'égalité des identifiants. Bien évidemment, (c) et (d) sont équivalentes.
+\end{example}
+
 La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transposabilite} présente les conséquences du changement de timestamp.
 \begin{defi}[Équivalences de requêtes]\label{def:equivalence}
 	Soient $E=(E_1, ..., E_n)$, $n$ entités,
@@ -169,6 +169,4 @@ La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux r
 	Les requêtes $Q$ et $Q'$ démarrées à $t_0$ sont équivalentes si et seulement si pour toutes entités $E'$ de même types et schéma, les entités $Q(E')$ et $Q'(E')$ sont équivalentes.
 \end{defi}
 
-
-
-Nous venons de poser les bases fondamentales pour notre algèbre de gestion de données. Il nous faut maintenant construire des opérateurs pour pouvoir manipuler nos concepts. Nous allons voir que les contraintes que nous nous sommes fixés sur l'ordre, la nature du temps.
+Nous venons de poser les bases fondamentales pour notre algèbre de gestion de données. Il est nécessaire de construire des opérateurs pour pouvoir manipuler nos concepts. Nous allons voir que les contraintes que nous nous sommes fixés sur l'ordre, la nature du temps.
