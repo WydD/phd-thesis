@@ -46,7 +46,7 @@ $$\forall j \in \N, \begin{cases} \alpha(j) \leq \beta(j) & \textrm{le début es
 \end{defi}
 
 \begin{example}
-    Nous souhaitons connaître tous les $100$ relevés de charge processeur, les $10$ derniers relevés. Dans ce cas, nous souhaitons obtenir une séquence de fenêtres positionnelles générées tous les $100$ n-uplets ($r=100\in \N$). Nous appliquons des bornes positionnelles $\alpha,\beta \in (\N\to\N)^2$. La première fenêtre contient du $91\eme$ n-uplet au $100\eme$. Ainsi : $\alpha(0) = 91$ et $\beta(0) = 100$. L'évolution des bornes étant linéaire, nous avons :
+    Nous souhaitons connaître tous les $100$ relevés de charge processeur, les $10$ derniers relevés. Dans ce cas, nous souhaitons obtenir une séquence de fenêtres positionnelles générées tous les $100$ n-uplets ($r=100\in \N$). Nous appliquons des bornes positionnelles $\alpha,\beta \in (\N\to\N)^2$. La première fenêtre contient du $91\eme$ n-uplet au $100\eme$. Ainsi : $\alpha(0) = 91$ et $\beta(0) = 100$. Sachant que l'évolution des bornes est linéaire, nous avons :
 \begin{eqnarray*}
  \alpha(j) &=& 100j+91\\
  \beta(j) &=& 100j + 100\\
@@ -54,7 +54,7 @@ $$\forall j \in \N, \begin{cases} \alpha(j) \leq \beta(j) & \textrm{le début es
 \end{eqnarray*}
 \end{example}
 
-La création de fenêtres nécessite d'associer les n-uplets du flux et le numéro de fenêtre décrit dans la \textit{DSF}. Pour cela, nous définissons en~\ref{def:gamma} une \textit{fonction d'attente} utilisant les identifiants de \textit{batch}. Cette fonction donne le rang de la dernière fenêtre complète au moment du batch. Le terme \textit{attente} est lié au fait que l'évaluateur de fenêtre devra attendre le prochain changement de $\gamma$.
+La création de fenêtres nécessite d'associer les n-uplets du flux et le numéro de fenêtre décrit dans la \textit{DSF}. Pour cela, nous définissons en~\ref{def:gamma} une \textit{fonction d'attente} utilisant les identifiants de \textit{batch}. Cette fonction donne le rang de la dernière fenêtre complète au moment du batch. Le terme \textit{attente} est lié au fait que l'évaluateur de fenêtre doit attendre le prochain changement de $\gamma$.
 Nous retrouvons dans cette fonction le caractère \textit{bloquant} des fenêtres.
 \begin{defi}[Fonction d'attente $\gamma$]\label{def:gamma}
     Soit $S$ un flux, soit $(\alpha,\beta,r)$ une DSF,
@@ -71,7 +71,7 @@ Nous retrouvons dans cette fonction le caractère \textit{bloquant} des fenêtre
 \end{example}
 
 \subsubsection{L'opérateur}
-Il devient désormais possible de définir un opérateur permettant  de générer une relation temporelle à partir d'un flux donné. Cette relation temporelle change d'état avec l'instant définit par la fonction $\gamma$. De manière générale, une DSF peut être ramenée à une expression plus générale $(\alpha,\beta,\gamma)$ ce que nous utiliserons pour la définition~\ref{def:fenetre} de séquence de fenêtres.
+Il devient désormais possible de définir un opérateur permettant  de générer une relation temporelle à partir d'un flux donné. Cette relation temporelle change d'état avec l'instant définit par la fonction $\gamma$. De manière générale, une DSF peut être ramenée à une expression plus générale $(\alpha,\beta,\gamma)$ ce que nous utilisons pour la définition~\ref{def:fenetre} de séquence de fenêtres.
 \begin{defi}[Opérateur de Séquence de Fenêtres]\label{def:fenetre}
 	Soit $S$ un flux et $(\alpha, \beta, \gamma)$ une description de séquence,
 	
@@ -94,14 +94,14 @@ Plusieurs remarques peuvent être formulées sur cette définition. Tout d'abord
 	\item[\textbf{depuis}] le premier \textit{batch} de la fenêtre : $(\alpha(\gamma(t,i)),0)$, i.e. ceux dont le \textit{timestamp} est supérieur à la borne inférieur.
 	\item[\textbf{jusqu'au}] dernier \textit{batch} de la fenêtre : $(\beta(\gamma(t,i)),i)$. Ce qui correspond au $i\eme$ \textit{batch} ayant le \textit{timestamp} inférieur ou égal à la borne.
 \end{itemize}
-Il est important de voir que $S[\alpha,\beta,\gamma]$ pourra changer à l'arrivée d'un nouveau \textit{batch}, même si le \textit{timestamp} ne change pas. Ne pas inclure ces modifications ferait perdre des données à la fenêtre. Nous retrouvons les problématiques explorées dans la section~\ref{sec:rw:sgfd:modeles}.
+Il est important de voir que $S[\alpha,\beta,\gamma]$ peut changer à l'arrivée d'un nouveau \textit{batch}, même si le \textit{timestamp} ne change pas. Ne pas inclure ces modifications ferait perdre des données à la fenêtre. Nous retrouvons les problématiques explorées dans la section~\ref{sec:rw:sgfd:modeles}.
 
 Pour les fenêtres positionnelles, la gestion est plus délicate. Si nous considérons que le flux réparti ses \textit{batchs} (un n-uplet par \textit{batch}), alors $E(b) = S[\alpha,\beta,\gamma](b)$. Mais dans le cadre général, $E(b)$ contient l'ensemble des n-uplets potentiels et la séquence $S[\alpha,\beta,\gamma](b)$ en est un sous-ensemble dont la taille est exactement celle décrite dans la DSF (sélections des n-uplets les plus récents). De plus, nous remarquons que $\gamma$ en positionnel est défini en fonction de $\rtau_S$ qui fournit la position maximale en cas d'égalité de \textit{batch}, ce qui nous garanti de couvrir l'ensemble des n-uplets concernés.
 
 	
 \begin{example}
 	La figure~\ref{fig:contrib:astral:fenetres} montre l'évolution d'une séquence où la fenêtre glisse de $2$ secondes toutes les $2$ secondes ($r=2$) avec une taille constante de $3$ secondes. $t_0 = 0$ par simplicité ici. 
-La première fenêtre possède les bornes $\alpha(0) = t_0+ 0s$ et $\beta(0) =t_0+3s$. Le glissement étant de $2s$ la description de fenêtre est $$\forall j \in \N, \begin{cases} \alpha(j)  & =\ j*2s+t_0 \\ \beta(j) & = \ j*2s+3s+t_0\end{cases}$$
+La première fenêtre possède les bornes $\alpha(0) = t_0+ 0s$ et $\beta(0) =t_0+3s$. Sachant que le glissement est de $2s$ la description de fenêtre est $$\forall j \in \N, \begin{cases} \alpha(j)  & =\ j*2s+t_0 \\ \beta(j) & = \ j*2s+3s+t_0\end{cases}$$
 La relation temporelle généré par cette DSF peut être noté $S[2js,2js+3s,2s]$.  Le calcul de son état à un instant est simple. Prenons le batch $(t_0+5.5s,0)$. La fenêtre a calculer est la fenêtre numérotée $\gamma(t_0+5.5s,0) = \left\lfloor \frac{t_0+5.5s-\beta(0)}{r}\right\rfloor = 1$. Ainsi : $S[2js,2js+3s,2s](t_0+5.5s,0) = F_1 = \{s_4,s_5,s_6,s_7,s_8\}$.
 \end{example}
 \begin{figure}[ht]
@@ -117,7 +117,7 @@ La relation temporelle généré par cette DSF peut être noté $S[2js,2js+3s,2s
 \end{defi}
 
 \begin{example}
-    En reprenant la définition de fenêtre sur 5 secondes : $(j*5s+t_0,j*5s+5s+t_0,5s)$. Nous remarquons que les fenêtres 0 et 1 contiennent les n-uplets dont le \textit{timestamp} est égal à $t_0+5s$. Ainsi, l'opérateur $S]jr+t_0,jr+r+t_0,r]$ avec $r=5s$ permettra de retirer les n-uplets à ce \textit{timestamp} de cette fenêtre.
+    En reprenant la définition de fenêtre sur 5 secondes : $(j*5s+t_0,j*5s+5s+t_0,5s)$. Nous remarquons que les fenêtres 0 et 1 contiennent les n-uplets dont le \textit{timestamp} est égal à $t_0+5s$. Ainsi, l'opérateur $S]jr+t_0,jr+r+t_0,r]$ avec $r=5s$ permet de retirer les n-uplets à ce \textit{timestamp} de cette fenêtre.
 \end{example}
 
 \subsubsection{Fenêtres partitionnées}
@@ -139,13 +139,13 @@ Ainsi, nous décrivons dans la définition~\ref{def:partition} de séquence de f
 	$$S[a_1...a_k/\alpha,\beta,\gamma] = \mathop{\bigcup\null^*}_{a\in Dom(a_1,...,a_k)} (\sigma_{(a_1,...,a_k)=a} S)[\alpha,\beta,\gamma]$$
 \end{defi}
 
-Nous remarquons que nous utilisons la définition de l'union relationnelle conservant les identifiants physiques présentée dans la section précédente, ainsi l'ordre naturel décrit dans le flux d'entrée pourra être retrouvé dans la relation de sortie.
+Nous remarquons que nous utilisons la définition de l'union relationnelle conservant les identifiants physiques présentée dans la section précédente, ainsi l'ordre naturel décrit dans le flux d'entrée peut être retrouvé dans la relation de sortie.
 \begin{example}
 	L'exemple le plus courant est la représentation de l'état actuel d'un système à partir d'un flux. Supposons un flux d'entrée $CPU(appId,cpu,\t)$, nous donnant les relevés de charge de processeur. Soit la description de fenêtre rapportant le dernier n-uplet d'un flux : $(1j,1j,1)$. Nous pouvons obtenir la relation temporelle représentant pour chaque application $appId$, la dernière valeur connue de $cpu$ ainsi que le \textit{timestamp $\t$ de mesure} : $$CPU[appId/1j,1j,1]$$
 
 	Cet exemple illustre comment nous pouvons passer d'un flux brut à une représentation (dynamique) d'un \textbf{contexte}. 
 	
-	La définition du partitionnement par l'union conservant les identifiants physiques permet d'avoir un ordre clair et intuitif sur la relation temporelle résultantes. Lorsqu'un nouveau n-uplet entre dans cette relation (ou remplace l'ancien n-uplet), alors il sera mis en bout. Avec l'union classique, il est nécessaire de définir l'ordre d'application des unions. Et les n-uplets auraient changé d'identifiants à chaque nouvel état de la fenêtre, ce qui est difficile à contrôler et à manipuler.
+	La définition du partitionnement par l'union conservant les identifiants physiques permet d'avoir un ordre clair et intuitif sur la relation temporelle résultantes. Lorsqu'un nouveau n-uplet entre dans cette relation (ou remplace l'ancien n-uplet), alors il est mis en bout. Avec l'union classique, il est nécessaire de définir l'ordre d'application des unions. Et les n-uplets auraient changé d'identifiants à chaque nouvel état de la fenêtre, ce qui est difficile à contrôler et à manipuler.
 \end{example}
 
 Par la suite, plusieurs notations simplifiés sont utilisés pour désigner des descriptions de fenêtres courantes décrites dans le tableau~\ref{tab:windows}.
@@ -205,23 +205,23 @@ Nous avons constitué la chaîne complète permettant de traiter les flux de don
 \begin{example}
     Le flux d'alerte avec pour attributs (deviceId, avgcpu, $\t$) représente que l'équipement \textbf{deviceId} au \textit{timestamp} $\t$ a eu une charge moyenne \textit{avgcpu} supérieure à 25\%. La moyenne est calculée sur 5 min toutes les minutes.
 
-    Pour former ce flux, il faut joindre le flux \textbf{CPU} avec \textbf{Applications} afin de pouvoir associer le bon \textit{deviceId} à l'\textit{appId}. Or, cette opération est interdite à moins de faire une fenêtre sur le flux. Nous pourrions utiliser une fenêtre telle que le dernier \textit{batch} $[B]$, mais comme il est nécessaire d'obtenir une fenêtre temporelles pour le calcul de moyenne, nous pouvons appliquer la description appropriée : $$CPU[T\ 5min\ 1min]\Join Applications.$$
+    Pour former ce flux, il est nécessaire de joindre le flux \textbf{CPU} avec \textbf{Applications} afin de pouvoir associer le bon \textit{deviceId} à l'\textit{appId}. Or, cette opération est interdite à moins de faire une fenêtre sur le flux. Nous pourrions utiliser une fenêtre telle que le dernier \textit{batch} $[B]$, mais comme il est nécessaire d'obtenir une fenêtre temporelles pour le calcul de moyenne, nous pouvons appliquer la description appropriée : $$CPU[T\ 5min\ 1min]\Join Applications.$$
 
-    Appliquons l'opération d'agrégation sur cette relation pour obtenir notre moyenne. Puis nous pouvons sélectionner les n-uplets la moyenne est supérieure à 25\%. Enfin, une fois que notre relation temporelle représentant les équipements supérieurs à 25\% de charge sur ces 5 dernières minutes, il faut pouvoir établir le flux. Ici une ambiguïté réside dans l'énoncé. Souhaitons-nous avoir le flux des nouveaux équipements ayant ce problème ou souhaitons nous être notifié à chaque vérification ? Ce critère va influencer le choix du \textit{streamer} : $\IS$ ou $\RSu$. Prenons le premier, nous aurons la requête suivante : 
+    Appliquons l'opération d'agrégation sur cette relation pour obtenir la moyenne. Puis nous pouvons sélectionner les n-uplets la moyenne est supérieure à 25\%. Enfin, le flux doit être créé à partir de la relation temporelle représentant les équipements supérieurs à 25\% de charge pendant les 5 dernières minutes. Ici une ambiguïté réside dans l'énoncé. Souhaitons-nous avoir le flux des nouveaux équipements ayant ce problème ou souhaitons nous être notifié à chaque vérification ? Ce critère va influencer le choix du \textit{streamer} : $\IS$ ou $\RSu$. Prenons le premier, nous obtenons la requête suivante : 
     $$\IS\left(\sigma_{avgcpu \geq 25} \ \null_{deviceId}\G_{avg_{cpu}^{avgcpu}} (CPU[T\ 5min\ 1min]\Join Applications)\right)$$
 \end{example}
 
-D'autres streamers peuvent être construits pour effectuer l'envoi de données dans le flux résultant de manière périodique comme le présente la définition~\ref{def:rsr}.
+D'autres streamers peuvent être construits pour effectuer l'insertion de données dans le flux résultat de manière périodique comme le présente la définition~\ref{def:rsr}.
 \begin{defi}[\textit{Streamers} périodiques]\label{def:rsr}
     Soit $R$ une relation,
 
-    Les \textit{streamers} périodiques sont les opérateurs créateurs d'un flux $S$ dont l'envoi est effectué périodiquement. Le \textit{streamer} d'envoi $\RS{r}$ est défini par un taux temporel $r$ et la propriété :
+    Les \textit{streamers} périodiques sont les opérateurs créateurs d'un flux $S$ où les insertions ont lieu périodiquement. Le \textit{streamer} $\RS{r}$ est défini par un taux temporel $r$ et la propriété :
 $$s\in R(t,i) \wedge t-t_0\equiv 0[r]\equ s'=\Psi_{(t,i)}(s,t)\in S \wedge \BS(s') = (t,i)$$
 \end{defi}
 
-Nous avons maintenant vu une gestion des opérateurs permettant de couvrir la plupart des opérations. Toutefois, deux opérateurs sont encore à définir pour certaines opérations plus particulière.
+Nous avons maintenant défini des opérateurs permettant de couvrir la plupart des opérations. Toutefois, deux opérateurs sont encore à définir pour certaines opérations plus particulière.
 \subsection{Manipulation temporelle}\label{sec:contrib:astral:manipulation}
-Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. Elles changent au cours de l'exécution de la requête. En l'état, nous n'avons pas d'opérateur capable de contrôler ces changements. L'opérateur de manipulation temporelle permet de sélectionner, pour l'instant présent, un état passé de la relation. Tout d'abord, définissons une transformation temporelle (def~\ref{def:transformation}) permettant de sélectionner l'instant que nous souhaitons observer. La seule contrainte de cette transformation est le fait qu'il est impossible de regarder dans le futur. Nous pouvons ainsi définir l'opérateur de manipulation temporelle (def~\ref{def:manipulation}) qui appliquera cette transformation à la relation temporelle.
+Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. Elles changent au cours de l'exécution de la requête. Il n'existe pas d'opérateur capable de contrôler ces changements. L'opérateur de manipulation temporelle permet de sélectionner, pour l'instant présent, un état passé d'une relation. Tout d'abord, définissons une transformation temporelle avec la définition~\ref{def:transformation} permettant de sélectionner l'instant voulu sur la relation temporelle. La seule contrainte de cette transformation est l'impossibilité de regarder dans le futur. Nous pouvons ainsi définir l'opérateur de manipulation temporelle (def~\ref{def:manipulation}) qui applique cette transformation à la relation temporelle.
 \begin{defi}[Transformation temporelle]\label{def:transformation}
     Une transformation temporelle est une fonction de $\TN\to\TN$ telle que $\forall b\in\TN, f(b) \leq b$
 \end{defi}
@@ -234,15 +234,14 @@ Contrairement à l'algèbre relationnelle, les relations sont temporelles ici. E
 
 Plusieurs fonctions classiques ont une utilité directe :
 \begin{itemize}
- \item $\mathrm{freeze}^{t_s}(t,i)=(t_s,0)$ si $t \geq t_s$. Permet de figer une relation temporelle à un instant précis, plus aucun changement ne sera retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Le cas particulier pouvant être lorsque $t_s=t_0$. Alors la relation n'aura connu qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
- \item $\mathrm{period}^r(t,i)=\left(\left\lfloor\frac{t-t_0}{r}\right\rfloor r + t_0, 0\right)$ met à jour la relation de manière périodique avec $r$ un taux de rafraîchissement.
- \item $\mathrm{change}_S(t,i)=\tau_S\circ\rtau_S$ met à jour la relation à chaque fois qu'un \textit{batch} est inséré dans $S$. Nous pourrions appliquer le même principe pour \textit{à chaque fois que la relation $R'$ change}.
+ \item $\mathrm{freeze}^{t_s}(t,i)=(t_s,0)$ si $t \geq t_s$. Permet de figer une relation temporelle à un instant précis, plus aucun changement n'est retransmis à partir de ce point. La relation résultante de cette opération est notée $R^{t_s}$. Un cas particulier est lorsque $t_s=t_0$. Dans ce cas la relation n'a qu'un seul état. Grâce à cette opération, nous sommes capables de faire une \textbf{interrogation instantanée} sur des relations temporelle.
+ \item $\mathrm{period}^r(t,i)=\left(\left\lfloor\frac{t-t_0}{r}\right\rfloor r + t_0, 0\right)$ met à jour la relation de manière périodique avec un taux de rafraîchissement $r$.
+ \item $\mathrm{change}_S(t,i)=\tau_S\circ\rtau_S$ met à jour la relation à chaque fois qu'un \textit{batch} est inséré dans $S$. Le même principe permet une mise à jour \textit{à chaque fois que la relation $R'$ change}.
 \end{itemize}
 
-Cette dernière fonction a un impact particulier lors de la jointure de deux éléments. Dans la jointure temporelle telle que nous l'avons définie, si un changement est appliqué d'un côté ou de l'autre, il y aura un nouveau calcul de jointure. Ce comportement peut ne pas être souhaité dans la pratique où nous pourrions souhaiter que seul une branche soit déclencheur de calcul et l'autre soit passive. La jointure semi-sensible permet cette opération.
+Cette dernière fonction a un impact particulier lors de la jointure de deux relations temporelles. Dans la jointure (ou au sens large le produit cartésien) telle que nous l'avons définie, si un changement est appliqué d'un côté ou de l'autre, un nouveau calcul de jointure est effectué. Ce comportement peut ne pas être souhaité dans la pratique où nous pourrions souhaiter que seul une branche soit déclencheur de calcul et l'autre soit passive. La jointure semi-sensible permet cette opération. Dans la définition~\ref{def:ssjoin} le résultat $R_1 \ssjoin R_2$ n'est pas mis à jour au changement de $R_2$ mais au changement de $R_1$ avec l'état de $R_2$ correspondant.
 
-
-\begin{defi}[Jointure semi-sensible]
+\begin{defi}[Jointure semi-sensible]\label{def:ssjoin}
     Soient $R_1$ et $R_2$ deux relations temporelles,
 
     Soit $\mathrm{change}_{R_1}$ la transformation temporelle telle que $\mathrm{change}_{R_1}(b)$ corresponde au dernier changement de $R_1$ inférieur ou égal à $b$,
@@ -253,22 +252,21 @@ Cette dernière fonction a un impact particulier lors de la jointure de deux él
 \begin{example}
     $$DeviceCPU=\IS(\Pi_{deviceId,deviceName,cpu}(CPU[B]\Join Applications)\ssjoin Devices)$$
 
-Le flux $DeviceCPU$ correspond au flux \textit{CPU} originel sur lequel nous avons remplacé l'attribut \textit{appId} par les attributs \textit{deviceId} et \textit{deviceName} qui est plus intéressant d'un point de vue de l'observation. Mais si \textit{Devices} est mise à jour, typiquement pour changer son statut, alors la relation temporelle pourrait changer d'état. Ce qui pourrait provoquer potentiellement l'envoi d'un nouveau n-uplet dans le flux. Toutefois, grâce à l'opérateur de jointure semi-sensible, nous empêchons ce cas puisque les mises à jours seront cadencées par celles de $CPU[B]\Join Applications$ c'est à dire $CPU[B]$ soit encore les \textit{batchs} de $CPU$.
+Le flux résultat $DeviceCPU$ correspond au flux \textit{CPU} originel sur lequel nous avons remplacé l'attribut \textit{appId} par les attributs \textit{deviceId} et \textit{deviceName} qui sont plus intéressant d'un point de vue de l'observation. Si \textit{Devices} est mise à jour (pour changer son statut) en utilisant la jointure simple, la relation temporelle change d'état. Ce qui provoque l'envoi d'un nouvel n-uplet dans le flux. L'opérateur de jointure semi-sensible empêche ce cas puisque les mises à jours seront cadencées par celles de $CPU[B]\Join Applications$ c'est à dire $CPU[B]$ soit encore les \textit{batchs} de $CPU$ et non la relation \textit{Devices}.
 \end{example}
 
 \subsection{Spread}
-Enfin, le dernier opérateur est celui évoqué lors de la conception des \textit{batchs} dans~\cite{Jain:spread}. Il nous faut en effet de quoi manipuler les \textit{batchs} afin de modifier la fonction $\BS$ d'un flux sans toucher à ses données.
+Enfin, le dernier opérateur est celui évoqué lors de la conception des \textit{batchs} dans~\cite{Jain:spread}. Il est nécessaire d'avoir un opérateur pour manipuler les \textit{batchs} afin de modifier la fonction $\BS$ d'un flux sans toucher à ses données.
 
-L'opérateur de redéfinition des \textit{batchs} (def~\ref{def:spreadall}, \textit{spread all} dans la littérature) permet de rassembler les \textit{batchs} multiples pour chaque \textit{timestamp} en un seul. Ceci permet de réorganiser son flux.
+L'opérateur de réinitialisation des \textit{batchs} (def~\ref{def:spreadall}, \textit{spread all} dans la littérature) permet de rassembler les \textit{batchs} multiples pour chaque \textit{timestamp} en un seul. Ceci permet de réorganiser le flux.
 \begin{defi}[Réinitialisation des batch]\label{def:spreadall}
 Soit $S$ un flux,
 
 Le flux $S$ réinitialisé noté $\lhd S$ vérifie :
-$\forall s_1, s_2\in S^2, \textrm{ alors } s_1, s_2 \in (\lhd S)^2,$ tel que :
-$$\B{\lhd S}(s_1) < \B{\lhd S}(s_2) \equ s_1(\t) < s_2(\t)$$
+$$\forall s\in S, \textrm{ alors } s \in \lhd S, \textrm{ et }\B{\lhd S}(s) = (s(\tau),0)$$
 \end{defi}
 
-L'opérateur \textit{spread} quant à lui (def~\ref{def:spread}) permet de découper les \textit{batchs} présents dans un flux en plusieurs nouveaux. Le découpage se fait sur l'ordre induit par ses attributs, par exemple, le fait de partitionner selon un identifiant. Il est important de voir 
+L'opérateur \textit{spread} décrit dans la définition~\ref{def:spread} permet de découper les \textit{batchs} présents dans un flux en plusieurs nouveaux. Le découpage se fait sur l'ordre induit par ses attributs. Ceci permet par exemple de partitionner selon un identifiant.
 \begin{defi}[\textit{Spread}]\label{def:spread}
 Soient $S$ un flux de schéma $A$, et $a$ un attribut de $S$,
 
@@ -283,6 +281,100 @@ b_1=\B{\rhd_a S}(s_1') < b_2=\B{\rhd_a S}(s_2') &\equ & \BS (s_1) < \BS (s_2)\\ 
 Ainsi que $s_i' = \{(\varphi, (b_i,s_i(\varphi)))\}\bigcup_{x\in A\backslash\{\varphi\}}\{(x,s(x))\}$, pour $i\in\{1,2\}$
 \end{defi}
 
-Dans sa spécification, l'opérateur \textit{spread} accepte le fait de ne pas avoir d'attribut, ce qui a pour conséquence d'étaler tous les n-uplets dans des batchs séparés de manière non-déterministe. Dans notre algèbre, nous avons à notre portée l'attribut $\varphi$ et l'ordre positionnel. Ainsi, en appliquant $\rhd=\rhd_\varphi$, nous définissons l'ordres des \textit{batchs} comme l'ordre positionnel. À l'inverse, en appliquant $\lhd$, nous définissons l'ordre des \textit{batchs} comme l'ordre temporel.
+Originellement, si pour l'opérateur \textit{spread}, aucun attribut n'est mentionné, alors tous les n-uplets sont étalés dans des batchs séparés de manière non-déterministe. Dans notre algèbre, l'attribut $\varphi$ et l'ordre positionnel permet de définir l'ordre des \textit{batchs} comme l'ordre positionnel : $\rhd = \rhd_\varphi$. À l'inverse, en appliquant $\lhd$, nous définissons l'ordre des \textit{batchs} comme l'ordre temporel.
 
-Nous avons maintenant présenté l'ensemble des opérateurs de l'algèbre Astral. Nous sommes désormais capable d'exprimer une requête continue (et instantanné avec l'aide de la manipulation temporelle) avec une grande clareté et sans ambiguïté sémantique. Nous allons maintenant, pour finir ce chapitre, définir l'équivalence de requête avec des \textit{timestamps} de départs $t_0$ différents.
+\begin{example}
+Sachant le contenu du flux \textbf{CPU}(appId, value, $\t$) :
+
+\begin{center}\noindent\begin{tabular}{|c|c|c|} \bottomrule
+(1,0) & (1,1) & (2,0) \\ \hline
+\begin{tabular}{c}
+$(1,20,1)$ \\
+$(1,25,1)$ \\
+$(2,22,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(4,10,1)$ \\
+$(1,25,1)$ \\
+$(4,12,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(2,23,1)$ \\
+$(6,64,1)$ \\
+\end{tabular} \\ \toprule
+\end{tabular}
+\end{center}
+
+ $\lhd\ CPU$ : L'application de l'opérateur de réinitialisation des batchs regroupe tous les n-uplets simultanés dans le même batch.
+ 
+\begin{center}\noindent\begin{tabular}{|c|c|} \bottomrule
+(1,0) & (2,0) \\ \hline
+\begin{tabular}{c}
+$(1,20,1)$ \\
+$(1,25,1)$ \\
+$(2,22,1)$ \\
+$(4,10,1)$ \\
+$(1,25,1)$ \\
+$(4,12,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(2,23,1)$ \\
+$(6,64,1)$ \\
+\end{tabular} \\ \toprule
+\end{tabular}
+\end{center}
+
+ $\rhd_{appId}\ CPU$ : L'utilisation du \textit{spread} sur l'identifiant permet d'affiner les batchs originels en garantissant que chaque batch ne contienne qu'une valeur de \textit{appId}.
+ 
+\begin{center}\noindent\begin{tabular}{|c|c|c|c|c|c|} \bottomrule
+(1,0) & (1,1) & (1,2) & (1,3) & (2,0) & (2,1) \\ \hline
+\begin{tabular}{c}
+$(1,20,1)$ \\
+$(1,25,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(2,22,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(1,25,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(4,10,1)$ \\
+$(4,12,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(2,23,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(6,64,1)$ \\
+\end{tabular} \\ \toprule
+\end{tabular}
+\end{center}
+
+$\lhd\rhd_{appId}\ CPU$ : La combinaison de la réinitialisation et du \textit{spread} permet d'avoir un batch par \textit{timestamp} affecté à une valeur d'\textit{appId}.
+
+\begin{center}\noindent\begin{tabular}{|c|c|c|c|c|} \bottomrule
+(1,0) & (1,1) & (1,2) & (2,0) & (2,1) \\ \hline
+\begin{tabular}{c}
+$(1,20,1)$ \\
+$(1,25,1)$ \\
+$(1,25,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(2,22,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(4,10,1)$ \\
+$(4,12,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(2,23,1)$ \\
+\end{tabular} &
+\begin{tabular}{c}
+$(6,64,1)$ \\
+\end{tabular} \\ \toprule
+\end{tabular}
+\end{center}
+\end{example}
+
+Nous avons maintenant présenté l'ensemble des opérateurs de l'algèbre Astral. Nous sommes désormais capable d'exprimer une requête continue (et instantanné avec l'aide de la manipulation temporelle) avec une grande clareté et sans ambiguïté sémantique. Nous allons maintenant, définir l'équivalence de requête avec des \textit{timestamps} de départs $t_0$ différents.
