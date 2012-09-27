@@ -25,7 +25,7 @@ Les données sont toutefois considérées comme uniquement volatiles. Pour notre
 \begin{table}[!ht]
 \criteretabDonnee
     {Modèle dérivé du relationnel mais où le contenu est variable dans le temps.}
-    {Ensemble de sources indépendantes sauf exception.}
+    {Ensemble de sources indépendantes sauf représentation ad-hoc.}
     {Toutes les données sont dynamiques et événementielles a priori.}
 \criteretabTraitement
     {Continue.}
@@ -33,7 +33,7 @@ Les données sont toutefois considérées comme uniquement volatiles. Pour notre
     {Langages de requêtes similaires aux SQL supportant la dynamique des données}
     {A un instant donné, les opérateurs sont semblables au relationnel. L'expressivité du support de l'évolution des données reste inconnu encore.}
 \criteretabAdaptabilite
-    {Création de source pour fournir les flux de données. Comme il n'y a pas de schéma contextuel, l'adaptation est l'écriture de requêtes continues.}
+    {Création de source pour fournir les flux de données. Comme il n'y a pas de schéma conceptuel, l'adaptation est l'écriture de requêtes continues.}
     {Pas de perspectives métiers.}
     {Les sources et puits sont en général adaptés par les utilisateurs. Un développement peut être fait dessus, mais il est rarement possible de rajouter des opérateurs.}
     {Très rapide car la latence de traitement doit être contrôlée pour supporter des haut débits.}
