@@ -2,18 +2,29 @@
 Dans cette section, nous détaillons les capacités d'interrogations d'Astral appliquées sur notre architecture. Tout d'abord, nous détaillons comment le catalogue est entretenu avec les données provenant des flux. Ensuite, nous archivons des données volatiles. Enfin, nous exploitons cet ensemble pour former des requêtes continues de haut niveau.
 
 \subsection{Entretien du catalogue}
-Nous avons à notre disposition plusieurs flux de données pour remplir le catalogue : \textit{UPnPStatus}, \textit{Serial}, \textit{NetworkInterface} et enfin \textit{NetworkInterface}. Le premier flux fournit des renseignements obtenu par l'observation de la couche applicative (\textit{UPnP}). Il contient ainsi moins de données descriptive que les autres flux. Toutefois, il permet de renseigner des données pour les équipements qui n'ont pas l'agent \textit{DM}.
+Comme présenté dans la section~\ref{sec:valid:domvision:systeme:data}, nous avons à notre disposition plusieurs flux de données pour remplir le catalogue : \textit{UPnPStatus}, \textit{Serial}, \textit{NetworkInterface} et enfin \textit{IPInterface}. Le premier flux fournit des renseignements obtenu par l'observation de la couche applicative (ici \textit{UPnP}). Il contient des données moins précises que les autres flux. Toutefois, il permet de renseigner des données pour les équipements qui n'ont pas l'agent \textit{UPnP-DM}.
 
-Nous prenons ainsi directement le flux \textit{UPnPStatus} et découpons ses attributs par concepts. \textit{ip} appartient à \textit{Interface} ; aucun attribut ne convient à \textit{Équipement} ; pour \textit{Application} \textit{FriendlyName} correspond à \textit{description}, \textit{uuid} au \textit{nom}, \textit{type} et \textit{status} correspondent directement au schéma. Nous créons un composant puit \textit{StatusSink} capable de mettre à jour le catalogue avec ces informations, la figure~\ref{fig:valid:domvision:statushandler} décrit le processus. Pour note, la mise à jour des informations stables ne prend pas toujours en compte la mise à jour de l'\textit{IP} car s'il existe plusieurs interfaces, il est impossible sans interroger le réseau via une requête \textit{ARP} d'identifier quelle est l'interface concernée.
+Par exemple, si nous détectons dans notre réseau domestique, un agent \textit{UPnP-DM} et un profil de partage de contenu. Les deux applications sont exécutés sur deux appareils distincts. L'agent \textit{DM} fournira un ensemble de données précise sur le premier dispositif avec les flux présentés en figure~\ref{tab:valid:domvision:upnpdm}. Nous n'avons pas d'informations précises sur l'autre équipement, toutefois, nous savons qu'il existe un autre dispositif qui peut partager du contenu.
+
+Afin de mettre à jour le catalogue en fonction des n-uplets de \textit{UPnPStatus}, nous séparons ses attributs par concepts sémantiques :
+\begin{itemize}
+\item \textit{ip} appartient à \textit{Interface}
+\item \textit{uuid} convient au \textit{nom} unique d'\textit{Application}
+\item \textit{FriendlyName} correspond à la \textit{description} d'\textit{Application}
+\item \textit{type} et \textit{status} correspondent directement au schéma d'\textit{Application}.
+\item aucun attribut n'appartient à \textit{Équipement}
+\end{itemize}
+Nous créons un composant puit \textit{StatusSink} capable de mettre à jour le catalogue avec ces informations, la figure~\ref{fig:valid:domvision:statushandler} décrit en détail le processus.
 
 \begin{figure}[ht]
 	\includegraphics[width=\textwidth]{valid-domvision-statushandler}
 	\caption{Description du processus de mise à jour de \textit{StatusSink}}\label{fig:valid:domvision:statushandler}
 \end{figure}
 
-Concernant les informations venant d'\textit{UPnP-DM}, nous pouvons les regrouper en un flux $DM$ grâce aux clés de jointures \textit{uuid} et \textit{SystemName}\footnote{Les sources sont synchronisés par le mécanisme d'événement. Sans cette synchronisation un partitionnement \textit{uuid} serait nécessaire.}. Ainsi nous obtenons un flux indiquant que l'interface \textit{SystemName} (avec les propriétés données) est sur l'équipement identifié par le \textit{SerialNumber}. Nous pouvons appliquer la même approche que pour \textit{StatusHandler} en créant un composant puit \textit{DMSink}. La figure~\ref{fig:valid:domvision:cmshandler} résume le processus de ce puit.
+Concernant les informations venant d'\textit{UPnP-DM}, nous pouvons regrouper tous les flux en un seul $DM$ grâce aux clés de jointures \textit{uuid} et \textit{SystemName}\footnote{Les sources sont synchronisés par le mécanisme d'événement. Sans cette synchronisation un partitionnement \textit{uuid} serait nécessaire.}. Ainsi, nous obtenons un flux indiquant que l'interface \textit{SystemName} (avec les propriétés données) est sur l'équipement identifié par le \textit{SerialNumber}. 
 $$\begin{array}{c} DM(\textit{uuid},\textit{SerialNumber},\textit{SystemName},\textit{MACAddress},\textit{InterfaceType}, \textit{IPv4Address}, \t)\\
  DM = \IS(\textrm{Serial}[B] \Join \textrm{NetworkInterface}[B] \Join \textrm{IPInterface}[B])\end{array}$$
+Nous pouvons appliquer la même approche que pour \textit{StatusHandler} en créant un composant puit \textit{DMSink} pour mettre à jour le catalogue grâce aux données de $DM$. La figure~\ref{fig:valid:domvision:cmshandler} résume le processus de ce puit.
 \begin{figure}[ht]
         \includegraphics[width=\textwidth]{valid-domvision-cmshandler}
 	\caption{Description du processus de mise à jour de \textit{DMSink}}\label{fig:valid:domvision:cmshandler}
@@ -30,7 +41,7 @@ $$BandwidthUsage = \Pi_{...}\ \IS \left( e_{\frac{tbr-otbr}{\t-o\t}}^{bwr} e_{\f
 
 Nous avons maintenant le flux possédant les données que nous souhaitons archiver. Comme pour \textit{CPUMem}, nous devons identifier l'entité sur laquelle nous enregistrons cette donnée. Ceci est faisable par une jointure semi-sensible sur la base de données en utilisant le \textit{uuid} de l'agent et le \textit{SystemName} représentant le \textit{nom} de l'interface. Cela produit un flux $Bandwidth$ que nous injectons dans un puit de persistance.
 
-Les autres paramètres volatiles intéressants (changement d'\textit{IP} ou de \textit{status}...) s'enregistrent par le même procédé. D'abord, la requête qui extrait la ou les données que nous souhaitons, puis, identifier l'entité de rattachement.
+Les autres paramètres volatiles intéressants (changement d'\textit{IP} ou de \textit{status}...) s'enregistrent par le même procédé : extraire la ou les données à historiser ; identifier l'objet de rattachement.
 
 Nous avons désormais un système d'observation capable d'entretenir sa vision du système et qui archive ses données volatiles. Ces données sont disponibles à travers le SGBD ce qui permet de faire diverses interrogations instantanées avec une capacité d'expression équivalente au \textit{SQL}. Ainsi, nous avons créé un panneau de contrôle indiquant la topologie du réseau ainsi que son histoire et des graphiques de métriques. Une série d'écran est disponible en annexe~\ref{misc:interface}.
 
@@ -40,3 +51,14 @@ $$\IS\ \sigma_{avgcpu>90}(\null_{monitorableId}\G_{avg(CPUUsage)}^{avgcpu} CPUMe
 
 Afin de montrer les capacités d'interrogation de notre système, nous pouvons améliorer cette requête en exprimant le critère \enquote{\it la moyenne sur 1 minute est différente à 10\% près de la moyenne historique}. La valeur historique est obtenue par la relation temporelle produite par $HistAvgCPU=\null_{monitorableId}\G_{avg(cpu)}^{avgcpuhist} cpumemhistory$. Nous obtenons ainsi la requête :
 $$\IS\ \sigma_{\abs{avgcpu-avghist}\geq 10}\left(AvgCPU\ssjoin HistAvgCPU\right)$$
+
+Bien que cette requête mêle données historiques persistantes et données à la volée, nous sommes capables de l'écrire et de l'exécuter dans notre approche. Ceci prouve que notre approche est capable d'intégrer flux et relations persistantes par un langage semi-déclaratif.
+
+\subsection{Journalisation du catalogue}
+De plus, si l'utilisateur souhaite connaître les états passés du catalogue, il est possible de garder une trace dans le support persistant de tels changements. Prenons l'exemple de la relation \textit{Interfaces} du catalogue. Nous pouvons créer les flux d'insertion et de suppression de cette relation temporelle grâce à $\IS$ et $\DS$. Ainsi, un historique des changements de cette relation peut se traduire par :
+$$InterfacesHist = \begin{cases} InterfacesIS = \IS(Interfaces) \\ InterfacesDS = \DS(Interfaces)\end{cases}$$
+En persistant ces deux flux dans la base de donnée grâce à un puits de persistance, il est possible de reconstituer la relation \textit{Interfaces} à un temps quelconque $\tau$.
+
+De plus, ces historiques permettent de fournir à l'utilisateur la liste des changements de son catalogue. Par exemple, il est possible de détailler une liste d'événements indiquant \enquote{\it un nouvel appareil vient de se connecter} ou \enquote{\it le profil de partage de contenu a disparu}. Ce type d'information sont très utiles dans le cadre du diagnostic afin de tracer au mieux les causes des problèmes.
+
+Alternativement, il est possible d'archiver cette relation par l'utilisation de l'opérateur $\RSu$. Ceci permettra d'enregistrer l'ensemble de la relation à chaque changement. Nous remarquons que nous retrouvons le principe du calcul incrémental évoqué en section~\ref{sec:rw:sgfd:optimisation} en matérialisant une relation par l'ensemble de ses différences ou par l'ensemble de ses états.
