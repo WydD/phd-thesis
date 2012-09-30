@@ -11,12 +11,12 @@
    {\setlength\paperheight {297mm}%
     \setlength\paperwidth  {210mm}}
 \ProcessOptions\relax
-
+\usepackage{datetime}
 \AtBeginDocument{\ifx\includegraphics\undefined\RequirePackage{graphicx}\fi%
 \ifx\colorbox\undefined\RequirePackage{xcolor}\fi}
 
 \long\def\Universite#1{\gdef\@Universite{#1}}
-\def\@Universite{\includegraphics[width=10cm,clip]{logo_first_ligne}}
+\def\@Universite{\includegraphics[width=10cm,clip]{logo_first_ligne}\\\ \\ \textbf{\Large DRAFT \hfill \today\ \currenttime }}
 \long\def\EcoleDoctorale#1{\gdef\@EcoleDoctorale{et de {\bfseries#1}}}
 \def\@EcoleDoctorale{}     
 \long\def\Grade#1{\gdef\@Grade{\uppercase{#1}}}
@@ -152,7 +152,7 @@
             \hglue-\ifodd\c@page\oddsidemargin\else\evensidemargin\fi
             \hglue\@UGTtitlepageshift
             \hglue-\parindent
-            \hglue\@Sethpageshift
+            \hglue\@Sethpageshift            
             \rlap{\vbox to0pt{\vbox to\@UGthesepage@height
             {\hsize\@UGthesepage@width
             \fontfamily{phv}\fontsize{11}{13}\selectfont\@Thesis@titlep@ge}
