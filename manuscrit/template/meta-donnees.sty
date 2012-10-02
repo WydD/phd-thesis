@@ -16,7 +16,7 @@
 \ifx\colorbox\undefined\RequirePackage{xcolor}\fi}
 
 \long\def\Universite#1{\gdef\@Universite{#1}}
-\def\@Universite{\includegraphics[width=10cm,clip]{logo_first_ligne}\\\ \\ \textbf{\Large DRAFT \hfill \today\ \currenttime }}
+\def\@Universite{\includegraphics[width=10cm,clip]{logo_first_ligne}}
 \long\def\EcoleDoctorale#1{\gdef\@EcoleDoctorale{et de {\bfseries#1}}}
 \def\@EcoleDoctorale{}     
 \long\def\Grade#1{\gdef\@Grade{\uppercase{#1}}}
@@ -165,6 +165,7 @@
 \fbox{\colorbox[gray]{.82}{\parbox[t][28cm][b]{5.7cm}{\hfil\@UniversityLogo\hfil\par\vskip5mm}}\hskip5mm\parbox[t][28cm]{12.8cm}{
        \vskip3mm plus1fil
              \hfill\@ThesisHead
+       \vskip3mm \textbf{\Large DRAFT \hfill \ddmmyyyydate\today\ \currenttime}
        \vfill
              {\bfseries\fontsize{16}{18}\selectfont\@ThesisType}
        \vskip3mm plus1fil
