@@ -17,7 +17,7 @@ La contribution principale d'Astronef est la définition de ces composants en te
 
 Cette transformation se fait en deux étapes, comme dans les SGBD. Tout d'abord, l'expression est restructurée pour être plus optimale en terme de taille de résultats intermédiaires. Cette restructuration utilise les résultats d'équivalences de requêtes données par les preuves faites avec Astral. Ensuite, un ensemble de règles permettent de sélectionner le meilleur plan de requête correspondant à l'expression en se basant sur la détection de motifs.
 
-La souplesse de son architecture a été démontré par l'intégration d'opérateurs de gestions de préférences en section~\ref{sec:valid:domvision:architecture}. De plus, cet opérateur nous permet en partie de gérer l'hétérogénéité des points de vues utilisateurs. Les aspects performances du système de règles ont été expérimentés dans le chapitre~\ref{chap:valid:perfs}.
+Les aspects performances du système de règles ont été expérimentés dans le chapitre~\ref{chap:valid:perfs}. La souplesse de son architecture a été démontré par l'intégration d'opérateurs de gestions de préférences dans le chapitre~\ref{chap:prefs}. Cet opérateur nous permet de gérer des points de vues utilisateurs dans l'observation.
 
 \subsection{Intégration du support persistant à l'intergiciel}
 Le langage Astral nous permet d'intégrer les requêtes continues et requêtes instantanées. Ainsi, il est possible d'écrire toute requête exécutable sur un SGFD, mais aussi toute requête exécutable sur un SGBD. Nous avons développé une extension à Astronef capable de coupler un SGBD aux traitements des requêtes continues : \textit{Asteroid}.

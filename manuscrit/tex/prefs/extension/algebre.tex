@@ -1,5 +1,5 @@
-\section{Ajout d'un opérateur : gestion des préférences} \label{sec:valid:domvision:architecture}
-Dans cette section, nous validons la flexibilité de notre architecture en intégrant un nouvel opérateur. De nombreux efforts ont été consacrés ces dernières années à la personnalisation des réponses lors de l'accès aux bases de données. Dans notre cadre, un de nos objectifs était de pouvoir adapter les résultats en fonction de l'utilisateur. Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous appliquons ceci à notre cadre applicatif. Enfin, nous présentons comment l'intégration dans Astronef est faite.
+\section{Modélisation algébrique}\label{sec:ext:prefs:algebre}
+Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous appliquons ceci à notre cadre applicatif. Enfin, nous présentons comment l'intégration dans Astronef est faite.
 
 \subsection{Préférences contextuelles}
 Dans cette section nous présentons les principaux concepts concernant le formalisme logique que nous employons pour spécifier et raisonner avec des préférences. Tout d'abord présentons le concept de préférence contextuelle. Une \textit{préférence contextuelle} est une manière d'exprimer la phrase suivante : \enquote{\it Lorsque $u$ est vrai, je préfère $Q_1$ à $Q_2$ à attributs $W$ égaux}. La définition~\ref{def:pref} définie formellement cette notion.
@@ -110,18 +110,4 @@ En supposant que nous appliquons une fenêtre sur $V$ et que nous obtenons les n
 
 Dans la pratique nous pourrions appliquer cet opérateur sur tout type de fenêtre. Pour revenir à notre application, en supposant que $V$ est correctement formé, nous pouvons déployer une requête continue qui peut alimenter l'interface de l'utilisateur avec : les 25 événements les plus importants du dernier jour évalué toutes les minutes. Cette requête a l'expression $\textbf{KBest}_{25}(V[T\ 1j\ 1min])$.
 
-\subsection{Intégration dans Astronef}
-Nous avons désormais des définitions Astral correctement posées. Nous pouvons maintenant intégrer ces opérateurs à Astronef. En premier lieu, nous avons conçu un composant opérateur capable de calculer les sémantiques de \textbf{Best} et \textbf{KBest} de manière statique en calculant à partir de l'état de $R(b)$. Ce composant prend évidemment en paramètre $k$ qui peut être égal à $-1$ pour indiquer une sémantique de \textbf{Best}.
-
-L'intégration du composant se fait en deux parties. Tout d'abord, il est nécessaire d'enregistrer le composant en tant qu'opérateur, ceci est fait automatiquement lorsque le binaire est installé. Ensuite, il faut renseigner ses définitions Astral dans le moteur de règle. Dans notre cas, quatre règles sont suffisantes :
-\begin{lstlisting}
-sugar([best,Config,C],[kbest,NewConfig,C]):-
-    map_put(Config,['k',-1],NewConfig), !. % best = kbest avec k=-1
-
-typerules([kbest,_,_,[T]],T):- relation(T), !.
-attribrules([kbest,_,_,[A]], A):- !.
-
-implrules([kbest,_,_,_], "KBest"):- !.
-\end{lstlisting}
-
-Une fois ce code renseigné dans le service de connaissance d'Astronef, nous pouvons librement utiliser les opérateurs \textbf{Best} et \textbf{KBest} sur toutes relations temporelles. Nous verrons dans le chapitre suivant, les possibilités d'amélioration de cette approche en terme de performances. Il est intéressant de voir que si le SGBD supporte le langage \textit{CPref-SQL}, nous pouvons pousser les opérateurs \textbf{Best} et \textbf{KBest} sur le SGBD via une règle Asteroid. 
+Nous avons désormais présenté les deux opérateurs nous permettant la personnalisation de résultat. Dans la section suivante, nous détaillons leur implémentation.

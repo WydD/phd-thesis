@@ -1,0 +1,16 @@
+\begin{savequote}[6cm]
+<< The shape's fine, just make the whole thing... you know, cooler. 
+
+\quad It needs to be about 20\% cooler. >>
+\qauthor{Rainbow Dash}
+\end{savequote}
+\chapter{Extension à la gestion des préférences}\label{chap:prefs}
+
+Les systèmes devenant de plus en plus complexes, ils produisent de plus en plus de données. De nombreux efforts ont été consacrés ces dernières années à la personnalisation des réponses lors de l'accès aux bases de données. Dans notre cadre, un de nos objectifs est de pouvoir adapter les résultats en fonction de l'utilisateur. Dans ce chapitre, nous explorons une extension à notre approche pour ajouter des opérateurs capables d'adapter les résultats d'interrogations aux préférences utilisateurs.
+
+Dans la section~\ref{sec:ext:prefs:algebre}, nous détaillons les fondements théoriques à la gestion de préférences contextuelles. Une fois que les opérateurs décrit dans l'algèbre Astral, nous pouvons présenter les algorithmes utilisés pour les mettre en œuvre dans la section~\ref{sec:ext:prefs:algo}. Enfin, dans la section~\ref{sec:ext:prefs:integration} nous présentons l'intégration faite dans Astronef pour que l'utilisateur puisse personnaliser ses résultats d'interrogation. Cette intégration est accompagnée d'une évaluation de performances pour sélectionner le meilleur algorithme de calcul.
+
+\input{tex/prefs/extension/algebre}
+\input{tex/prefs/extension/algo}
+\input{tex/prefs/extension/integration}
+\input{tex/prefs/extension/conclusion}

@@ -1,5 +1,5 @@
-\section{L'avantage du mode incrémental dans Best/KBest}\label{sec:valid:perfs:prefs}
-Nous avons vu dans le chapitre~\ref{chap:valid:domvision} que nous pouvons introduire des opérateurs de préférences contextuelles. Cette section présente les algorithmes que nous avons développés pour les opérateurs \textbf{Best} et \textbf{KBest}. Ces opérateurs nécessitent de connaître la hiérarchie des n-uplets déduite d'un ensemble de préférences. Cette hiérarchie est déduite du \textit{graphe de préférence} \textit{GP}. Nous présentons ci-après deux algorithmes pour la gestion du graphe ainsi qu'une étude des performances pour sélectionner le meilleur algorithme.
+\section{Mise en œuvre}\label{sec:ext:prefs:algo}
+Cette section présente les algorithmes que nous avons développés pour les opérateurs \textbf{Best} et \textbf{KBest}. Ces opérateurs nécessitent de connaître la hiérarchie des n-uplets déduite d'un ensemble de préférences. Cette hiérarchie est déduite du \textit{graphe de préférence} \textit{GP}. Nous présentons ci-après deux algorithmes pour la gestion du graphe : l'un est calculé sur l'état courant de la relation temporelle d'entrée, l'autre travaille sur les différences de manière incrémentale.
 
 \subsection{Le graphe de préférence}
 L'ordre de préférence entre deux n-uplets $t_1$ et $t_2$ selon une règle $\varphi$ est construit à partir d'une fonction $Com\-pare(t_1,t_2,\varphi_k)$ qui retourne $\emptyset$ si $t_1$ et $t_2$ sont incomparables, 1 si $t_1$ est préféré à $t_2$ et $-1$ sinon. L'algorithme~\ref{algo:comparT} étend la comparaison à une théorie $\Gamma$. Cette dernière utilise un ensemble de règles pour calculer l'ordre de préférence mais ne calcule par la clôture transitive.
@@ -121,28 +121,3 @@ KBest \quad & $\mathcal O(N^2)$ & \quad $\mathcal O((\Delta+k)N)$ \quad\\ \noali
 \caption{Best/KBest complexity}\label{tab:valid:perfs:prefs:complexity}
 \end{minipage}
 \end{table}
-
-\subsection{Expérimentations pour la sélection du plan de requête}
-Nous avons à notre disposition deux composants capables de calculer de manière incrémentale ou non les opérateurs de préférences contextuelles. Dans cette section, nous expérimentons pour sélectionner l'un ou l'autre choix.
-
-L'expérience a été réalisé dans un cadre applicatif financier. Ainsi, $30,000$ n-uplets ont été collectés depuis des flux de cours d'actions\footnote{Fournit par le service Dukascopy's Data Export. Disponible à \url{http://www.dukascopy.com/swiss/english/data_feed/csv_data_export}}. Les préférences utilisés sont de la même complexité que celles présentés en section~\ref{sec:valid:domvision:architecture}. Soit $S$ un flux, la requête que nous analysons est la suivante : $${\bf KBest}_k(S[N \textrm{ slide } \Delta])$$
-
-\begin{figure}[ht]
-\subfigure[En variant $\Delta$ sur KBest (pour $N=500$)]{\includegraphics[width=0.48\linewidth]{valid-perfs-prefs-slide}\label{fig:prefxp-slide}}
-\subfigure[En variant $N$ sur KBest (pour $\Delta=N$)]{\includegraphics[width=0.48\linewidth]{valid-perfs-prefs-size}\label{fig:prefxp-size}}
-\caption{Temps de calcul de \textit{Créer GP}, \textit{GP Incrémental} et de la maintenance de \textit{Src}}\label{fig:prefxp}
-\end{figure}
-
-\textbf{Résultats :} Les expérimentations montrent que le temps d'évaluation de \textbf{KBest} est dominé par la construction-mise à jour du \textit{GP}. Nous avons aussi observé que la structure du \textit{GP} d'une fenêtre à l'autre pouvait changer. La profondeur maximale du graphe varie de 2 à 6 et le nombre de n-uplets non-dominés varie de $1$ à $N$. Les grands changements de structures correspondent aux pires cas de l'algorithme incrémental. La figure~\ref{fig:prefxp-slide} montre le temps de calcul des deux algorithmes du \textit{GP} : \textit{créer} et \textit{incrémental}. Elle indique aussi le temps nécessaire au calcul réduit de la maintenance de \textit{Src}, qui est directement utilisée pour l'opérateur \textbf{Best}. 
-
-Durant les expérimentations, nous avons utilisé plusieurs tailles de fenêtres $N$ et de taux $\Delta$. Nous remarquons que les changements de taux de mise à jour n'impactent pas le temps de création du \textit{GP}, tandis que l'algorithme incrémental obtient un gain de 6 pour un ration $N/\Delta=10$. Étonnement, les deux algorithmes du \textit{GP} se comportent de la même façon lorsque $\Delta\sim N$, ce qui correspond au cas où il n'y a pas ou peu d'intersections entre les fenêtres successives. Cela indique que dans la version incrémentale, les suppressions dans le \textit{BTG} prennent peu de temps comparé aux insertions. Ceci est notamment dû au fait que l'insertion nécessite l'évaluation des comparaisons (coûteuses dans notre cadre expérimental). Le coût de ces suppressions peut aussi être augmenté dans le cas où le \textit{GP} est un graphe fortement connexe, ce qui est difficile à trouver dans la pratique.
-
-La variation de la taille de la fenêtre (figure~\ref{fig:prefxp-size} avec $\Delta=N$) montre que le comportement n'est pas impacté par le nombre d'n-uplets impliqués. Comme prévu, l'évolution semble quadratique selon $N$ et l'approche incrémentale suit strictement la performance de l'algorithme de création.
-
-Nous pouvons désormais intégrer notre composant incrémental à l'intérieur d'Astronef par la création de la règle suivante :
-\begin{lstlisting}[language=PrologAstral]
-implrules([kbest,B,[C]], "DynamicKBest"):- 
-    map_get(B, "incremental", "true", "true"), % Mode incremental par defaut
-    dynamicoperator(C), !. % Si le noeud fils est aussi incremental
-\end{lstlisting}
-Pour plus de complétude, nous pourrions établir une règle disant que si nous sommes dans le cas $k=-1$ (i.e. \textbf{Best}) et que le ratio $N/\Delta$ de la description de fenêtre, s'il y en a une, est inférieur à 2 : alors nous devons utiliser l'opérateur \textbf{Best} non-incrémental.
