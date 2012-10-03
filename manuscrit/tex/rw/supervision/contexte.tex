@@ -1,11 +1,13 @@
 \section{Informatique contextuelle}\label{sec:rw:supervision:contexte}
-Au centre des systèmes pervasifs et de l'informatique ubiquitaire, l'informatique contextuelle prend une importance de plus en plus grande. Sa définition a fait l'objet de plusieurs débats au sein de la communauté scientifique. Celle la plus couramment utilisé est : \enquote{L'informatique contextuelle (\textit{context-aware computing} a pour but de permettre les équipements de fournir de meilleurs services aux utilisateurs par l'utilisation d'information de contexte}\cite{Han:contextaware}. Ainsi, le point important est de former un ensemble d'information pour que des applications puissent adapter leur fonctionnement en fonction de cet ensemble. La formation de ce contexte est un processus d'observation de l'environnement dans lequel se trouve l'application.
+Au centre des systèmes pervasifs et de l'informatique ubiquitaire, l'informatique contextuelle prend une importance de plus en plus grande. Sa définition a fait l'objet de plusieurs débats au sein de la communauté scientifique. Celle la plus couramment utilisé est : \enquote{L'informatique contextuelle (\textit{context-aware computing} a pour but de permettre aux équipements de fournir de meilleurs services aux utilisateurs par l'utilisation d'information de contexte}\cite{Han:contextaware}. Ainsi, le point important est de former un ensemble d'information pour que des applications puissent adapter leur fonctionnement. L'instanciation de cette notion de contexte est un processus d'observation de l'environnement dans lequel se trouve l'application.
+
+La section~\ref{sec:rw:supervision:administration} a permit de voir que le système peut fournir de grandes quantités de données. Grâce à l'informatique contextuelle, nous souhaitons pouvoir les exploiter en les plongeant dans un contexte. Ainsi, nous pouvons mieux exploiter la sémantique des données et envisager effectuer de l'observation de plus haut niveau afin d'établir un diagnostique.
 
 Cette section présente d'abord les définitions et applications de l'informatique contextuelle. Par la suite, nous détaillons comment le contexte est capturé et modélisé. Nous présentons les capacités de traitement sur celui-ci. Enfin, nous analysons différents systèmes pervasifs existants pour percevoir la mise en application de cette approche. Nous concluons par une synthèse, détaillant l'adéquation aux critères que nous nous sommes fixés.
 \subsection{Définitions et applications}
 La définition de contexte a été elle aussi au cœur de nombreux débats. Après analyse des travaux sur le sujet, le rapport de recherche~\cite{Dey:context} propose la définition suivante : \enquote{\it Un contexte est toute information pouvant être utilisée pour caractériser la situation d'une entité. Cette entité pouvant être une personne, un lieu, ou un objet considéré comme pertinent à l'interaction entre l'utilisateur et le système.}.
 
-Il est important de noter que cette définition est orientée par l'utilisation qui en est faite. Une donnée quelconque peut être un contexte si elle est utilisée comme tel. Ainsi, il nous faut voir l'ensemble des utilisations de ce contexte. Ces applications visent sept utilisations principales~\cite{Soylu:context} : 
+Il est important de noter que cette définition est orientée par l'utilisation qui en est faite. Une donnée quelconque peut faire partie d'un contexte si elle est utilisée comme tel. Ainsi, il est nécessaire de voir l'ensemble des utilisations de ce contexte. Celles-ci sont rassemblés dans sept catégories principales~\cite{Soylu:context} : 
 \begin{enumerate}
 	\item Sélection et recommandations d'informations ou de services.
 	\item Présentation et accès à l'information et aux services.
@@ -15,10 +17,10 @@ Il est important de noter que cette définition est orientée par l'utilisation 
 	\item Conseil d'actions semi-automatique.
 	\item Allocations de ressources.
 \end{enumerate}
-Les utilisations du contexte sont directement reliés à l'observation car c'est elle qui permet la construction du contexte pour ensuite fournir ces types de services de haut-niveau.
+Les utilisations du contexte sont directement reliés à l'observation car c'est elle qui permet la construction du contexte.
 
 \subsection{Modélisation et capture du contexte}
-Le modèle utilisé pour créer et manipuler le contexte peut être de différentes formes : basé sur des principes d'intelligence artificielle (représentations de connaissances, réseaux bayésiens), le génie logiciel (UML), les bases de données (Entité-Relation) ou d'autres moyens applicatifs (entrées clefs-valeurs). L'UML et l'ER atteignent rapidement leurs limites d'expressivité. Il devient difficile de manipuler les données dans le cadre de contextes larges et hétérogènes à cause de leur rigidité. Ces modèles permettent d'abstraire une partie du monde ou de la logique pour un usage restreint. Par opposition, la gestion de données issues d'ontologies est moins soumis à cette rigidité. Il est toutefois important de ne pas négliger ces autres modélisations dues à leur efficacité (comme vu dans la section~\ref{sec:rw:supervision:administration}).
+Le modèle utilisé pour créer et manipuler le contexte peut être de différentes formes : basé sur des principes d'intelligence artificielle (représentations de connaissances, réseaux bayésiens), le génie logiciel (UML), les bases de données (ER : Entité-Relation) ou d'autres moyens applicatifs (arbres, entrées clefs-valeurs). L'UML et l'ER atteignent rapidement leurs limites d'expressivité. Il devient difficile de manipuler les données dans le cadre de contextes larges et hétérogènes à cause de leur rigidité. Ces modèles permettent d'abstraire une partie du monde ou de la logique pour un usage restreint. Par opposition, la gestion de données issues d'ontologies est moins soumis à cette rigidité. Il est toutefois important de ne pas négliger les modélisations alternatives dues à leur efficacité (comme vu dans la section~\ref{sec:rw:supervision:administration}).
 
 \subsubsection{Un modèle sous forme de triplet}
 Pour représenter l'ensemble des connaissances sur le système, autant en terme de structure que de données, les contextes sont la plupart du temps modélisés comme un réseau sémantique. Le langage utilisé pour cela est le RDF (\textit{Resource Description Framework})~\cite{W3C:RDF}, un standard répandu. Son principe est à la fois simple et puissant. Son expression est simple car toute sa structure est orchestrée par des triplets : Objet, Relation, Valeur. Par exemple, \textit{la télévision} \textbf{est située dans} \textit{le salon}. De même, \textit{le salon} \textbf{est une} \textit{pièce}. L'ensemble des triplets forme un graphe où les objets et valeurs sont des nœuds et les relations sont des liens, d'où l'appellation de \textit{graphe sémantique}~\cite{Minsky:knowledge}. Pour étendre l'expressivité des graphes sémantiques et y apporter la notion de classes, les ontologies se sont développées.
@@ -45,6 +47,8 @@ Comparées à des structures telles qu'UML, les ontologies jouissent de la flexi
 \subsubsection{Capture du contexte}
 La capture du contexte est la manière de récupérer une information et de la représenter sous la forme choisie lors de la modélisation. Par exemple, un capteur de température peut insérer un ensemble de triplets pour indiquer qu'à 10h25 le lundi 26 avril, il faisait 25.256ºC sur la source T75896. Cet ensemble de triplets dépend de la modélisation des concepts qui forme le contexte. Plusieurs types de captures existent : la capture physique, où les informations sont extraites de l'environnement physique ; la capture logique, où les informations sont issues d'applications ou de services ; et enfin, la capture virtuelle où les données sont extraites à partir d'autres informations de contexte.
 
+La gestion de l'hétérogénéité est rarement mentionnée puisque les sources de données sont supposées être conforme au schéma commun. Toutefois, comme présenté dans~\cite{Kaed:these}, il est possible d'aligner les modèles des sources avec un schéma commum. Le formalisme des ontologies permettent en effet de décrire les équivalences logiques entre différents concepts ce qui permet l'intégration de données.
+
 \subsection{Capacités de traitement}
 Un intérêt des réseaux sémantiques est le pouvoir de raisonnement logique. Le but ici est de pouvoir inférer de nouveaux triplets à partir des connaissances accumulées. Pour cela, il existe plusieurs langages permettant de spécifier ces inférences. Le plus courant est le langage associé à \textit{RDF} : \textit{SPARQL}. Ce langage a la particularité d'être aussi expressif que l'algèbre relationnelle~\cite{Angles:sparql}\footnote{Plus exactement, SparQL est équivalent au datalog non-récursif avec négation, ce qui est équivalent à l'algèbre relationnelle.}. Ainsi, il est possible de faire des inférences du premier ordre sur ces données.
 
@@ -55,14 +59,15 @@ Ces inférences sont de trois types :
  \item[\textbf{Fission de contexte}] Une donnée infère un ensemble d'informations
 \end{itemize}
 
-Dans l'informatique contextuelle, il est important de distinguer plusieurs espaces de données~\cite{Padovitz:agent}. 
+Dans l'informatique contextuelle, il est important de distinguer plusieurs espaces de données~\cite{Padovitz:agent} :
 \begin{itemize}
  \item[\textbf{L'espace de valeur}] Par exemple, pour une personne, son age est compris entre 0 et 125.
  \item[\textbf{L'espace applicatif}] L'ensemble des données atomiques qui représentent le contexte dit de bas-niveau.
- \item[\textbf{L'espace de situation}] Reflète les situations pouvant être extraits de l'espace applicatif.
+ \item[\textbf{L'espace de situation}] Reflète les situations pouvant être extraites de l'espace applicatif.
 \end{itemize}
 
-A un instant donné, il est possible de définir un \textbf{état de contexte} en tant que collection d'attributs de l'espace de contexte. Cet état peut par la suite, grâce aux opérations présentées, inférer un ensemble de situations. La figure~\ref{rw-supervision-contextreasoning} montre la structure abstraite du raisonnement sur les contextes.
+A un instant donné, il est possible de définir un \textbf{état de contexte} en tant que collection d'attributs de l'espace de contexte. Cet état peut par la suite inférer un ensemble de situations. La figure~\ref{rw-supervision-contextreasoning} résume la structure abstraite du raisonnement sur les contextes.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.50\textwidth]{rw-supervision-contextreasoning}
@@ -70,10 +75,18 @@ A un instant donné, il est possible de définir un \textbf{état de contexte} e
 \end{figure}
 
 \subsubsection{La qualité de contexte}
-Beaucoup de travaux se sont intéressés à la qualité des données dans le cadre de la gestion de contexte. En effet, l'inférence des situations se fait sur la qualité du contexte. Or, si le contexte est de mauvaise qualité, en terme de précision ou de fiabilité par exemple, le raisonnement peut ne pas être sûr. Enfin, l'inférence se fait par des règles ou par raisonnements. De plus, la notion de qualité peut aussi s'appliquer sur les règles elles-mêmes. Par exemple, un problème de pixélisation TV est souvent dû à un problème de lenteur de réseau interne, mais ce peut être du à des dysfonctionnements plus rares du matériels (surchauffe). Ainsi, certaines recherches amènent une part de probabilités dans ces raisonnements pourtant déterministes a priori~\cite{Padovitz:agent}.
+La qualité du contexte~\cite{Buchholz:quality} est défini comme toute information permettant de décrire la qualité des informations contenues dans le contexte. Le point crucial est que cette qualité n'est pas liée à un quelconque processus ou matériel. Elle peut se décliner en plusieurs \textit{paramètres} : précision, fiabilité, confiance, fraicheur,...
 
-\subsection{Analyse de systèmes pervasifs existants}
-Dans cette partie, nous analysons des systèmes pervasifs existants. Ceux-ci sont en général très orientés sur la domotique (\textit{Home Automation}) qui est l'environnement de développement le plus courant dans le domaine de l'informatique ubiquitaire. Cette étude nous permet de voir comment est mis en pratique l'approche présentée jusqu'ici.
+Dans le cadre du traitement de contexte, la qualité du contexte influe sur l'inférence des situations. Car si le contexte est de mauvaise qualité, en terme de précision ou de fiabilité par exemple, le raisonnement peut ne pas être sûr. Enfin, l'inférence se fait par des règles ou par raisonnements. De plus, la notion de qualité peut aussi s'appliquer sur les règles elles-mêmes.
+
+Par exemple, nous constatons un problème de pixélisation TV. Cette situation a été inférée par la valeur actuelle d'une métrique indiquant le nombre d'images non décodées. Premièrement, si la source de donnée remontant la métrique n'est pas assez fiable, nous pouvons mettre en doute les relevés. De plus, il est possible que l'information ne reflète pas l'état actuel. Ainsi, la situation indiquant un problème est vraie à la qualité des sources prêt.
+
+De plus, si nous souhaitons effectuer un diagnostique, nous pouvons indiquer au système que ce type de panne est dû à un problème de lenteur de réseau interne. Toutefois, ce peut être du à des dysfonctionnements plus rares, comme une panne matérielle. Ainsi, certaines recherches permettent d'introduire une part de probabilités dans les raisonnements pourtant déterministes a priori~\cite{Padovitz:agent}.
+
+Dans cette thèse, nous ne détaillons pas le concept de qualité des données. Néanmoins, nous pouvons voir que cela peut avoir des impacts majeurs, notamment lors de l'établissement de diagnostiques.
+
+\subsection{Analyse de systèmes d'observation à base de contextes existants}
+Dans cette partie, nous analysons des systèmes pervasifs à base de contexte existants. Ceux-ci sont en général très utilisés dans le réseau domestique qui est l'environnement de développement le plus courant dans le domaine de l'informatique ubiquitaire. Cette étude nous permet de voir comment est mis en pratique l'approche présentée jusqu'ici.
 
 \subsubsection{De la représentation du système}
 \textit{DogOnt}~\cite{Bonino:dogont}, a pour objectif de pouvoir modéliser les objets des environnements domotiques intelligents. Ainsi, en plongeant l'ensemble des équipements au niveau conceptuel des ontologies, il est possible de résoudre les problèmes d'interopérabilité et d'hétérogénéité des données. \textit{DogOnt} est capable de répondre à des requêtes telles que : la position de l'équipement, ses capacités, ses moyens de communications, comment l'environnement est composé (notamment architecturalement parlant, ce qui permet de représenter la maison).
@@ -82,12 +95,14 @@ Ainsi, une représentation de haut niveau permet de poser tous les concepts afin
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.9\textwidth, trim=4cm 15.5cm 4cm 4.6cm, clip]{rw-supervision-dogont}
+    \includegraphics[width=0.8\textwidth, trim=4cm 15.5cm 4cm 4.6cm, clip]{rw-supervision-dogont}
     \caption{L'ontologie de DogOnt}\label{fig:rw:supervision:dogont}
 \end{figure}
-Pour pouvoir observer (et contrôler) les instances de ces concepts, il faut rajouter des fonctionnalités et des variables d'états. Ceci se fait par l'introduction de relations sémantiques telles que \textit{hasControl}, \textit{hasFunctionality}, et \textit{hasState}. En combinant ces associations ainsi que l'ensemble complet des instances, il est possible de représenter l'ensemble des périphériques et leurs capacités.
+Pour pouvoir observer (et contrôler) les instances de ces concepts, il est nécessaire de rajouter des fonctionnalités et des variables d'états. Ceci se fait par l'introduction de relations sémantiques telles que \textit{hasControl}, \textit{hasFunctionality}, et \textit{hasState}. En combinant ces associations ainsi que l'ensemble complet des instances, il est possible de représenter l'ensemble des périphériques et leurs capacités.
 
 Plusieurs autres projets ont utilisé ce type de modélisation pour des applications pervasives. Par exemple, Amigo~\cite{BenMokhtar:easy} se focalise plus sur la modélisation des services et des capacités. A contrario, \textit{MATCH}~\cite{Docherty:match} met l'accent sur la hiérarchie des ontologies pour que chaque domaine puisse apporter ses connaissances en utilisant des concepts communs (\textit{dispositifs}, \textit{réseau},\dots).
+
+Nous remarquons que la séparation des domaines permet de gérer les perspectives utilisateurs en fonction de leurs intérêts. De plus, nous notons que l'hétérogénéité des schémas conceptuelles est gérées par l'utilisation d'une ontologie commune.
 
 \subsubsection{SOCAM : De l'utilité du raisonnement logique}
 SOCAM (Service-Oriented Context-Aware Middleware)~\cite{Gu:socam} propose un intergiciel générique pour permettre aux développeurs de créer des applications pervasives par contexte. Cet intergiciel supporte l'acquisition, la découverte, l'interprétation et l'accès aux contextes. Comme les autres solutions présentés jusqu'ici, il s'appuie sur une ontologie conceptualisée comme celle de \textit{MATCH} afin de pouvoir être générique et y apporter les connaissances de chacun des domaines.
@@ -95,7 +110,7 @@ SOCAM (Service-Oriented Context-Aware Middleware)~\cite{Gu:socam} propose un int
 L'architecture de SOCAM, représentée en figure~\ref{fig:rw:supervision:socam} qui se décrit en trois 4 composants principaux.
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.75\textwidth]{rw-supervision-socam}
+    \includegraphics[width=0.66\textwidth]{rw-supervision-socam}
     \caption{Architecture de SOCAM}\label{fig:rw:supervision:socam}
 \end{figure}
 \begin{itemize}
@@ -106,11 +121,12 @@ L'architecture de SOCAM, représentée en figure~\ref{fig:rw:supervision:socam} 
 \end{itemize}
 Les services applicatifs utilisant la notion de contexte, vont ainsi utiliser les fonctionalitées que fournits SOCAM pour gérer cet ensemble de données. Une manière classique de construire ces services est de spécifier des actions déclenchés par un ensemble de règles au moment où le contexte change.
 
-SOCAM implémente deux manières de faire de l'inférence logique de prédicats. La première est l'inférence structurelle. En effet, l'application d'une propriété transitive à un concept nous donne plusieurs informations. La deuxième manière est un ensemble de règles utilisateurs. En utilisant un moteur similaire aux moteurs \textit{Prolog}, il est possible d'induire des prédicats applicatifs. 
+SOCAM implémente deux manières de faire de l'inférence logique de prédicats. La première est l'inférence structurelle. En effet, l'application d'une propriété transitive à un concept nous donne plusieurs informations. Par exemple, nous pouvons inférer que l'appareil \textit{Livebox} est une passerelle internet. Or, tous les équipements de cette catégorie ont des propriétés tel que la capabilité à gérer les règles de routage. La deuxième manière d'inférer des informations est un ensemble de règles utilisateurs. En utilisant un moteur similaire aux moteurs \textit{Prolog}, il est possible d'induire des prédicats applicatifs qui constituent l'ensemble des situations.
 
-La complexité du traitement des requêtes d'inférence est \textit{PSPACE} et celle du langage de l'ontologie est de \textit{EXPTIME}. Ce qui fait que plus la base de connaissance est conséquente plus son exécution devient difficile.
+Nous remarquons ici la présence d'une couche de traitement de données entre les sources et les services qui les utilises. Cette couche se base sur des inférences logiques qui utilise un support persistant pour constituer son contexte.
+
 \subsection{Synthèse}
-En conclusion, le traitement contextuel des données permet de gérer l'hétérogénéité sémantique des données. Les capacités de traitements sont liées à l'inférence logique pour enrichir la base des connaissances accumulées. Ainsi, il est possible de construire un espace de contexte et d'en inférer des situations de haut-niveau. Cette capacité d'abstraction est nécessaire pour l'informatique ubiquitaire qui a besoin de manipuler des concepts humains pour fournir des capacités pervasives au système
+En conclusion, le traitement contextuel des données permet de gérer l'hétérogénéité sémantique des données. Les capacités de traitements sont liées à l'inférence logique pour enrichir la base des connaissances accumulées. Ainsi, il est possible de construire un espace de contexte et d'en inférer des situations de haut-niveau. Cette capacité d'abstraction est nécessaire pour l'informatique ubiquitaire qui a besoin de manipuler des concepts humains.
 
 Pour notre problématique d'observation, il reste difficile de gérer l'évolution des données au cours du temps. La liberté d'expression des bases de connaissances fait que l'inférence est complexe à manipuler. Plusieurs travaux s’attellent à permettre aux connaissances et aux règles de supporter le dynamisme~\cite{Weikum:webknowledge, Hellerstein:declarative}. L'apport de cette dimension est toutefois difficile d'un point de vue théorique.
 
