@@ -252,7 +252,7 @@ Cette dernière fonction a un impact particulier lors de la jointure de deux rel
 \begin{example}
     $$DeviceCPU=\IS(\Pi_{deviceId,deviceName,cpu}(CPU[B]\Join Applications)\ssjoin Devices)$$
 
-Le flux résultat $DeviceCPU$ correspond au flux \textit{CPU} originel sur lequel nous avons remplacé l'attribut \textit{appId} par les attributs \textit{deviceId} et \textit{deviceName} qui sont plus intéressant d'un point de vue de l'observation. Si \textit{Devices} est mise à jour (pour changer son statut) en utilisant la jointure simple, la relation temporelle change d'état. Ce qui provoque l'envoi d'un nouvel n-uplet dans le flux. L'opérateur de jointure semi-sensible empêche ce cas puisque les mises à jours seront cadencées par celles de $CPU[B]\Join Applications$ c'est à dire $CPU[B]$ soit encore les \textit{batchs} de $CPU$ et non la relation \textit{Devices}.
+Le flux résultat $DeviceCPU$ correspond au flux \textit{CPU} originel sur lequel nous avons remplacé l'attribut \textit{appId} par les attributs \textit{deviceId} et \textit{deviceName} qui sont plus intéressant d'un point de vue de l'observation. Si \textit{Devices} est mise à jour (pour changer son statut) en utilisant la jointure simple, la relation temporelle change d'état. Ce qui provoque l'envoi d'un nouvel n-uplet dans le flux. L'opérateur de jointure semi-sensible empêche ce cas puisque les mises à jours sont cadencées par celles de $CPU[B]\Join Applications$ c'est à dire $CPU[B]$ soit encore les \textit{batchs} de $CPU$ et non la relation \textit{Devices}.
 \end{example}
 
 \subsection{Spread}

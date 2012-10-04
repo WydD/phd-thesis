@@ -1,13 +1,13 @@
 \section{Propositions et théorèmes}\label{sec:valid:expressivite:theoremes}
-Dans cette section, nous explorons les équivalences de requêtes possibles grâce à Astral. Dans la littérature, quelques résultats ont été prouvés, comme les commutativités classiques par exemple. Nous démontrons ici que nous pouvons prouver ces propriétés avec nos définitions et que nous pouvons en démontrer d'autres. Premièrement, nous explorons comment le \textit{timestamp} et les \textit{batchs} sont conservés malgré l'utilisation de \textit{streamers}, et les conséquences que cela implique. Ensuite, nous explorons les relations classiques de commutativité et d'associativité des opérateurs, ce qui a des impacts nets lors de l'optimisation logique. Enfin, nous présentons les résultats de calculs de transposibilité.
+Dans cette section, nous explorons les équivalences de requêtes possibles grâce à Astral. Dans la littérature, quelques résultats sont connus, comme par exemple, les commutativités classiques. Nous démontrons ici que nous pouvons prouver ces propriétés avec nos définitions et que nous pouvons en démontrer d'autres. Premièrement, nous montrons comment le \textit{timestamp} et les \textit{batchs} sont conservés lors de l'utilisation de \textit{streamers}, et leurs conséquences. Ensuite, nous explorons les relations classiques de commutativité et d'associativité des opérateurs, ce qui a des impacts pour l'optimisation logique. Enfin, nous présentons les résultats de calculs de transposibilité.
 
 \subsection{Transmission du temps}
-La définition~\ref{def:stamping} de la réécriture des n-uplets des \textit{streamers} implique le changement de son \textit{timestamp} et de son \textit{batch}. Ainsi, lors de l'application successive d'un opérateur de séquence de fenêtre et d'un \textit{streamer} : il n'est pas trivial de voir que ces propriétés sont conservés. Le théorème~\ref{thm:transmission} de transmission temporelle permet d'avoir une condition suffisante pour garantir cette transmission.
+La définition~\ref{def:stamping} de la réécriture des n-uplets des \textit{streamers} implique le changement de son \textit{timestamp} et de son \textit{batch}. Ainsi, lors de l'application successive d'un opérateur de séquence de fenêtre et d'un \textit{streamer} : il n'est pas trivial de voir comment ces propriétés sont conservées. Le théorème~\ref{thm:transmission} de transmission temporelle permet d'avoir une condition suffisante pour garantir cette transmission.
 
 \begin{thm}[Transmission temporelle des \textit{streamers}]\label{thm:transmission}
     Soit $S$ un flux,
 
-    Soit $]\!\![\alpha,j+k,1]$ une DSF positionnelle avec $\alpha$ croissante et $k$ un entier, 
+    Soit $[\!\![\alpha,j+k,1]$ une DSF positionnelle avec $\alpha$ croissante, $k$ un entier avec une borne inférieur incluse ou non,
 
     Considérant $S'$ le flux formé par la requête $\IS(S]\!\![\alpha,i+k,1])$,
 
@@ -17,9 +17,9 @@ $$\Psi_{(t,i)}(s,t) \wedge \B{S'}(\Psi_{(t,i)}(s,t)) = (t,i) \im s\in S \wedge \
     Cette propriété est aussi valable pour $\RSu(S[B])$.
 \end{thm}
 
-Le corrolaire à ce théorème est l'interprétation de $\IS$ comme opération inverse de $[B]$ par exemple.
-\begin{coro}[Équivalence de la composition fenêtre-\textit{streamer}]
-    Sachant une composition de fenêtre-streamers respectant les conditions du théorème~\ref{thm:transmission},
+Le corrolaire~\ref{cor:equivalence-winstr} à ce théorème permet d'interpréter $\IS$ comme l'opération inverse de la fenêtre \enquote{dernier batch} $[B]$, entre autres.
+\begin{coro}[Équivalence de la composition fenêtre-\textit{streamer}]\label{cor:equivalence-winstr}
+    Soit une composition de fenêtre-streamers respectant les conditions du théorème~\ref{thm:transmission},
 
     Si $\alpha$ est telle que la séquence de fenêtre contient $[B]$, alors,
 $$S \equiv \IS(S]\!\![\alpha,i+k,1n]) \equiv \IS(S[B]) \equiv \IS(S[\infty]) \equiv \RSu(S[B])$$
@@ -70,7 +70,7 @@ $1$ & $v3$ & $10$ \\ \hline
 \end{tabular}\end{center}
 \end{minipage} % Ne pas sauter de ligne !
 
-Nous avons vu que la propriété était effectivement vraie. Voyons maintenant un contre-exemple avec une fenêtre ne respectant pas les conditions du théorème. Nous considérons maintenant l'utilisation de la fenêtre temporelle glissante de $2$ secondes : $[T\ 2s\ 2s]=[W]$. Comme la production d'un n-uplet dans un \textit{streamer} sensible est dirigée par les changements de fenêtres, alors le \textit{timestamp} des n-uplets produits est le moment où le contenu de la fenêtre change. Dans le cas d'une fenêtre changeant toutes les $2$ secondes, cela ne correspond pas au \textit{timestamp} original.
+Voyons maintenant un contre-exemple avec une fenêtre ne respectant pas les conditions du théorème. Nous considérons maintenant l'utilisation de la fenêtre temporelle glissante de $2$ secondes : $[T\ 2s\ 2s]=[W]$. Comme la production d'un n-uplet dans un \textit{streamer} sensible est dirigée par les changements de fenêtres, alors le \textit{timestamp} affecté aux n-uplets produits est le moment où le contenu de la fenêtre change. Dans le cas d'une fenêtre changeant toutes les $2$ secondes, cela ne correspond pas au \textit{timestamp} original.
 
 Voici la suite des états par lesquels passe la relation temporelle $CPU[W]$, ainsi que le flux résultant de $\IS(CPU[W])$ :
 
@@ -115,10 +115,10 @@ $3$ & $v4$ & $12$ \\ \hline
 \end{tabular}\end{center}
 \end{minipage}
 
-Ainsi, nous avons bel et bien la relation suivante : $I_S(CPU[T\ 2s\ 2s]) \not\equiv CPU$.
+Ainsi : $I_S(CPU[T\ 2s\ 2s]) \not\equiv CPU$.
 \end{example}
 
-Ce résultat permet de traiter des flux d'une manière pratique. Un flux $S$ n'est pas manipulable a priori par une implémentation car c'est une entité infinie. Par contre, $S[B]$ correspond au \textit{dernier batch} qui est accessible. Ainsi, la lecture d'un flux correspond à la récupération du dernier \textit{batch} et envoyer les n-uplets dans le flux résultant. De plus, lorsque le dernier \textit{batch} est récupéré, il est possible d'y appliquer des opérations simples avant de le renvoyer. Nous définissons les sélections, projections et renommage sur flux par l'application de ces opérations sur la fenêtre \textit{batch}.
+Ce résultat est assimilable aux implémentations courantes des opérateurs flux$\to$flux. En effet, la lecture d'un flux correspond dans la pratique à la récupération du dernier \textit{batch} et à l'envoi de ces n-uplets dans un nouveau flux. De plus, lorsque le dernier \textit{batch} est récupéré, il est possible d'y appliquer des opérations simples avant de le renvoyer. Nous définissons les sélections, les projections et le renommage sur flux par l'application de ces opérations sur la fenêtre \textit{batch}.
 
 \begin{coro}[Définition de la sélection, projection et renommage sur flux]\label{cor:defunary}
     Soit $S$ un flux,
@@ -129,12 +129,12 @@ Ce résultat permet de traiter des flux d'une manière pratique. Un flux $S$ n'e
 $$\nu S = \IS(\nu(S[B]))$$
 \end{coro}
 
-Afin de montrer que cette définition est viable, nous facilement démontrer grâce au théorème~\ref{thm:transmission} que la sélection sur flux correspond à la sémantique intuitive. $$\sigma_c(S) = \IS(\nu(S[B])) = \{s\in S, c(s)\}$$
+Afin de montrer que cette définition est viable, nous démontrons grâce au théorème~\ref{thm:transmission} que la sélection sur un flux correspond à la sémantique intuitive suivante : $$\sigma_c(S) = \IS(\nu(S[B])) = \{s\in S, c(s)\}$$
 
 \subsection{Commutativité et associativité}
-Nous voyons désormais les règles de commutativité et d'associativité. Ces règles étaient déjà existantes dans le cadre de l'algèbre relationnelle. Nous les redécouvrons ici. Nous détaillons premièrement les projections.
+Nous voyons désormais les règles de commutativité et d'associativité. Nous détaillons premièrement le cas des projections.
 
-L'opérateur de projection a peu d'impact dans la sémantique des opérateurs. Les règles sont principalement issues de l'algèbre relationnelle qui nous donne beaucoup de résultats. Comme la projection ne perturbe pas les cardinalités ou les ordres, il n'y a pas d'impact non désirés. De plus, l'opérateur permute facilement avec la fenêtre et les \textit{streamers}. Le tableau~\ref{tab:projection} référence l'ensemble des règles de transformations pour pousser les projections au plus proche des sources.
+Comme la projection ne perturbe pas les cardinalités ou les ordres, il n'y a pas d'impact important. De plus, l'opérateur permute avec l'opérateur de séquence de fenêtre et les \textit{streamers}. Le tableau~\ref{tab:projection} liste l'ensemble des règles de transformations permettant de pousser les projections au plus proche des sources lors d'un processus d'optimisation logique.
 
 \begin{table}[p]
 \centering
@@ -184,7 +184,7 @@ L'opérateur de projection a peu d'impact dans la sémantique des opérateurs. L
 \end{table}
 
 
-La sélection est quant à elle plus délicate. En effet, elle perturbe la cardinalité du flux. Ainsi, l'opérateur de fenêtre dans le cas positionnel peut ne pas sélectionner les mêmes n-uplets. Il est possible de fournir un contre-exemple interdisant la permutation avec l'opérateur de fenêtre.
+L'opérateur de sélection est plus délicat. En effet, il perturbe la cardinalité du flux. Ainsi, l'opérateur de fenêtre positionnel ne peut pas permuter avec un opérateur de sélection. Il est possible de fournir un contre-exemple interdisant cette permutation.
 \begin{example}
 Soit le flux exemple $CPU$, considérons les requêtes suivantes :
 \begin{enumerate}
@@ -193,32 +193,35 @@ Soit le flux exemple $CPU$, considérons les requêtes suivantes :
 \end{enumerate}
 Les tailles des fenêtres de ces requêtes sont différentes. Dans la seconde requête, la largeur est constante à 10 n-uplets. Alors que dans le premier cas, s'il existe des n-uplets $\leq 50\%$ alors la taille est inférieure à $10$ n-uplets.
 \end{example}
-Le problème dépend du fait que $\tau_{\sigma_c S}$ et $\tau_S$ sont deux fonctions différentes. Ce qui implique des changements importants dans le cadre de l'opérateur de fenêtre positionnel. Toutefois, dans le cadre particulier des fenêtres temporelles ainsi que de la fenêtre accumulative $[\infty]$ la commutativité est juste\footnote{Car ces définitions de fenêtres ne dépendent pas de la fonction $\tau_S$}. De façon similaire, la commutativité avec $\RSu$ n'est pas autorisé. Les autres règles autorisant la commutativité sont pour la plupart issues de l'algèbre relationnel. La table~\ref{tab:selection} liste l'ensemble des règles pour pousser les sélections.
-
-Nous abordons maintenant la question de l'associativité. Dans le cadre de nos définitions par défaut, les associativités issues de l'algèbre relationnelles sont toujours vraies.
-\begin{prop}[Associativité des jointures et unions]
-Les opérations de jointure et d'union sont associatives pour les définitions par défaut de $\Phi^\times$ et $\Phi^\cup$.
-\end{prop}
-Ceci est dû au fait que l'ordre lexicographique est lui aussi un ordre associatif. En effet, les ordres lexicographiques induits par $\I\times(\I\times\I)$ ou $(\I\times\I)\times \I$ sont équivalents (démonstration simple). Si une autre fonction est utilisée (par exemple, un des jointures est dans l'ordre lexicographique inversé), il est nécessaire de vérifier que les ordres fournis sont toujours équivalents.
+Toutefois, dans le cadre particulier des fenêtres temporelles et de la fenêtre accumulative $[\infty]$ la propriété de commutativité est vraie\footnote{Car ces définitions de fenêtres ne dépendent pas de la fonction $\tau_S$}. De façon similaire, la commutativité avec $\RSu$ n'est pas autorisé. Les autres règles autorisant la commutativité sont pour la plupart issues de l'algèbre relationnel. La table~\ref{tab:selection} liste l'ensemble des règles pour pousser les sélections.
 
 Enfin, une dernière commutativité est notable : la manipulation temporelle. Sa commutativité est intuitive à appréhender.
 \begin{prop}\label{prop:commut:manipulation}
 L'opérateur de manipulation temporelle est commutatif avec tous les opérateurs relationnels.
 \end{prop}
-En effet, la manipulation temporelle applique une fonction $f$ au \textit{batch} utilisé pour récupérer la relation instantanée d'une relation temporelle. Or, les opérateurs relationnels sont décomposables comme $\nu (R)(b) = \nu' R(b)$. L'application d'une fonction $f$ donne : $\nu (R)(f(b)) = \nu' R(f(b))$, et $R(f(b))$ correspond à l'application de la manipulation temporelle.
+En effet, la manipulation temporelle applique une fonction $f$ au \textit{batch} utilisé pour récupérer la relation instantanée d'une relation temporelle. Or, les opérateurs relationnels sont décomposables en $\nu (R)(b) = \nu' R(b)$. L'application d'une fonction $f$ donne : $\nu (R)(f(b)) = \nu' R(f(b))$, et $R(f(b))$ correspond à l'application de la manipulation temporelle.
 
-Nous avons vu plusieurs propriétés utilisables par les implémentations et optimiseurs. Nous avons désormais plusieurs outils pour appliquer une optimisation logique suffisamment efficace. Nous explorons désormais la transposabilité, qui peut avoir un impact dans le cadre des partages de requêtes.
+
+Nous abordons maintenant la question de l'associativité. Dans le cadre de nos définitions, les propriétés d'associativités issues de l'algèbre relationnelles sont toujours vraies.
+\begin{prop}[Associativité des jointures et unions]
+Les opérations de jointure et d'union sont associatives pour les définitions de $\Phi^\times$ et $\Phi^\cup$ données en section~\ref{sec:contrib:astral:relationnel}.
+\end{prop}
+
+Ceci est dû au fait que l'ordre lexicographique est lui aussi un ordre associatif. Les ordres lexicographiques induits par $\I\times(\I\times\I)$ ou $(\I\times\I)\times \I$ sont équivalents (démonstration simple). Si une autre fonction est utilisée, il est nécessaire de vérifier que les ordres fournis sont toujours équivalents.
+
+Nous avons vu plusieurs propriétés utilisables par les implémentations et optimiseurs. Nous avons désormais plusieurs outils pour construire une optimisation logique suffisamment efficace. Nous explorons désormais la transposabilité, qui peut avoir un impact dans le cadre des partages de requêtes.
 
 \subsection{Transposabilité des opérateurs}
-Dans cette section, nous étudions les propriétés de transposabilités des opérateurs. Ces propriétés ont des conséquences concrêtes dans le cadre du partage des requêtes. En effet, lors du déploiement d'une requête, il peut être utile de voir qu'un sous-arbre est déjà en cours de traitement. Si tel est le cas, pouvons-nous réutiliser ses résultats, pouvons-nous le faire à tout instant ?
+Dans cette section, nous étudions la propriété de transposabilité des opérateurs telle que présenté dans la définition~\ref{def:transposabiliteop}. Ces propriétés ont des conséquences concrêtes dans le cadre du partage des requêtes. En effet, lors du déploiement d'une requête, il peut être utile de voir qu'une sous-requête est déjà en cours de traitement. Si tel est le cas, comment réutiliser ses résultats et à quels instants ?
 
-Tout d'abord, nous remarquons que les opérateurs issus de l'algèbre relationnel sont naturellement transposable (prop~\ref{prop:transpcodd}). Ce résultat est intuitif car l'opérateur de manipulation temporelle peut commuter avec ces opérateurs. Ils ne sont ainsi pas impacté par le changement de $t_0$.
+Tout d'abord, nous remarquons que les opérateurs issus de l'algèbre relationnel sont naturellement transposable (prop~\ref{prop:transpcodd}). Ce résultat est intuitif car l'opérateur de manipulation temporelle commute avec ces opérateurs.
 \begin{prop}[Transposabilité des opérateurs de Codd]\label{prop:transpcodd}
     Les opérateurs issus de l'algèbre relationnelle sont naturellement transposables sur $\T$.
 \end{prop}
 
-Les \textit{streamers} sensibles ne sont pas non plus gênés par le changement de $t_0$. Il est intéressant de voir que les \textit{streamers} subissent tout de même le phénomène d'élaboration ($\IS$ à $t_0$ dépend du fait que $R(t)=\emptyset$ pour $t <t_0$). Toutefois, comme les transposabilités sont calculés en mode stable, nous obtenons une transposabilité naturelle. Les \textit{streamers} périodiquent sont eux naturellement transposables sur des multiples du taux $r$ comme vu dans l'exemple~\ref{ex:transposabilite}.
-\begin{prop}[Transposabilité des \textit{streamers}]
+Les \textit{streamers} sensibles ne sont pas gênés par le changement de \textit{timestamp} de départ $t_0$ dû à la transposabilité. Il est intéressant de voir que les \textit{streamers} subissent tout de même le phénomène d'élaboration (car $\IS$ à $t_0$ dépend du fait que $R(b)=\emptyset$ pour $b<(t_0,0)$). Toutefois, comme les transposabilités sont calculés lorsque la requête est stable, nous obtenons une transposabilité naturelle comme précisé dans la propriété~\ref{prop:transpstr}. Les \textit{streamers} périodiques sont eux naturellement transposables sur des multiples du taux $r$ comme vu dans l'exemple~\ref{ex:transposabilite}.
+
+\begin{prop}[Transposabilité des \textit{streamers}]\label{prop:transpstr}
     Les \textit{streamers} sensibles $\IS$, $\DS$ et $\RSu$ sont naturellement transposables sur $\T$.
     Le \textit{streamer} périodique $\RS{r}$ est naturellement transposable sur $\{t\in \T, t\equiv t_0 [r]\}$.
 \end{prop}
@@ -232,7 +235,7 @@ Nous considérons maintenant le cas plus complexe des fenêtres. Soit $Q_1=(S,t_
     $K$ & Facteur de synchronisation. Correspond au nombre de fenêtres évaluées sur $Q_1$ lorsque $Q_2$ démarre & \multicolumn{2}{c|}{$\displaystyle\frac{\beta'(0)-\beta(0)+D}{r}$} \\ \toprule
 \end{tabularx}
 
-Ces constantes permettent d'exprimer plus aisément les résultats. Le théorème général~\ref{thm:transpwindow} permet de trouver une condition suffisante pour permettre la transposition de la DSF $[\alpha,\beta,r]$ par $\sigma_{t\geq t_1} [\alpha',\beta',r]$. En effet, la transposition n'est pas naturelle car la description peut changer, mais aussi il est nécessaire de réinitialiser le flux à $t_1$ en supprimant les données inférieures à ce \textit{timestamp}.
+Ces constantes permettent d'exprimer plus aisément les résultats. Le théorème général~\ref{thm:transpwindow} permet de trouver une condition suffisante pour permettre la transposition de la DSF $[\alpha,\beta,r]$ par $\sigma_{t\geq t_1} [\alpha',\beta',r]$. En effet, la transposition n'est pas naturelle car la description de la fenêtre peut changer, mais aussi il est nécessaire de réinitialiser le flux à $t_1$ en supprimant les données inférieures à ce \textit{timestamp}.
 \begin{thm}[Théorème général de la transposabilité des DSF]\label{thm:transpwindow}
     Si $\left\{\begin{array}{rcl} K &\in& \N \\\alpha'(j) &=& \max(B_{t_1}, \alpha(j+K)-D)\\ \beta'(j) &=&  \beta(j+K)-D \end{array}\right.$,
 
@@ -241,14 +244,21 @@ Ces constantes permettent d'exprimer plus aisément les résultats. Le théorèm
 
 Avoir $K$ entier est intuitif car cette constante décrit la synchronisation entre les requêtes. Ainsi, il est possible de prouver que $\gamma'(t,i) = \gamma(t,i) - K$. En considérant ceci, le remplacement de $j$ par $j+K$ devient logique. Il ne reste qu'à limiter la borne inférieure par $B_{t_1}$ et nous obtenons le résultat.
 
-Afin de pouvoir mettre ce théorème en pratique, nous présentons la proposition~\ref{prop:transplineaire} présente les conditions nécessaires et suffisantes à vérifier pour entrer dans le cadre du théorème~\ref{thm:transpwindow}.
+Afin de mettre ce théorème en pratique, nous présentons la proposition~\ref{prop:transplineaire} qui présente les conditions nécessaires et suffisantes à vérifier pour entrer dans le cadre du théorème~\ref{thm:transpwindow}.
 \begin{prop}[Transposabilité des DSF linéaires]\label{prop:transplineaire}
-    Si les descriptions sont de la forme suivante :
+    Si les descriptions de fenêtres sont de la forme suivante :
 $$\begin{array}{ll} \alpha(j) = \max(aj+b,B_{t_0}) & \alpha'(j) = \max(a'j+b',B_{t_1})\\ \beta(j) = cj+d & \beta'(j) = c'j+d' \end{array}$$
 
     Alors, les DSF vérifient le théorème~\ref{thm:transpwindow} ssi. :  $K=\dfrac{d'-d+D}r \in \N,$
 $$\left\{\begin{array}{rcl} a & = & a'\\ c & = & c'\\ c & = & r \textrm{\ si\ } K \neq 0 \end{array}\right.\textrm{ et }\begin{cases} b' = b+aK-D & \textrm{\ si\ } a \neq 0\\ \max(B_{t_1},b') = \max(B_{t_1}, b-D)& \textrm{\ si\ } a=0 \end{cases}$$
 \end{prop}
+\begin{coro}[Transposabilité pseudo-naturelle des DSF linéaires]\label{coro:transplineaire}
+    Si les descriptions sont de la forme suivante :
+$$\begin{array}{ll} \alpha(i) - B_{t_0} = \alpha'(i)-B_{t_1} = & \max(ai+b,0)\\ \beta(i) - B_{t_0} = \beta'(i)-B_{t_1} = & ci+d \end{array}$$
+    Alors les DSF vérifient le théorème~\ref{thm:transpwindow} si et seulement si : $c = r \wedge ((a = 0 \wedge b\leq 0) \vee a = r)$ et
+$$\begin{array}{rcl} t_1 - t_0 & \in & r\N \quad \textrm{\ temporel}\\ \tau_{(S,t_0)}^{-1} ((t_1,0)^-)+1 & \in & r\N \quad \textrm{\ positionnel} \end{array}$$
+\end{coro}
+
 
 \begin{example}
     Considérons les requêtes suivantes : $\left\{\begin{array}{l} Q_1=(S[2is+3s, 5is+3s, 5s],t_0)  \\ Q_2=(S[2is+2s, 5is+8s, 5s],t_1) \end{array}\right.$
@@ -284,11 +294,4 @@ $$\left\{\begin{array}{rcl} a & = & a'\\ c & = & c'\\ c & = & r \textrm{\ si\ } 
 \end{example}
 
 Le corollaire~\ref{coro:transplineaire} permet de vérifier l'équivalence des deux descriptions dans le cas linéaire et dans le cas où les coefficients sont identiques (à l'initialisation près). 
-\begin{coro}[Transposabilité pseudo-naturelle des DSF linéaires]\label{coro:transplineaire}
-    Si les descriptions sont de la forme suivante :
-$$\begin{array}{ll} \alpha(i) - B_{t_0} = \alpha'(i)-B_{t_1} = & \max(ai+b,0)\\ \beta(i) - B_{t_0} = \beta'(i)-B_{t_1} = & ci+d \end{array}$$
-    Alors les DSF vérifient le théorème~\ref{thm:transpwindow} si et seulement si : $c = r \wedge ((a = 0 \wedge b\leq 0) \vee a = r)$ et
-$$\begin{array}{rcl} t_1 - t_0 & \in & r\N \quad \textrm{\ temporel}\\ \tau_{(S,t_0)}^{-1} ((t_1,0)^-)+1 & \in & r\N \quad \textrm{\ positionnel} \end{array}$$
-\end{coro}
-
-La synchronisation est plus claire et devient réduite à une condition sur $t_1$ relativement à $t_0$. En particulier, ce résultat permet de valider que les fenêtres usuelles présentées dans le tableau~\ref{tab:windows} sont toutes transposables telles quelles (non obstant l'opérateur $\sigma_{\t\geq t_1}$.
+La synchronisation est plus claire et se réduit à une condition sur $t_1$ relativement à $t_0$. En particulier, ce résultat permet de valider que les fenêtres usuelles présentées dans le tableau~\ref{tab:windows} sont toutes transposables telles quelles (à l'opérateur $\sigma_{\t\geq t_1}$ près).

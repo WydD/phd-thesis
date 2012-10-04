@@ -13,13 +13,13 @@
 
 \chapter{Systèmes de Gestion de Flux de Données}\label{chap:rw:sgfd}
 \chaptertoc
-Nous avons présenté dans le chapitre précédent les principaux concepts de la gestion de flux de données. Celle-ci permet de répondre de manière intégrée à l'interrogation continue sur des données temps réel. Dans ce chapitre, nous explorons ce domaine d'un point de vue plus technique afin d'analyser les points forts et les limitations.
+Nous avons présenté dans le chapitre précédent les concepts de la gestion de flux de données. Celle-ci permet de répondre de manière intégrée à l'interrogation continue sur des données temps-réel. Dans ce chapitre, nous explorons ce domaine d'un point de vue plus technique afin d'analyser les points forts et les limitations.
 
-Afin de rendre les SGFD viables dans notre contexte et après la présentation de cette approche, nous avons noté plusieurs faiblesses. Notre analyse porte particulièrement sur les points clés suivants : 
+Afin de rendre les SGFD viables dans notre contexte et après la présentation de cette approche, nous pouvons noter plusieurs faiblesses. Notre analyse porte particulièrement sur les points clés suivants : 
 \begin{itemize}
 	\item[\textbf{Langage d'interrogation}] : L'expressivité des langages manipulants les flux de données est plus complexe que le relationnel. L'écriture des requêtes dont l'exécution est continue, fait qu'il est nécessaire de prendre en compte l'évolution du temps et des données. Pour exprimer les requêtes de façon claire, il est nécessaire d'avoir un langage et un modèle sous-jacent sans ambiguïté sémantique.
 	\item[\textbf{Modes d'interrogations}] : Les SGFD sont capables uniquement d'exécuter des requêtes continues par nature. Toutefois, dans notre cadre, il est important d'être capable d'exprimer des requêtes instantanées ou mixtes. 
-	\item[\textbf{Support persistent}] : Dans le chapitre précédent, nous avons vu que le support de base de données permet des cas d'usages plus poussées par rapport à l'analyse à la volée en mémoire. En effet, un flux est une entité transitoire. La durée de vie des données est par définition limitée dans le temps. Or, pour permettre des besoins d'analyse plus évolués, il faut considérer le flux comme un tout, avec son histoire. La capacité à archiver ces flux et à pouvoir les interroger (de manière instantanée ou continue) est primordiale.
+	\item[\textbf{Support persistent}] : Dans le chapitre précédent, nous avons vu que le support de base de données permet des cas d'usages plus poussées par rapport à l'analyse à la volée en mémoire. En effet, un flux est une entité transitoire. La durée de vie des données est par définition limitée dans le temps. Or, pour permettre des besoins d'analyse plus évolués, il est nécessaire de considérer le flux comme un tout, avec son histoire. La capacité à archiver ces flux et à pouvoir les interroger (de manière instantanée ou continue) est primordiale.
 	\item[\textbf{Optimisation}] : Afin de s'adapter à tout type de systèmes, y compris à grande échelle : il est nécessaire que l'exécution des requêtes soit efficace. Or, cet aspect est influencé par l'architecture et par les algorithmes d'exécution des opérateurs.
 \end{itemize}
 
