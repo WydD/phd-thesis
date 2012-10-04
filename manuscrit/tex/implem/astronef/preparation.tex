@@ -51,13 +51,13 @@ Ce prédicat est appliqué tant qu'il peut l'être (de manière itérative).
 \end{regle}
 
 \begin{example}
-	Nous nous proposons de remplacer le sucre syntaxique $R^{t_0}$ en $\D^{t0} (R)$. $R^{t_0}$ est exprimée par le nœud \textit{freeze} possédant le paramètre \enquote{at} et $\D$ est exprimée par un nœud \textit{domain} possédant un paramètre \enquote{description}. Voici l'expression de ce remplacement :
+	Nous nous proposons de remplacer le sucre syntaxique $R^{t_0}$ en $\D^{t0} (R)$. $R^{t_0}$ est exprimée par le nœud \textit{freeze} possédant le paramètre \enquote{at} et $\D$ est exprimée par un nœud \textit{timetransform} possédant un paramètre \enquote{description}. Voici l'expression de ce remplacement :
 	\begin{lstlisting}
 sugar(
 	[freeze, % Lorsqu'il existe un noeud freeze
 		{at: t0},
 		Children], 
-	[domain, % ... le remplacer par domain
+	[timetransform, % ... le remplacer par timetransform
 		{"description": [ % Avec un parametre description
 		% contenant le type de manipulation voulue
 			{"type": "freeze", 
