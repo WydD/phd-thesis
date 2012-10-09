@@ -1,21 +1,21 @@
 \section{Conclusion}\label{sec:rw:sgfd:synthese}
-Après 20 années de recherche, la gestion de flux de données devient désormais suffisamment mature pour être appliqué massivement. Plusieurs produits commerciaux sont d'ailleurs maintenant utilisés en production. Toutefois, nous pouvons nous rendre compte que la complexité théorique de ces systèmes a été sous-estimé. De nombreux modèles ont été décrit pour représenter les flux de données et leurs traitements. Ces modèles sont encore remis en questions aujourd'hui au fur et à mesure du déploiement d'applications concrètes. Certains points sont encore manquants :
+Après 20 années de recherche, la gestion de flux de données devient désormais suffisamment mature pour être appliquée massivement. Plusieurs produits commerciaux sont d'ailleurs maintenant utilisés en production. Toutefois, nous pouvons nous rendre compte que la complexité théorique de ces systèmes a été sous-estimée. De nombreux modèles ont été décrits pour représenter les flux de données et leurs traitements. Ces modèles sont encore remis en questions aujourd'hui au fur et à mesure du déploiement d'applications concrètes. Certains points sont encore manquants :
 \begin{itemize}
-\item[\textbf{Le fenêtrage}] : malgré les efforts récurrents de formalisation de cet opérateur, la sémantique reste souvent restreinte à la fenêtre glissante. Qu'en est-il des fenêtres moins conventionnelles, comme par exemple, en mélangeant à la fois les positions et le temps ? Ce type de fenêtre apparait pourtant dans des systèmes d'observation \textit{fenêtre sur 5 données, toutes les 3 minutes}.
-\item[\textbf{L'ordre}] : comme nous l'avons présenté, certaines propositions considèrent que des résultats peuvent être non-déterministe. La compréhension de la sémantique des requêtes est ainsi plus difficile. Quelles sont les conséquences si des ordres plus stricts sont imposés ?
+\item[\textbf{Le fenêtrage}] : malgré les efforts récurrents de formalisation de cet opérateur, la sémantique reste souvent restreinte à la fenêtre glissante. Qu'en est-il des fenêtres moins conventionnelles, par exemple, en mélangeant à la fois les positions et le temps ? Ce type de fenêtre apparait pourtant dans des systèmes d'observation \textit{fenêtre sur 5 données, toutes les 3 minutes}.
+\item[\textbf{L'ordre}] : comme nous l'avons présenté, certaines propositions considèrent que des résultats peuvent être non déterministe. La compréhension de la sémantique des requêtes est ainsi plus difficile. Quelles sont les conséquences si des ordres plus stricts sont imposés ?
 \item[\textbf{Les équivalences}] : plusieurs équivalences de requêtes simples existent. Toutefois, elles sont souvent remises en question avec des algèbres plus expressives. Comme les équivalences de requêtes sont la pierre angulaire pour permettre une optimisation logique des plans de requêtes, même en SGFD~\cite{Slivinskas:temporal,Arasu:stream}, il est nécessaire d'investiguer sur ce point.
 \end{itemize}
 
-Nous avons vu que l'infrastructure des SGFD a reçu beaucoup d'attention en terme d'architecture, de tolérance aux fautes, d'intégration et de support des multi-échelles. Néanmoins, la compréhension de la sémantique des composants du SGFD est encore limité. Ainsi, il est difficile d'intégrer deux SGFD car ils ne partagent pas le même langage.
+Nous avons vu que l'infrastructure des SGFD a reçu beaucoup d'attention en terme d'architecture, de tolérance aux fautes, d'intégration et de support des multiéchelles. Néanmoins, la compréhension de la sémantique des composants du SGFD est encore limitée. Ainsi, il est difficile d'intégrer deux SGFD, car ils ne partagent pas le même langage.
 
-L'intégration des supports persistants reste ad-hoc et assisté par l'utilisateur. Un fonctionnement intégré avec une modélisation générique capable de gérer les deux modes d'interrogations de façon unifiée est indispensable pour manipuler correctement flux et relations persistantes.
+L'intégration des supports persistants reste ad hoc et assistée par l'utilisateur. Un fonctionnement intégré avec une modélisation générique capable de gérer les deux modes d'interrogations de façon unifiée est indispensable pour manipuler correctement flux et relations persistantes.
 
-Similairement, les contributions sur l'optimisation de traitement des requêtes sont nombreuses mais principalement ponctuelles. Peu de travaux~\cite{Galpin:snee,Kramer:semantics} proposent des optimisations de plan de requêtes similaires aux SGBD (optimisation logique puis physique). Dû au manque de connaissances en équivalences de requêtes, seules les règles simples telles l'application de projections au plus près des sources sont faites dans l'optimisation logique. Il est nécessaire d'avoir une \textit{recherche d'optimisation plus approfondie} sans intervention de l'utilisateur, ce qui est limité en l'état.
+Similairement, les contributions sur l'optimisation de traitement des requêtes sont nombreuses, mais principalement ponctuelles. Peu de travaux~\cite{Galpin:snee,Kramer:semantics} proposent des optimisations de plan de requêtes similaires aux SGBD (optimisation logique puis physique). Dû au manque de connaissances en équivalences de requêtes, seules les règles simples telles l'application de projections au plus près des sources sont faites dans l'optimisation logique. Il est nécessaire d'avoir une \textit{recherche d'optimisation plus approfondie} sans intervention de l'utilisateur, ce qui est limité en l'état.
 
 Notre contribution technique se focalise sur trois points principaux :
 \begin{itemize}
- \item[\textbf{Modélisation}] : Création d'Astral, algèbre de traitement des requêtes continues sur flux et relations temporelles. Nous accordons de l'importance sur la prise en compte des problèmes relevés dans cette section. Cette algèbre est présenté dans le chapitre~\ref{chap:contrib:astral}
- \item[\textbf{Exécution}] : Mise en œuvre de l'intergiciel Astronef pour construire et exécuter efficacement une requête exprimée avec l'algèbre Astral. Ainsi, à partir d'une requête algébrique, il est possible de sélectionner le plan de requête qui semble le plus efficace grâce aux connaissances accumulés. Cette mise en œuvre est développée dans le chapitre~\ref{chap:contrib:astronef}.
+ \item[\textbf{Modélisation}] : Création d'Astral, algèbre de traitement des requêtes continues sur flux et relations temporelles. Nous accordons de l'importance sur la prise en compte des problèmes relevés dans cette section. Cette algèbre est présentée dans le chapitre~\ref{chap:contrib:astral}
+ \item[\textbf{Exécution}] : Mise en œuvre de l'intergiciel Astronef pour construire et exécuter efficacement une requête exprimée avec l'algèbre Astral. Ainsi, à partir d'une requête algébrique, il est possible de sélectionner le plan de requête qui semble le plus efficace grâce aux connaissances accumulées. Cette mise en œuvre est développée dans le chapitre~\ref{chap:contrib:astronef}.
  \item[\textbf{Persistance}] : Conception de l'extension Asteroid permettant l'intégration des requêtes continues sur flux et des requêtes sur support relationnel persistant. Ceci permet de gérer la représentation du système observé ainsi que l'historisation des données dynamiques. Le support mathématique de cette intégration est effectué par Astral et sa mise en œuvre par Astronef. Cette intégration est effectuée dans le chapitre~\ref{chap:contrib:asteroid}.
 \end{itemize}
 
@@ -25,7 +25,7 @@ Grâce à l'ensemble de ces contributions, il devient possible de mettre en œuv
 \begin{table}[!ht]
 \criteretabDonnee
     {Relationnel dérivé. Nous réutilisons les principes utilisés dans la gestion de flux et des bases de données.}
-    {\meh Modèle entité-relation auquel sont attachés des flux.}
+    {\meh Modèle entité relation auquel sont attachés des flux.}
     {\good Requêtes sur tout type de données (flux, relations).}
 \criteretabTraitement
     {\good Continue, Instantannée, Mixte}
@@ -34,7 +34,7 @@ Grâce à l'ensemble de ces contributions, il devient possible de mettre en œuv
     {\good Relationnel avec support \textbf{intégré} du dynamisme des données.}
 \criteretabAdaptabilite
     {\good Spécification du modèle du système ainsi que des requêtes d'intégration (algébriques).}
-    {\meh Pour l'analyse, la gestion de données multi-dimensionnelles des entrepôts utilisés est utilisé. Pour l'interrogation continue, utilisation d'un opérateur de préférences sur les flux.}
+    {\meh Pour l'analyse, la gestion de données multidimensionnelles des entrepôts utilisés est utilisée. Pour l'interrogation continue, utilisation d'un opérateur de préférences sur les flux.}
     {\good Infrastructure générique capable de supporter l'ajout d'opérateurs avec plusieurs implémentations.}
     {\good Héritage de l'efficacité des flux de données. Sélection du meilleur plan d'exécution pour chaque requête. Héritage des supports de grands volumes grâce aux entrepôts.}
 \caption{Résumé de notre contribution selon nos critères initiaux}\label{tab:rw:contrib}
