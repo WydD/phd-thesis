@@ -1,18 +1,17 @@
 \section{Transposabilité}\label{sec:contrib:astral:transposabilite}
-La définition de l'équivalence de requête (def~\ref{def:equivalence}) spécifie que les entités sont toutes deux initialisées à un \textit{timestamp} $t_0$. Ce type d'équivalence permet de réécrire une requête avant de l'exécuter tout en conservant exactement le même comportement. Toutefois, cela ne permet pas de comparer avec une requête déjà en exécution, puisque la requête n'est pas synchronisé au même instant. Pour intégrer des données provenant de différentes parties, cet aspect a une grande importance.
-\subsection{Équivalence de requêtes multitemporelle}
-Pour illustrer l'idée d'effectuer des équivalences de requêtes à différents moments n'est pas trivial, prenons un exemple. Soit la requête $CPU[B]$. Cette requête représente la relation contenant le dernier \textit{batch} du flux \textbf{CPU}. Dans cette requête, durant la période $[t_0,\tau_S(0)[$, par définition, la relation est vide : il est nécessaire d'attendre le premier n-uplet pour former le résultat. Si nous prenons une autre requête ayant démarré au timestamp $t_1 \ll t_0$. Alors pendant la période $[t_0,\tau_S(0)[$, il contient son dernier \textit{batch}. Ceci constitue un exemple de ce que nous appelerons le phénomène d'élaboration défini en~\ref{def:elaboration}.
+La définition de l'équivalence de requête (def~\ref{def:equivalence}) spécifie que les entités sont toutes deux initialisées à un \textit{timestamp} $t_0$. Ce type d'équivalence permet de réécrire une requête avant de l'exécuter tout en conservant exactement le même comportement. Toutefois, cela ne permet pas de comparer avec une requête déjà en exécution, puisque la requête n'est pas synchronisée au même instant. Pour intégrer des données provenant de différentes parties, cet aspect a une grande importance.
+Pour illustrer que l'idée d'effectuer des équivalences de requêtes à différents moments n'est pas triviale, prenons un exemple. Soit la requête $CPU[B]$. Cette requête représente la relation contenant le dernier \textit{batch} du flux \textbf{CPU}. Dans cette requête, durant la période $[t_0,\tau_S(0)[$, par définition, la relation est vide : il est nécessaire d'attendre le premier n-uplet pour former le résultat. Si nous prenons une autre requête ayant démarré au timestamp $t_1 \ll t_0$. Alors pendant la période $[t_0,\tau_S(0)[$, il contient son dernier \textit{batch}. Ceci constitue un exemple de ce que nous appellerons le phénomène d'élaboration défini en~\ref{def:elaboration}.
 \begin{defi}[Phénomène d'élaboration]\label{def:elaboration}
     Le phénomène d'élaboration correspond à une période initiale de la vie d'une requête durant laquelle le résultat n'est pas calculable. Cette période transitoire constitue l'élaboration d'une requête.
 \end{defi}
 
-Ainsi, nous sommes capable d'établir l'équivalence entre deux requêtes par la définition~\ref{def:equivalencegenerale} qui précise que les résultats sont équivalents à partir d'un certain moment. Pour cela, nous définissons qu'il existe un \textit{timestamp} pour lequel, l'initialisation des entités (grâce à $\sigma$ et $\D$) au ce \textit{timestamp} implique une équivalence des résultats.
+Ainsi, nous sommes capable d'établir l'équivalence entre deux requêtes par la définition~\ref{def:equivalencegenerale} qui précise que les résultats sont équivalents à partir d'un certain moment. Pour cela, nous définissons qu'il existe un \textit{timestamp} pour lequel, l'initialisation des entités (grâce à $\sigma$ et $\D$) à ce \textit{timestamp} implique une équivalence des résultats.
 \begin{defi}[Équivalence de requêtes générale]\label{def:equivalencegenerale}
     Soient $(Q_1(E_1),t_1)$ et $(Q_2(E_2),t_2)$ deux requêtes quelconques,
 
     Soit $\E_t$ l'opérateur égal à $\begin{cases} \sigma_{t\geq \t} & \textrm{ si les requêtes sont des flux}\\ \D_{t\geq \t}^{(t,i)} & \textrm{  si les requêtes sont des relations}\end{cases}$
 
-    Alors l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1(E_1), t_1) \subseteqq (\E_t\  Q_2(E_2), t_2)$$
+    Alors, l'inclusion de requêtes entre ces requêtes est définie par $$\exists t \in \T, \textrm{ tel que } \quad (\E_t\ Q_1(E_1), t_1) \subseteqq (\E_t\  Q_2(E_2), t_2)$$
 
     L'équivalence de requêtes est définie par double inclusion.
 \end{defi}
@@ -27,7 +26,8 @@ La transposabilité telle que définie par la définition~\ref{def:transposabili
 
     $A$ est dite \textit{naturellement} transposable si $B=A$.
 \end{defi}
-Toutefois, cette définition ne permet pas de conclure sur l'équivalence de requête car nous ne pouvons pas a priori calculer la transposition de la requête sur son nouveau \textit{timestamp}. Pour permettre la résolution de ce problème, nous allons raisonner par récurrence sur les opérateurs. Comme le défini la définition~\ref{def:transposabiliteop}, chaque opérateur peut se transposer en un autre sur un ensemble de \textit{timestamp} calculé.
+
+Toutefois, cette définition ne permet pas de conclure sur l'équivalence de requête, car nous ne pouvons pas a priori calculer la transposition de la requête sur son nouveau \textit{timestamp}. Pour permettre la résolution de ce problème, nous allons raisonner par récurrence sur les opérateurs. Comme le défini la définition~\ref{def:transposabiliteop}, chaque opérateur peut se transposer en un autre sur un ensemble de \textit{timestamp} calculé.
 \begin{defi}[Transposabilité d'opérateur]\label{def:transposabiliteop}
     Soit $O$ un opérateur unaire,
 
@@ -42,11 +42,11 @@ Il est nécessaire d'initialiser la récurrence en supposant que pour toute expr
 \begin{hyp}[Transposabilité native]\label{hyp:transposabilite}
     Soit $(Q(E),t_0)$ une requête,
 
-    Alors il existe une expression $Q'(E')$ telle que : $$\forall A\in E', \qquad A \textrm{ est naturellement transposable sur } \T$$
+    Alors, il existe une expression $Q'(E')$ telle que : $$\forall A\in E', \qquad A \textrm{ est naturellement transposable sur } \T$$
     
     Les éléments de $E'$ sont appelés sources de la requête.
 \end{hyp}
-Cette affirmation reste toutefois à travailler car lors du déploiement d'une requête, nous instantions aussi le processus d'acquisition, qui est lui dépendant du moment de démarrage. Ces aspects sont détaillés lors de l'exploration de l'expressivité d'Astral dans le chapitre~\ref{chap:validation:expressivite}. Afin d'illustrer les propriétés de transposabilité, nous allons montrer la transposabilité d'une requête simple.
+Cette affirmation reste toutefois à travailler, car lors du déploiement d'une requête, nous instancions aussi le processus d'acquisition, qui est lui dépendant du moment de démarrage. Ces aspects sont détaillés lors de l'exploration de l'expressivité d'Astral dans le chapitre~\ref{chap:validation:expressivite}. Afin d'illustrer les propriétés de transposabilité, nous allons montrer la transposabilité d'une requête simple.
 
 \begin{example}\label{ex:transposabilite} 
     Supposons que nous souhaitons obtenir la transposabilité de la requête permettant d'obtenir toutes les 5 secondes la liste des dispositifs actuellement connectés dans la maison : $$\RS{5s} (\sigma_{deviceStatus=1} Devices).$$
@@ -59,4 +59,4 @@ Cette affirmation reste toutefois à travailler car lors du déploiement d'une r
     \begin{center}$\RS{5s}\sigma_{deviceStatus=1} Devices$ est naturellement transposable sur $\{t\in \T /\ t\equiv t_0 [5s]\}$\end{center}
 \end{example}
 
-Nous avons désormais montré comment nous pouvions faire des équivalences de requêtes à travers le temps et comment manipuler ces concepts pour en extraire des propriétés. Dans le chapitre~\ref{chap:validation:expressivite}, nous explorons des cas généraux et plus complexe de transposabilité pour démontrer la puissance d'expression d'Astral.
+Nous avons désormais montré comment nous pouvions faire des équivalences de requêtes à travers le temps. Nous pouvons manipuler ces concepts pour en extraire des propriétés. Dans le chapitre~\ref{chap:validation:expressivite}, nous explorons des cas généraux et plus complexes de transposabilité pour démontrer la puissance d'expression d'Astral.

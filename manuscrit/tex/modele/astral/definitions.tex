@@ -1,78 +1,78 @@
 \section{Définitions générales}\label{sec:contrib:astral:definitions}
-Avant de présenter les définitions plus spécifiques à la gestion des flux de données, définissons les notions les plus élémentaires de notre algèbre. Nous présentons en premier les notions d'n-uplets et d'identifiants, puis celles de flux et relations. Nous continuons par la présentation d'un exemple fil rouge, qui permet d'illustrer les définitions de ce chapitre. Enfin, nous présentons les notions fondamentales de l'algèbre : les ordres, les requêtes et les équivalences de requêtes.
+Avant de présenter les définitions plus spécifiques à la gestion des flux de données, définissons les notions les plus élémentaires de notre algèbre. Nous présentons en premier les notions de n-uplets et d'identifiants, puis celles de flux et relations. Nous continuons par la présentation d'un exemple fil rouge, qui permet d'illustrer les définitions de ce chapitre. Enfin, nous présentons les notions fondamentales de l'algèbre : les ordres, les requêtes et les équivalences de requêtes.
 
 \subsection{N-uplets et identifiants}
 La définition~\ref{def:tuple} présente un n-uplet de manière similaire au modèle relationnel avec une fonction partielle.
 \begin{defi}[n-uplet]\label{def:tuple}
-    Un n-uplet est une fonction partielle de l'ensemble des attributs vers l'espace des valeurs. Le domaine de cette fonction est appellé le schéma du n-uplet.
+    Un n-uplet est une fonction partielle de l'ensemble des attributs vers l'espace des valeurs. Le domaine de cette fonction est appelé le schéma du n-uplet.
     
     Comme toute fonction partielle, un n-uplet peut être représenté comme un ensemble de couples $Attribut\times Valeur$.
 \end{defi}
 
-Ajoutons désormais la définition~\ref{def:phy} décrivant l'identifiant physique d'un n-uplet. Cet attribut particulier a deux buts : identifier un n-uplet et définir la position (définition~\ref{def:pos}) dans une séquence d'n-uplet (définition~\ref{def:seq}).
+Ajoutons désormais la définition~\ref{def:phy} décrivant l'identifiant physique d'un n-uplet. Cet attribut particulier a deux buts : identifier un n-uplet et définir la position (définition~\ref{def:pos}) dans une séquence de n-uplets (définition~\ref{def:seq}).
 \begin{defi}[Identifiant physique]\label{def:phy}
     Nous appelons un $\Phi$-espace, un ensemble dénombrable totalement ordonné.
 
     L'identifiant physique d'un n-uplet $s$ est l'attribut $\varphi$ dont la valeur $s(\varphi)$ est un élément d'un $\Phi$-espace.
 \end{defi}
-\begin{defi}[Séquence d'n-uplet]\label{def:seq}
-    Un ensemble dénombrable d'n-uplets $TS$ est une séquence si et seulement si : 
+\begin{defi}[Séquence de n-uplet]\label{def:seq}
+    Un ensemble dénombrable de n-uplets $TS$ est une séquence si et seulement si : 
     \begin{itemize}
      \item Tout n-uplet de $TS$ partage le même schéma $A$ contenant $\varphi$.
      \item L'ensemble $\I_{TS}=\{s(\varphi), s\in TS\}$ forme un $\Phi$-espace.
      \item $\forall s,s' \in TS^2$, $s = s' \equ s(\varphi) = s'(\varphi)$
     \end{itemize}
 
-    Une séquence est naturellement totalement ordonné par son identifiant physique.
+    Une séquence est naturellement totalement ordonnée par son identifiant physique.
 \end{defi}
 \begin{defi}[Position d'un n-uplet]\label{def:pos}
-    La position d'un n-uplet $s$ dans une séquence $TS$ correspond au nombre d'n-uplet ayant un identifiant physique plus petit que $s$.
+    La position d'un n-uplet $s$ dans une séquence $TS$ correspond au nombre de n-uplets ayant un identifiant physique plus petit que $s$.
     $$\pos_{TS}(s) = \#\{s'\in TS,\ s'(\varphi) \leq s(\varphi) \}$$
 \end{defi}
 
-La gestion des flux de données nécessite de plus le concept de \textit{timestamp} (def~\ref{def:timestamp}) qui est associé aux n-uplets d'un flux. Nous adoptons un modèle continu pour le temps car cela nous permet de ne pas faire d'hypothèse sur la plus courte distance entre deux \textit{timestamps} consécutifs.
+La gestion des flux de données nécessite de plus le concept de \textit{timestamp} (def~\ref{def:timestamp}) qui est associé aux n-uplets d'un flux. Nous adoptons un modèle continu pour le temps, car cela nous permet de ne pas faire d'hypothèse sur la plus courte distance entre deux \textit{timestamps} consécutifs.
 \begin{defi}[Timestamp]\label{def:timestamp}
-    L'espace temps $\T$ est un corps totalement ordonné, isomorphique à $\R$. 
+    L'espace-temps $\T$ est un corps totalement ordonné, isomorphique à $\R$. 
 
     Un \textit{timestamp} est un élément de $\T$ et son attribut est noté $\t$.
 \end{defi}
 
 \subsection{Flux et relations}
-Comme présenté dans le chapitre~\ref{chap:rw:sgfd}, la notion de batch est introduite pour gérer les n-uplets simultanés (égalité de timestamp). La définition~\ref{def:flux}  définie un flux de donnée comme une séquence d'n-uplet organisés en une séquence de batch. Tous les n-uplets simultanés sont partitionnés en batch. Ceux-ci sont identifiés (def~\ref{def:batch}) par un entier identifiant le batch en plus du \textit{timestamp}.
+Comme présentée dans le chapitre~\ref{chap:rw:sgfd}, la notion de batch est introduite pour gérer les n-uplets simultanés (égalité de timestamp). La définition~\ref{def:flux}  définit un flux de donnée comme une séquence de n-uplets organisés en une séquence de batchs. Tous les n-uplets simultanés sont partitionnés en \textit{batchs}. Ceux-ci sont identifiés (def~\ref{def:batch}) par un entier identifiant le batch en plus du \textit{timestamp}.
 \begin{defi}[Identifiant de batch]\label{def:batch}
     Un identifiant de batch est un élément de l'ensemble $\TN$ totalement ordonné par l'ordre naturel du produit cartésien.
 \end{defi}
 \begin{defi}[Flux]\label{def:flux}
     Un flux est un couple $(S,\BS)$ tel que :
     \begin{itemize}
-        \item $S$ est une séquence d'n-uplet potentiellement infinie possédant un schéma contenant l'attribut spécial $\t$.
+        \item $S$ est une séquence de n-uplets potentiellement infinie possédant un schéma contenant l'attribut spécial $\t$.
         \item $\BS$ est une fonction $S\to \TN$ définissant le batch d'appartenance d'un n-uplet
     \end{itemize}
     
     Par mesure de commodité, sauf mention contraire, nous écrivons $S$ pour désigner le couple $(S,\BS)$.
 \end{defi}
 
-Notre algèbre définie les deux concepts comme présenté dans la section~\ref{sec:rw:sgfd:modeles}. Nous définissons une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble d'n-uplet. Dans notre cas, le temps est définit comme un identifiant de batch, et l'ensemble d'n-uplet est en réalité une séquence. 
+Notre algèbre définit les deux concepts comme présentés dans la section~\ref{sec:rw:sgfd:modeles}. Nous définissons une relation temporelle (def~\ref{def:relation} comme une fonction associant le temps à un ensemble de n-uplets. Dans notre cas, le temps est défini comme un identifiant de batch, et l'ensemble de n-uplets est en réalité une séquence.
 \begin{defi}[Relation temporelle]\label{def:relation}
-	Une relation temporelle $R$ est une fonction en escalier associant un identifiant de batch $(t,i)\in\TN$ à une séquence d'n-uplet $R(t,i)$
+	Une relation temporelle $R$ est une fonction en escalier associant un identifiant de batch $(t,i)\in\TN$ à une séquence de n-uplet $R(t,i)$
 \end{defi}
 L'évaluation d'une relation temporelle à un instant donnée est une séquence (ou \textit{relation instantannée}) avec un ordre strict sur les n-uplets. Par abus de langage, nous utilisons le terme \textit{relation} pour désigner une relation temporelle.
 
-La définition des relations temporelles et des flux implique qu'il existe une quantité dénombrable de \textit{batch} différents dans le flux ou dans une relation temporelle. Ainsi, pour tout \textit{batch} $(t,i)$, il existe un autre \textit{batch} proche de $(t,i)$ sans y être égal même si $t$ est assimilable à un réel\footnote{Au final, $(t,i)^- = (t,i-1)$ si $i\neq 0$ et $(t^-,0)$ sinon}. Ce type de \textit{batch} est noté $(t,i)^-$. Par exemple, pour une relation temporelle dont l'état change au \textit{batch} $b$, nous pouvons comparer les états $R(b)$ et $R(b^-)$ correspondant à avant et après le changement.
+La définition des relations temporelles et des flux implique qu'il existe une quantité dénombrable de \textit{batchs} différents dans le flux ou dans une relation temporelle. Ainsi, pour tout \textit{batch} $(t,i)$, il existe un autre \textit{batch} proche de $(t,i)$ sans y être égal même si $t$ est assimilable à un réel\footnote{Au final, $(t,i)^- = (t,i-1)$ si $i\neq 0$ et $(t^-,0)$ sinon}. Ce type de \textit{batch} est noté $(t,i)^-$. Par exemple, pour une relation temporelle dont l'état change au \textit{batch} $b$, nous pouvons comparer les états $R(b)$ et $R(b^-)$ correspondants à avant et après le changement.
 
 Nous appelons \textbf{entité} tout objet pouvant être une relation ou un flux.
 
 \subsection{Exemple}\label{sec:contrib:astral:definitions:exemple}
-Dans la suite de ce chapitre, nous développons plusieurs exemples. Ces exemples se basent sur les entités suivantes issus de l'application du réseau local domestique.
+Dans la suite de ce chapitre, nous développons plusieurs exemples. Ces exemples se basent sur les entités suivantes issues de l'application du réseau local domestique.
 \begin{itemize}
     \item[\textbf{CPU}] Flux(appId, cpu, $\t$) : flux de relevé des charges processeurs. Un n-uplet de ce flux indique qu'au timestamp $\t$, l'application \textit{appId} indique que sur son équipement hôte, la charge processeur est égale à \textit{cpu}.
     \item[\textbf{Applications}] Relation(appId, appName, deviceId) : catalogue des applications. Un n-uplet de cette relation indique que l'application \textit{appId} appelée \textit{appName} est déployée sur le l'équipement \textit{deviceId}.
-    \item[\textbf{Devices}] Relation(deviceId, deviceName, deviceType, deviceStatus) : catalogue des équipements. Un n-uplet de cette relation indique que l'équipement \textit{deviceId} appelé \textit{deviceName} est de type \textit{deviceType} et est actuellement dans le status \textit{deviceStatus} (1 ou 0 pour allumé et éteint).
+    \item[\textbf{Devices}] Relation(deviceId, deviceName, deviceType, deviceStatus) : catalogue des équipements. Un n-uplet de cette relation indique que l'équipement \textit{deviceId} appelé \textit{deviceName} est de type \textit{deviceType} et est actuellement dans le statut \textit{deviceStatus} (1 ou 0 pour allumé et éteint).
 \end{itemize}
 
 \subsection{Fondations de l'algèbre}
 \subsubsection{Hypothèse fondamentale de l'ordre}
-La notion d'ordre est crucial dans la gestion de flux de données. Nous avons introduit l'ordre naturel dans la séquence d'n-uplet. Ceci est l'ordre positionnel. Mais pour un flux, nous pouvons aussi définir l'ordre des \textit{batchs} et l'ordre temporel. La définition~\ref{def:ordres} spécifie l'expression formelle de ces ordres.
+La notion d'ordre est cruciale dans la gestion de flux de données. Nous avons introduit l'ordre naturel dans la séquence de n-uplet. Ceci est l'ordre positionnel. Mais pour un flux, nous pouvons aussi définir l'ordre des \textit{batchs} et l'ordre temporel. La définition~\ref{def:ordres} spécifie l'expression formelle de ces ordres.
 \begin{defi}[Ordres d'un flux]\label{def:ordres}
 Soit $S$ un flux, trois ordres sont naturellement définis : $\forall s,s' \in S^2$,
 
@@ -83,7 +83,7 @@ $$\begin{array}{lcrcl}
 \end{array}$$
 \end{defi}
 
-Nous supposons maintenant que nos flux sont correctement ordonnés avec l'hypothèse~\ref{hyp:ordres}. Si un n-uplet est positionnellement avant un autre, alors son batch est inférieur ou égal. Et par conséquent son \textit{timestamp} est lui aussi inférieur ou égal.
+Nous supposons maintenant que nos flux sont correctement ordonnés avec l'hypothèse~\ref{hyp:ordres}. Si un n-uplet est positionné avant un autre, alors son \textit{batch} est inférieur ou égal. Et par conséquent son \textit{timestamp} est lui aussi inférieur ou égal.
 \begin{hyp}[Cohérence temporelle]\label{hyp:ordres}
 L'ordre positionnel implique l'ordre des batchs.
 $$\forall s, s'\in S^2, \qquad s <_\varphi s' \im s \leq_{\B{}} s'$$
@@ -99,16 +99,16 @@ Tout d'abord, il est nécessaire de définir que dans la gestion de flux de donn
 	\end{itemize}
 \end{defi}
 
-La notion de requête s'appuie directement sur cette notion d'entité initialisée. Ainsi, la requête (definition~\ref{def:requete}) est une fonction transformant ces entités initialisées en une nouvelle. Il est important de voir que cette fonction sont potentiellement dépendants du \textit{timestamp} d'initialisation.
+La notion de requête s'appuie directement sur cette notion d'entité initialisée. Ainsi, la requête (definition~\ref{def:requete}) est une fonction transformant ces entités initialisées en une nouvelle. Il est important de voir que cette fonction soit potentiellement dépendante du \textit{timestamp} d'initialisation.
 \begin{defi}[Requête]\label{def:requete}
 	Soient $E=(E_1, ..., E_n)$, $n$ entités,
 	
-	Une requête continue sur $E$ démarrée au temps $t_0$ est définie comme une fonction $Q$ appliquée sur les éléments de $E$ initialisés à $t_0$ et produisant une nouvelle entité. Cette requête est noté $(Q(E),t_0)$.
+	Une requête continue sur $E$ démarrée au temps $t_0$ est définie comme une fonction $Q$ appliquée sur les éléments de $E$ initialisés à $t_0$ et produisant une nouvelle entité. Cette requête est notée $(Q(E),t_0)$.
 \end{defi}
 
 \subsubsection{Équivalences de requêtes}
 Avec la définition~\ref{def:inclusion}, nous définissons l'inclusion de séquences de manière similaire à la notion de suites extraites. La notion d'\textbf{équivalence} de deux séquences est quant à elle définie par la double inclusion. 
-\begin{defi}[Inclusion et équivalences de séquences d'n-uplets]\label{def:inclusion}
+\begin{defi}[Inclusion et équivalences de séquences de n-uplets]\label{def:inclusion}
 	Soient $TS_1$ et $TS_2$ deux séquences possédant le même schéma $A$,
 	
 	$TS_1$ est inclue dans $TS_2$ ($TS_1 \subseteqq TS_2$) si et seulement si : 
@@ -120,7 +120,7 @@ $$\forall s\in TS_1, \exists s'\in TS_2, \textrm{ tel que } \forall a \in A, s'(
 
 
 \begin{example}
-La table~\ref{tab:contrib:astral:exequivalence} représente quatre exemple de séquences d'une instance figée de la relation temporelle \textbf{Device}. Ces séquences pourraient être équivalentes d'un point de vue algèbre relationnelle (en ne tenant pas compte de $\varphi$).
+La table~\ref{tab:contrib:astral:exequivalence} représente quatre exemples de séquences d'une instance figée de la relation temporelle \textbf{Device}. Ces séquences pourraient être équivalentes d'un point de vue algèbre relationnelle (en ne tenant pas compte de $\varphi$).
 
 \begin{table}[ht]
 \centering
@@ -157,16 +157,16 @@ La table~\ref{tab:contrib:astral:exequivalence} représente quatre exemple de s�
 \caption{Quatre séquences représentant une instance figée de \textbf{Device}}\label{tab:contrib:astral:exequivalence}
 \end{table}
 
-Les séquences (a) et (b) sont équivalentes car leurs identifiants physiques sont différents mais représentent le même ordre des n-uplets. Selon la définition, nous pouvons effectivement trouver une fonction $f$ strictement croissante pour transformer les $\varphi$ de (a) en (b) et inversement. 
+Les séquences (a) et (b) sont équivalentes, car leurs identifiants physiques sont différentes mais représentent le même ordre des n-uplets. Selon la définition, nous pouvons effectivement trouver une fonction $f$ strictement croissante pour transformer les $\varphi$ de (a) en (b) et inversement. 
 
-Les séquences (a) et (c) ne sont pas équivalentes car l'ordre des n-uplets est inversé. Il est en effet impossible de trouver une transformation $f$ de $\varphi$ \textbf{croissante} telle que l'égalité des n-uplets soit exacte. Nous remarquons que la valeur de $\varphi$ n'a que peut d'importance car même les séquences (b) et (d) ne sont pas équivalentes malgré l'égalité des identifiants. Bien évidemment, (c) et (d) sont équivalentes.
+Les séquences (a) et (c) ne sont pas équivalentes, car l'ordre des n-uplets est inversé. Il est en effet impossible de trouver une transformation $f$ de $\varphi$ \textbf{croissante} telle que l'égalité des n-uplets soit exacte. Nous remarquons que la valeur de $\varphi$ n'a que peut d'importance, car même les séquences (b) et (d) ne sont pas équivalentes malgré l'égalité des identifiants. Bien évidemment, (c) et (d) sont équivalentes.
 \end{example}
 
-La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transposabilite} présente les conséquences du changement de timestamp.
+La notion d'inclusion et d'équivalence s'étend naturellement aux flux et aux relations. Nous pouvons maintenant définir proprement la notion d'équivalence de requêtes comme l'équivalence de l'entité résultante quelques soient les entités d'entrées. Il est important de noter que l'équivalence suppose que les requêtes ont démarré au même \textit{timestamp} $t_0$. La section~\ref{sec:contrib:astral:transposabilite} présente les conséquences du changement de \textit{timestamp}.
 \begin{defi}[Équivalences de requêtes]\label{def:equivalence}
 	Soient $E=(E_1, ..., E_n)$, $n$ entités,
 	
-	Les requêtes $Q$ et $Q'$ démarrées à $t_0$ sont équivalentes si et seulement si pour toutes entités $E'$ de même types et schéma, les entités $Q(E')$ et $Q'(E')$ sont équivalentes.
+	Les requêtes $Q$ et $Q'$ démarrées à $t_0$ sont équivalentes si et seulement si pour toutes entités $E'$ de mêmes types et schéma, les entités $Q(E')$ et $Q'(E')$ sont équivalentes.
 \end{defi}
 
-Nous venons de poser les bases fondamentales pour notre algèbre de gestion de données. Il est nécessaire de construire des opérateurs pour pouvoir manipuler nos concepts. Nous allons voir que les contraintes que nous nous sommes fixés sur l'ordre, la nature du temps.
+Nous venons de poser les bases fondamentales pour notre algèbre de gestion de données. Il est nécessaire de construire des opérateurs pour pouvoir manipuler nos concepts. Nous allons voir que les contraintes que nous nous sommes fixées sur l'ordre, la nature du temps.

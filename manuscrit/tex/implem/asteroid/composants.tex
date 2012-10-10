@@ -33,7 +33,7 @@ La liste des paramètres de ce composants est disponible dans la table~\ref{tab:
     \caption{Modes de mise à jour supportés par le composants \textit{dbsource}}\label{tab:contrib:asteroid:dbsource:modes}
 \end{table}
 
-Il est important de voir que l'ensemble de la relation est représenté dans la relation temporelle fournie. Or, dans Astronef, toute relation temporelle est placée en mémoire. Ainsi, si la séquence produite par l'interrogation du SGBD est de plusieurs millions d'n-uplets, la taille des données est à prendre en compte. 
+Il est important de voir que l'ensemble de la relation est représenté dans la relation temporelle fournie. Or, dans Astronef, toute relation temporelle est placée en mémoire. Ainsi, si la séquence produite par l'interrogation du SGBD est de plusieurs millions de n-uplets, la taille des données est à prendre en compte. 
 
 Comme cette source est capable de représenter toute requête \textit{SQL}, il est possible de déporter des opérations dans cette requête pour exploiter les capacités du SGBD. Nous détaillons dans la section~\ref{sec:contrib:asteroid:reecriture} comment effectuer cette réécriture automatiquement grâce à l'optimisation par règle d'Astronef.
 
@@ -54,7 +54,7 @@ D'un point de vue Astral, l'opérateur \textit{dbjoin} permet d'effectuer l'opé
 \end{table}
 
 L'implémentation de \textit{dbjoin} peut différer selon les capacités du SGBD. De façon générale, il est nécessaire d'utiliser une table temporaire \sql{Tmp} (en mémoire). Au moment de l'exécution de \textit{dbjoin}, l'opérateur insère les données de la séquence fournie dans \sql{Tmp}. Ensuite, il applique la requête \textit{SQL} suivante : \begin{center} \sql{SELECT * FROM Tmp AS l NATURAL JOIN (*query*) AS r ON (*on*)} \end{center}
-Le résultat est transformé en séquence d'n-uplet qui est envoyée à la relation temporelle de sortie. Les données temporaires sont supprimées ensuite. Par mesure de performances, les requêtes sont préparés à l'avance.
+Le résultat est transformé en séquence de n-uplet qui est envoyée à la relation temporelle de sortie. Les données temporaires sont supprimées ensuite. Par mesure de performances, les requêtes sont préparés à l'avance.
 
 Certains SGBD implémentent des optimisations particulièrement adaptés à ce genre d'exécution. Sur \textit{H2} par exemple, il est possible d'utiliser la syntaxe \sql{TABLE(A1 T1=?,...,An Tn=?)} pour représenter une table temporaire d'attributs $A_i$ et de types $T_i$ dont les données sont passés comme paramètres lors de l'exécution de la requête. Il est aussi possible d'accélérer l'opération de suppression via l'opération \sql{TRUNCATE} maintenant répandue parmi les SGBD populaires.
 

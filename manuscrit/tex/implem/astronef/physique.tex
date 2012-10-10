@@ -30,27 +30,27 @@ macrobloc(
 \end{example}
 Si un bloc est créé, il doit exister un composant capable de l'implémenter tel qu'il a été formé. Ainsi, il est nécessaire de vérifier des conditions supplémentaires si les capacités des composants sont limitées. En reprenant notre exemple, si nous ne possédons qu'un composant capable d'exécuter le nœud \textbf{windowaggregate} avec une description temporelle. Alors, nous devons le vérifier au moment de la formation du bloc.
 
-\subsection{Encapsulation d'opérations d'n-uplets}
-Les opérateurs d'n-uplets sont ceux capables de réduire leur opération à un traitement n-uplet par n-uplet.
-\begin{defi}[Opérateurs d'n-uplets]\label{def:operateurtuple}
+\subsection{Encapsulation d'opérations de n-uplets}
+Les opérateurs de n-uplets sont ceux capables de réduire leur opération à un traitement n-uplet par n-uplet.
+\begin{defi}[Opérateurs de n-uplets]\label{def:operateurtuple}
     Soit $TS$ une séquence de n-uplets,
 
-    Un opérateur d'n-uplet $\Lambda$ est défini par la fonction partielle d'n-uplet vers n-uplet : $\lambda$.
+    Un opérateur de n-uplet $\Lambda$ est défini par la fonction partielle de n-uplet vers n-uplet : $\lambda$.
     $$\Lambda(TS) = \{\lambda(s) / s \in TS \}$$
 \end{defi}
 
 Ces opérateurs ont pour propriété de vérifier le corollaire~\ref{cor:defunary} permettant de s'appliquer sur des flux ou relations. De plus, ces opérateurs sont composables. La proposition~\ref{prop:composition:operateurtuple} montre que l'évaluation de celle-ci est égal à la composition des traitements n-uplets par n-uplets.
-\begin{prop}[Composition d'opérateurs d'n-uplets]\label{prop:composition:operateurtuple}
-    La composition d'opérateurs d'n-uplet est égale à l'opérateur d'n-uplet définit par la composition de leurs fonctions partielles.
+\begin{prop}[Composition d'opérateurs de n-uplets]\label{prop:composition:operateurtuple}
+    La composition d'opérateurs de n-uplet est égale à l'opérateur de n-uplet définit par la composition de leurs fonctions partielles.
 \end{prop}
 
-Ainsi, il est possible de regrouper tous les opérateurs d'n-uplets en un seul composant efficace. La règle pour appliquer cette opération utilise le prédicat \textbf{macrobloc}. Afin de simplifier les règles de type, d'implémentation et de macro-bloc, nous créons un prédicat pour déclarer les opérateurs d'n-uplets.
-\begin{regle}[Déclaration d'opérateurs d'n-uplets]
+Ainsi, il est possible de regrouper tous les opérateurs de n-uplets en un seul composant efficace. La règle pour appliquer cette opération utilise le prédicat \textbf{macrobloc}. Afin de simplifier les règles de type, d'implémentation et de macro-bloc, nous créons un prédicat pour déclarer les opérateurs de n-uplets.
+\begin{regle}[Déclaration d'opérateurs de n-uplets]
 La déclaration que le nœud de nature $A$ avec la configuration $B$ peut se traiter n-uplet par n-uplet avec le composant $Impl$ se fait via le prédicat :
 \begin{center}\textbf{unaryimpl}($A$,$B$,$Impl$)\end{center}
 \end{regle}
 
-Une fois ces composants déclarés, une règle interne réécrira l'ensemble des opérateurs d'n-uplets sous un nœud \textbf{unary} comprenant la propriété \textit{operations} contenant la liste des opérations à appliquer.
+Une fois ces composants déclarés, une règle interne réécrira l'ensemble des opérateurs de n-uplets sous un nœud \textbf{unary} comprenant la propriété \textit{operations} contenant la liste des opérations à appliquer.
 \begin{example}
 Soit la requête $\sigma_{a > 30}\Pi_{id,a} R$. Son expression avant l'encapsulation est :
 \begin{lstlisting}

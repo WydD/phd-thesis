@@ -35,7 +35,7 @@ Il est important de noter que l'approche incrémentale est intéressante si la d
 \small
 \begin{algorithm}[H]\caption{Calcule KBest$(R)(t)$}\label{alg:kbest}
 \dontprintsemicolon
-\KwData{La structure GP, $k$ le nombre d'n-uplet demandé}
+\KwData{La structure GP, $k$ le nombre de n-uplet demandé}
 Res $\gets $ \textbf{new TreeSet}$()$ \tcp{Ensemble ordonné}
 \If{$k < \abs{Src}$}{\tcp{Src contient plus de $k$ n-uplets}
 	$N \gets \abs{Src} - k$ \;\tcp{L'ordre position de Src est utilisé}
@@ -92,7 +92,7 @@ PrecCount $\gets $ \textbf{new HashMap}()\;
 \vspace{1cm}
 \begin{algorithm}[H]\caption{Créer GP}\label{algo:create}
 \dontprintsemicolon
-\KwIn{$TS$ un ensemble d'n-uplets}
+\KwIn{$TS$ un ensemble de n-uplets}
 \KwData{La structure de GP}
 \lForEach{$s\in TS$}{
 	$Graph.$insert$(s)$\;

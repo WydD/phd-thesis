@@ -21,7 +21,7 @@ La formule $u$ du côté gauche d'une cp-règle $\varphi$ est appelé son \texti
 
 Une \textit{théorie de préférence contextuelle} (\textit{cp-théorie}) sur $A$ est un ensemble fini $\Gamma$ de cp-règles sur $R$. Nous notons par Attr($\Gamma$) l'ensemble d'attributs dans les cp-règles de $\Gamma$.
 
-Ainsi, une cp-règle $\varphi$ sur $A$ induit une \textit{relation binaire} (notée $\succ_\varphi$) sur une séquence d'n-uplet d'attributs $A$, à savoir l'ensemble des paires ($s_1,s_2$) tels que $s_1$ est préféré à $s_2$ par rapport à $\varphi$. Cette relation binaire n'est pas nécessairement transitive, ce qui fait que ce n'est pas une \textit{relation d'ordre}. Nous définissons la notion de \textit{Relation de Préférence} inférée par une cp-théorie $\Gamma$.
+Ainsi, une cp-règle $\varphi$ sur $A$ induit une \textit{relation binaire} (notée $\succ_\varphi$) sur une séquence de n-uplet d'attributs $A$, à savoir l'ensemble des paires ($s_1,s_2$) tels que $s_1$ est préféré à $s_2$ par rapport à $\varphi$. Cette relation binaire n'est pas nécessairement transitive, ce qui fait que ce n'est pas une \textit{relation d'ordre}. Nous définissons la notion de \textit{Relation de Préférence} inférée par une cp-théorie $\Gamma$.
 
 \begin{defi}[Relation de Préférence]
 Soit $\Gamma$ cp-théorie sur $A$,
@@ -76,7 +76,7 @@ Soit $\Gamma$ la cp-théorie comportant les préférences contextuelles suivante
 	\item $\varphi_3 : $ concept = interface $\mapsto ($type = wifi$) \succ ($type = ethernet$)$
 \end{itemize}
 
-La figure~\ref{fig:valid:domvision:architecture:pref} représente un ensemble de données pour $V$. Si nous appliquons la relation d'ordre sur cet ensemble d'n-uplet, nous pouvons remarquer que par la règle $\varphi_1$, nous obtenons que $s_1 > s_4$. Par $\varphi_2$ nous obtenons que $s_2 > s_1$. Et enfin, nous avons $s_3 > s_5$ par $\varphi_3$. La relation d'ordre $\succ_\Gamma$ est transitive, ainsi $s_2 > s_4$. Le graphe de la figure représente ces relations d'ordres.
+La figure~\ref{fig:valid:domvision:architecture:pref} représente un ensemble de données pour $V$. Si nous appliquons la relation d'ordre sur cet ensemble de n-uplet, nous pouvons remarquer que par la règle $\varphi_1$, nous obtenons que $s_1 > s_4$. Par $\varphi_2$ nous obtenons que $s_2 > s_1$. Et enfin, nous avons $s_3 > s_5$ par $\varphi_3$. La relation d'ordre $\succ_\Gamma$ est transitive, ainsi $s_2 > s_4$. Le graphe de la figure représente ces relations d'ordres.
 \begin{figure}[ht]\centering
 \begin{tabular}{|c|c|c|c|c|c|c|} \bottomrule
 \rowcolor{hypcolor} $V$ & id & concept & type & volatile & value & $\t$\\ \hline
