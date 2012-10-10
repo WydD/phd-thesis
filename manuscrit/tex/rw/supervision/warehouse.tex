@@ -1,9 +1,9 @@
 \section{Entrepôts de données}\label{sec:rw:supervision:warehouse}
-Pour l'informatique décisionnelle (\textit{Business Intelligence}), l'approche par entrepôt de données (\textit{Data Warehouses}) est très largement répandue. Son apport est originellement utilisé dans les applications pour entreprises. Toutefois, sa capacité de traitement et ses outils d'analyses ont permis son introduction dans d'autres cœurs de métiers tels que les réseaux~\cite{Gilbert:quicksand} ou l'agriculture~\cite{Abdullah:olap}. Cette architecture est prévue comme support à des outils d'analyses de données puissants. Pour cela, des procédés ont été développés pour faire de l'intégration de données hétérogènes, ainsi que des structures d'entrepôts prêts à répondre aux besoins d'analyses.
+Pour l'informatique décisionnelle (\textit{Business Intelligence}), l'approche par entrepôt de données (\textit{Data Warehouses}) est très largement répandue. Son apport est originellement utilisé dans les applications pour entreprises. Toutefois, les outils de traitement et d'analyse des données sont maintenant très largement utilisés notamment pour des données liées aux réseaux~\cite{Gilbert:quicksand} ou à l'agriculture~\cite{Abdullah:olap}. Des procédés ont été développés pour faire l'intégration de données hétérogènes, ainsi que des structures d'entrepôts prêts à répondre aux besoins d'analyses.
 
-Son utilisation dans le cadre de l'observation semble claire. En effet, puisque l'observation et la compréhension du système passent par son analyse, des outils sont nécessaires pour effectuer ces opérations. L'établissement de diagnostic nécessite effectivement le parcours des données pour mieux comprendre les causes d'un problème. De plus, sa structure permettant l'intégration de donnée est à considérer pour intégrer les sources de données hétérogènes auxquelles nous devons faire face.
+L'utilisation des entrepôts dans le cadre de l'observation est pertinente lors de la persistance des données relevés. Ainsi, nous obtenons un grand ensemble d'historiques sur lesquels nous pouvons effectuer de l'analyse. Or, les entrepôts de données fournissent les outils nécessaires pour effectuer ces opérations. De plus, vu cette approche permet l'intégration de données, cela est à considérer pour la gestion de l'hétérogénéité des sources du système observé.
 
-Par la suite, cette section détaille en premier lieu l'architecture globale de la solution. Nous détaillons ensuite comment l'intégration est faite via les processus \textit{ETL}. Ensuite nous décrivons les structures de données utilisées pour permettre différentes analyses. Enfin, nous présentons brièvement quelques outils d'analyses pouvant raisonner sur les données.
+Par la suite, cette section détaille en premier lieu l'architecture globale des entrepôts de données. Nous détaillons ensuite comment l'intégration est faite via les processus \textit{ETL}. Ensuite nous décrivons les structures de données utilisées pour permettre différentes analyses. Enfin, nous présentons brièvement quelques outils d'analyses pouvant raisonner sur les données.
 
 \subsection{Architecture globale}
 La définition fonctionnelle d'un entrepôt de donnée est \enquote{\it une collection de données orientées sujet, intégrées, non volatiles et historisées, organisées pour le support d’un processus d’aide à la décision}~\cite{Inmon:warehouse}. Au sens large, un entrepôt est une base de données avec une organisation qui s'oriente avant tout sur l'application finale (l'analyse) plutôt que sur l'intégrité des données, et qui néglige la suppression ou la modification de données afin de garder une trace.
@@ -36,11 +36,11 @@ En conclusion, les entrepôts de données représentent une grande capacité de 
 
 \begin{table}[!ht]
 \criteretabDonnee
-    {Modèle relationnel}
-    {Géré par le modèle relationnel. Modélisation en étoile et par normalisation.}
+    {Multidimensionnel}
+    {Modélisation en étoile ou en flocon.}
     {Faible gestion du dynamisme en dehors des mécanismes CDC dans les entrepôts temps réels.}
 \criteretabTraitement
-    {Instantané principalement. Les ETL peuvent être apparentés à des interrogations continues.}
+    {Instantané principalement avec les opérations OLAP. Les ETL peuvent être apparentés à des interrogations continues.}
     {Intégration complexe via les ETL.}
     {Paradigme déclaratif pour l'exploration de données. Algorithmique pour la fouille de données. Principalement procédural pour les ETL.}
     {En dehors des algorithmes et des procédures de gestion de syntaxe ou de règles métiers, le traitement des données est dérivé de l'algèbre relationnelle.}
