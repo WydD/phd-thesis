@@ -7,11 +7,11 @@ Dans cette section, nous présentons les différents composants développés pou
 \end{itemize}
 
 \subsection{Source d'interrogation}
-Comme présenté dans la section~\ref{sec:contrib:asteroid:theorie:astral}, une relation persistante peut être présentée comme une relation temporelle Astral. Pour cela nous introduisons un composant source de données \textit{dbsource} capable de représenter une telle relation temporelle. Cette source doit suivre l'évolution de la relation suivant différents modes. Son implémentation est décrite par la séquence suivante : lorsque la relation temporelle doit être mise à jour, le composant interroge le SGBD avec une requête \textit{SQL} telle que \sql{SELECT * FROM Relation}.
+Comme présentée dans la section~\ref{sec:contrib:asteroid:theorie:astral}, une relation persistante peut être présentée comme une relation temporelle Astral. Pour cela nous introduisons un composant source de données \textit{dbsource} capable de représenter une telle relation temporelle. Cette source doit suivre l'évolution de la relation suivant différents modes. Son implémentation est décrite par la séquence suivante : lorsque la relation temporelle doit être mise à jour, le composant interroge le SGBD avec une requête \textit{SQL} telle que \sql{SELECT * FROM Relation}.
 
-Afin de pouvoir réutiliser \textit{dbsource}, nous pouvons le rendre configurable en permettant la spécifications de paramètres. Ainsi, la source est capable de supporter la représentation Astral de toute requête du type $\D^f Q$ où $Q$ désigne une relation temporelle exprimable en algèbre relationnelle sur toute relation persistante. Notons que $\D^f$ permet de refléter une dynamique de mise à jour comme présenté dans la section précédente. De ce fait, nous pouvons produire une relation temporelle avec une dynamique statique, stable, périodique ou imprévisible (mise à jour suite à un événement extérieur).
+Afin de pouvoir réutiliser \textit{dbsource}, nous pouvons le rendre configurable en permettant la spécification de paramètres. Ainsi, la source est capable de supporter la représentation Astral de toute requête du type $\D^f Q$ où $Q$ désigne une relation temporelle exprimable en algèbre relationnelle sur toute relation persistante. Notons que $\D^f$ permet de refléter une dynamique de mise à jour comme présentée dans la section précédente. De ce fait, nous pouvons produire une relation temporelle avec une dynamique statique, stable, périodique ou imprévisible (mise à jour suite à un événement extérieur).
 
-La liste des paramètres de ce composants est disponible dans la table~\ref{tab:contrib:asteroid:dbsource} et la sémantique des modes de mise à jour est disponible dans la table~\ref{tab:contrib:asteroid:dbsource:modes}.
+La liste des paramètres de ce composant est disponible dans la table~\ref{tab:contrib:asteroid:dbsource} et la sémantique des modes de mise à jour est disponible dans la table~\ref{tab:contrib:asteroid:dbsource:modes}.
 \begin{table}[ht]
     \centering
     \begin{tabular}{cl}
@@ -35,12 +35,12 @@ La liste des paramètres de ce composants est disponible dans la table~\ref{tab:
 
 Il est important de voir que l'ensemble de la relation est représenté dans la relation temporelle fournie. Or, dans Astronef, toute relation temporelle est placée en mémoire. Ainsi, si la séquence produite par l'interrogation du SGBD est de plusieurs millions de n-uplets, la taille des données est à prendre en compte. 
 
-Comme cette source est capable de représenter toute requête \textit{SQL}, il est possible de déporter des opérations dans cette requête pour exploiter les capacités du SGBD. Nous détaillons dans la section~\ref{sec:contrib:asteroid:reecriture} comment effectuer cette réécriture automatiquement grâce à l'optimisation par règle d'Astronef.
+Comme cette source est capable de représenter toute requête \textit{SQL}, il est possible de déporter des opérations dans cette requête pour exploiter les capacités du SGBD. Nous détaillons dans la section~\ref{sec:contrib:asteroid:reecriture} cette réécriture de façon automatique grâce à l'optimisation par règle d'Astronef.
 
-\subsection{Macro-opération de jointure}
+\subsection{Macroopération de jointure}
 Le second composant d'Asteroid est un opérateur de jointure : \textit{dbjoin}. Son rôle est le suivant : lors de la réception d'un nouvel état d'une relation temporelle, interroger le SGBD et effectuer une jointure entre l'état courant de la relation et une requête \textit{SQL}. Cette opération est souvent utilisée lors qu'il est nécessaire d'ajouter à la relation courante des informations issues du SGBD (données du catalogue, agrégats de l'historique).
 
-L'idée principale de cet opérateur est d'exploiter au maximum le SGBD. L'utilisation d'index pré-calculés sur le disque permet d'effectuer la jointure de façon efficace car l'optimiseur sélectionne un plan performant grâce à ceux-ci.
+L'idée principale de cet opérateur est d'exploiter au maximum le SGBD. L'utilisation d'index précalculés sur le disque permet d'effectuer la jointure de façon efficace, car l'optimiseur sélectionne un plan performant grâce à ceux-ci.
 
 D'un point de vue Astral, l'opérateur \textit{dbjoin} permet d'effectuer l'opération suivante $R \ssjoin_c Q$, où $R$ est la relation d'entrée et $Q$ est une relation temporelle exprimable en algèbre relationnelle sur les relations de la base de données, et $c$ une condition de jointure. Les paramètres de configuration de \textit{dbjoin} sont présentés dans la table~\ref{tab:contrib:asteroid:dbjoin}.
 \begin{table}[ht]
@@ -48,24 +48,24 @@ D'un point de vue Astral, l'opérateur \textit{dbjoin} permet d'effectuer l'opé
     \begin{tabular}{cl}
         Paramètre & Description \\ \midrule
         query & Requête \textit{SQL} à joindre sur le SGBD \\
-        on & Expression de la condition de jointure (optionel)
+        on & Expression de la condition de jointure (optionnel)
     \end{tabular}
     \caption{Paramètres du composant \textit{dbjoin}}\label{tab:contrib:asteroid:dbjoin}
 \end{table}
 
 L'implémentation de \textit{dbjoin} peut différer selon les capacités du SGBD. De façon générale, il est nécessaire d'utiliser une table temporaire \sql{Tmp} (en mémoire). Au moment de l'exécution de \textit{dbjoin}, l'opérateur insère les données de la séquence fournie dans \sql{Tmp}. Ensuite, il applique la requête \textit{SQL} suivante : \begin{center} \sql{SELECT * FROM Tmp AS l NATURAL JOIN (*query*) AS r ON (*on*)} \end{center}
-Le résultat est transformé en séquence de n-uplet qui est envoyée à la relation temporelle de sortie. Les données temporaires sont supprimées ensuite. Par mesure de performances, les requêtes sont préparés à l'avance.
+Le résultat est transformé en séquence de n-uplet qui est envoyée à la relation temporelle de sortie. Les données temporaires sont supprimées ensuite. Par mesure de performances, les requêtes sont préparées à l'avance.
 
-Certains SGBD implémentent des optimisations particulièrement adaptés à ce genre d'exécution. Sur \textit{H2} par exemple, il est possible d'utiliser la syntaxe \sql{TABLE(A1 T1=?,...,An Tn=?)} pour représenter une table temporaire d'attributs $A_i$ et de types $T_i$ dont les données sont passés comme paramètres lors de l'exécution de la requête. Il est aussi possible d'accélérer l'opération de suppression via l'opération \sql{TRUNCATE} maintenant répandue parmi les SGBD populaires.
+Certains SGBD implémentent des optimisations particulièrement adaptées à ce genre d'exécution. Sur \textit{H2} par exemple, il est possible d'utiliser la syntaxe \sql{TABLE(A1 T1=?,...,An Tn=?)} pour représenter une table temporaire d'attributs $A_i$ et de types $T_i$ dont les données sont passées comme paramètres lors de l'exécution de la requête. Il est aussi possible d'accélérer l'opération de suppression via l'opération \sql{TRUNCATE} maintenant répandue parmi les SGBD populaires.
 
 \subsection{Puits de persistance}
-Enfin, nous présentons l'ensemble des composants puits de couplage. Ces composants ont pour but d'effectuer des opérations d'écritures dans la base de donnée. Deux catégories de composants sont décrits : les archives de flux ainsi que l'entretien du catalogue décrit par le schéma descriptif.
+Enfin, nous présentons l'ensemble des composants puits de couplage. Ces composants ont pour but d'effectuer des opérations d'écritures dans la base de données. Deux catégories de composants sont décrites : les archives de flux ainsi que l'entretien du catalogue décrit par le schéma descriptif.
 \subsubsection{Archives de flux}
 La première utilisation de la persistance pour la gestion de flux de données reste avant tout l'historisation. Ces données sont importantes pour effectuer des analyses a posteriori.
 
-Le composant le plus direct dans cette application est \textit{streampersistence}. Celui-ci a pour but de faire persister un flux donné en entrée. Son fonctionnement est simple, pour chaque n-uplet, effectuer une action \sql{INSERT} dans le SGBD sur la table créée au préalable. Son seul paramètre de configuration est le nom de la table qui est utilisé comme archive : \textit{table}.
+Le composant le plus direct dans cette application est \textit{streampersistence}. Celui-ci a pour but de faire persister un flux donné en entrée. Son fonctionnement est simple, pour chaque n-uplet, effectuer une action \sql{INSERT} dans le SGBD sur la table créée au préalable. Son seul paramètre de configuration est le nom de la table qui est utilisée comme archive : \textit{table}.
 
-Cependant, nous avons présenté en section~\ref{sec:contrib:asteroid:theorie:schema} que les données temps réelles sont considérés comme des \textit{volatiles} dans le schéma physique. Ainsi, lors de leur mise en archive, il est nécessaire de créer leurs données d'enregistrement. Le composant \textit{volatilepersistence} a pour but de faire persister un flux donné tout en faisant cette mise à jour. Ses paramètres de configuration sont listés dans la table~\ref{tab:contrib:asteroid:volatilepersistence}.
+Cependant, nous avons présenté en section~\ref{sec:contrib:asteroid:theorie:schema} que les données temps réel sont considérés comme des \textit{volatiles} dans le schéma physique. Ainsi, lors de leur mise en archive, il est nécessaire de créer leurs données d'enregistrement. Le composant \textit{volatilepersistence} a pour but de faire persister un flux donné tout en faisant cette mise à jour. Ses paramètres de configuration sont listés dans la table~\ref{tab:contrib:asteroid:volatilepersistence}.
 
 \begin{table}[ht]
     \centering
@@ -82,10 +82,10 @@ Cependant, nous avons présenté en section~\ref{sec:contrib:asteroid:theorie:sc
 Il est important de noter le paramètre \textit{monitorableId}. En effet, pour enregistrer comme persistante une donnée \textit{volatile}, celle-ci doit être une propriété attachée à un des objets du système grâce à son identifiant interne \textit{monitorableId}\footnote{Ces identifiants sont générés à la création d'un objet \textit{monitorable} par une séquence.}. Cette opération peut se faire via une jointure avec le schéma descriptif.
 
 \subsubsection{Entretien du catalogue}
-L'entretien du schéma descriptif en fonction des observations que nous pouvons faire grâce aux flux remontés est une opération complexe. En effet, la modélisation que l'utilisateur fait de son système est une vision qui ne correspond souvent pas à l'ensemble des données fournies. L'exemple ci-dessous indique un des cas observé dans la pratique indiquant la difficulté de ce processus de mise à jour.
+L'entretien du schéma descriptif en fonction des observations que nous pouvons faire grâce aux flux remontés est une opération complexe. En effet, la modélisation que l'utilisateur fait de son système est une vision qui ne correspond souvent pas à l'ensemble des données fournies. L'exemple ci-dessous indique un des cas observés dans la pratique indiquant la difficulté de ce processus de mise à jour.
 
 \begin{example}
 La modélisation du réseau local domestique illustré sur la figure~\ref{fig:contrib:asteroid:theorie:model} montre les relations \textit{Devices} et \textit{Interfaces}. Cependant, l'utilisateur ne possède qu'un flux \textit{Network(applicationName,ipAddress)} lui indiquant l'arrivée de l'application \textit{applicationName} sur le réseau avec l'IP \textit{ip}. Il est nécessaire pour chaque n-uplet de créer l'application (en supposant que le nom est un critère d'identification) et l'\textit{Interface} (associée à l'adresse \textit{IP}) si besoin. Or, la liaison entre \textit{Applications} et \textit{Interfaces} se fait par le concept de \textit{Devices}. Pour satisfaire les contraintes, il devient nécessaire de créer ou mettre à jour un \textit{Device} associé.
 \end{example}
 
-Le problème de mise à jour de relations à partir de données extraites est toutefois connu dans le domaine de la recherche fondamentale en base de données. En effet, cela est très similaire à la traduction de mises à jours sur une vue~\cite{Keller:viewupdate}. Ce problème correspond à la traduction d'une mise à jour d'une vue matérialisé par un ensemble d'opérations. Cependant, à l'écriture du manuscrit, aucun composant générique n'a été développé comme extension d'Astronef pour permettre cette opération, chaque cas de mise à jour est résolu de façon ad-hoc.
+Le problème de mise à jour de relations à partir de données extraites est toutefois connu dans le domaine de la recherche fondamentale en base de données. En effet, cela est très similaire à la traduction de mises à jour sur une vue~\cite{Keller:viewupdate}. Ce problème correspond à la traduction d'une mise à jour d'une vue matérialisée par un ensemble d'opérations. Cependant, à l'écriture du manuscrit, aucun composant générique n'a été développé comme extension d'Astronef pour permettre cette opération, chaque cas de mise à jour est résolu de façon ad hoc.
