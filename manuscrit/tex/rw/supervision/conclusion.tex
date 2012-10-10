@@ -1,5 +1,5 @@
 \section{Conclusion}
-Ce chapitre passe en revue des différents systèmes capables d'offrir une solution d'observation de système. Il en ressort qu'aucun système ne résout l'ensemble des problématiques que nous avons relevés en section~\ref{sec:intro:problematique}. Le tableau~\ref{tab:rw:supervision:bilan} résume les 11 points d'analyse en colorant les différents points suivant leurs conformités. 
+Ce chapitre passe en revue des différents systèmes capables d'offrir une solution d'observation de système. Il en ressort qu'aucun système ne résout l'ensemble des problématiques que nous avons relevés en section~\ref{sec:intro:problematique}. Le tableau~\ref{tab:rw:supervision:bilan} résume les onze points d'analyse en colorant les différents points suivant leurs conformités. 
 
 Il en ressort que les systèmes d'administration sont avant tout des systèmes qui donnent accès à de nombreuses données grâce au support de standards. L'architecture avec agents permet une grande flexibilité pour s'adapter aux cas d'usages. De son côté, l'informatique contextuelle fournit des outils permettant de modéliser et manipuler proprement les concepts du système grâce aux ontologies et aux raisonnements logiques. Il en sort une claire séparation des domaines de compétences, mais une complexité de traitement. Les entrepôts de données quant à eux, se distinguent par des capacités d'analyses très poussées, ainsi qu'un procédé d'intégration, très complexe et lourd, mais très complètes. Enfin, la gestion de flux de données est une base solide pour traiter les données dynamiques. L'intégration et l'adaptation à l'application sont faites de manière déclarative, ce qui en fait une solution performante et viable pour établir un système d'observation.
 
@@ -16,13 +16,14 @@ Les systèmes de gestion de flux de données forment un bon candidat comme fonda
 
 \begin{sidewaystable}[ht]
 \centering
+Adéquation par rapport aux problématiques : \fcolorbox{black}{good}{correcte}\quad \fcolorbox{black}{meh}{utilisable}\quad \fcolorbox{black}{bad}{mauvaise}
 \begin{tabular}{@{{\vrule width 1pt}\ \ }>{\raggedleft}m{3cm}@{\ \ {\vrule width 1pt}\ \ }M{4.2cm}|M{4.2cm}|M{4.2cm}|M{4.2cm}@{\ \ {\vrule width 1pt}}} \bottomrule
 \head Critère & \head Système d'administration & \head Gestion de contexte & \head Entrepôts de données & \head Gestion de flux de données \\  \toprule \bottomrule
 \critereAA & Hiérarchique & Triplets & Multidimensionnel & Relationnel dérivé \\ \hline
 \critereAB & \meh Structure hiérarchique sans contraintes & \good Ontologies & \good Étoile ou Flocon & \bad Pas de structure \\ \hline
 \critereAC & \meh Notifications & \bad Ajout du temps en propriété & \meh CDC & \good Flux natif \\ \toprule \bottomrule
 \critereBA & \meh Instantanée, continu en ad-hoc & \bad Instantané principalement & \meh Instantané. ETL en pseudo-continu & \bad Continu uniquement \\ \hline
-\critereBB & \good Standardisation, union de modèles & \meh Fusion d'ontologies non standardes & \good Processus ETL (complexe) & \good Union et jointures de flux \\ \hline
+\critereBB & \good Standardisation, union de modèles & \meh Fusion d'ontologies non standards & \good Processus ETL (complexe) & \good Union et jointures de flux \\ \hline
 \critereBC & \bad Impératif principalement & \good Logique & \meh Déclaratif (SQL) et Procédural (ETL) & \good Déclaratif principalement\\ \hline
 \critereBD & \meh Procédures à écrire soi-même & \good Logique du premier ordre & \good Relationnel multidimensionnel et Algorithmie dédiée & \meh Relationnel avec support du dynamisme\\ \toprule \bottomrule
 \critereCA & \good Support des standards & \meh Spécification longue des domaines & \bad Spécification du schéma, des ETL, autre (complexe) & \good Écriture de requêtes \\ \hline
@@ -30,5 +31,5 @@ Les systèmes de gestion de flux de données forment un bon candidat comme fonda
 \critereCC & \good Modèle extensible, fonctions métiers dans le gestionnaire & \meh Capteurs virtuels & \good Opérateurs ETL, procédures SQL, algorithmes & \meh Sources et puits mais pas les opérateurs  \\ \hline
 \critereCD & \good Large échelle & \bad Complexité très haute & \meh Réactivité lente, Support de grande quantité & \good Support de haut débits\\ \toprule 
 \end{tabular}
-\caption{Récapitulatif de l'état de l'art des systèmes génériques de supervision}\label{tab:rw:supervision:bilan}
+\caption{Récapitulatif de l'état de l'art des systèmes d'observation}\label{tab:rw:supervision:bilan}
 \end{sidewaystable}

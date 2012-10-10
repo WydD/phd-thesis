@@ -6,7 +6,7 @@ L'utilisation des entrepôts dans le cadre de l'observation est pertinente lors 
 Par la suite, cette section détaille en premier lieu l'architecture globale des entrepôts de données. Nous détaillons ensuite comment l'intégration est faite via les processus \textit{ETL}. Ensuite nous décrivons les structures de données utilisées pour permettre différentes analyses. Enfin, nous présentons brièvement quelques outils d'analyses pouvant raisonner sur les données.
 
 \subsection{Architecture globale}
-La définition fonctionnelle d'un entrepôt de donnée est \enquote{\it une collection de données orientées sujet, intégrées, non volatiles et historisées, organisées pour le support d’un processus d’aide à la décision}~\cite{Inmon:warehouse}. Au sens large, un entrepôt est une base de données avec une organisation qui s'oriente avant tout sur l'application finale (l'analyse) plutôt que sur l'intégrité des données, et qui néglige la suppression ou la modification de données afin de garder une trace.
+La définition fonctionnelle d'un entrepôt de donnée est \enquote{\it une collection de données orientées sujet, intégrées, non volatiles et historisées, organisées pour le support d'un processus d'aide à la décision}~\cite{Inmon:warehouse}. Au sens large, un entrepôt est une base de données avec une organisation qui s'oriente avant tout sur l'application finale (l'analyse) plutôt que sur l'intégrité des données, et qui néglige la suppression ou la modification de données afin de garder une trace.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.65\textwidth]{rw-supervision-warehouses}
@@ -25,14 +25,16 @@ Plusieurs considérations de performances rentrent en compte pour savoir quand l
 De plus, à cette étape, il est courant de générer des rapports compilant les données transformées vers un document qui est transmis à l'utilisateur.
 
 \subsubsection{Le temps réel : un nouveau challenge}
-La fraicheur des données à l'intérieur d'un entrepôt de donnée n'a pas été une contrainte critique jusqu'à présent. Les latences usuellement visées par ce type d'approche sont au alentour de l'heure voire de jours~\cite{Oracle:realtimedw}. Récemment, des travaux se sont intéressés à améliorer la qualité du traitement en terme de fraicheur de données (pour passer à l'ordre de la minute voire de la seconde).
+La fraicheur des données à l'intérieur d'un entrepôt de donnée n'a pas été une contrainte critique jusqu'à présent. Les latences usuellement visées par ce type d'approche sont au alentour de l'heure voire du jour~\cite{Oracle:realtimedw}. Récemment, des travaux se sont intéressés à améliorer la qualité du traitement en terme de fraicheur de données (pour passer à l'ordre de la minute voire de la seconde).
 
 Comme présentée en section~\ref{sec:intro:problematique}, la gestion de l'évolution des données est importante dans notre cadre. Ici, la gestion du dynamisme n'est pas explicite, car il n'y a pas de mécanisme d'événement. Ainsi, il est nécessaire d'implémenter un \textit{CDC} (\textit{Change Data Capture}) capable de transmettre les nouvelles données via un canal de communication dédiée.
 
 Plusieurs systèmes commencent à supporter la gestion en temps réel de l'import de données~\cite{Thomsen:rite, Oracle:ODI}. Toutefois, il n'y a pas de résultats concrets concernant le traitement des données dynamiques en tant que tel. Par exemple, la définition d'agrégat sur une fenêtre de temps doit se faire à la main via une base de données intermédiaire.
 
 \subsection{Synthèse}
-En conclusion, les entrepôts de données représentent une grande capacité de traitement des données. La prise en charge de données historique et les capacités d'analyses sont précieuses pour l'observation de système. Toutefois, le processus d'intégration est trop lent pour pouvoir gérer des alertes. De plus, il existe une ambiguïté sémantique sur les opérateurs disponibles qui dépendent du système.
+En conclusion, les entrepôts de données représentent une grande capacité de traitement des données. Ils nous permettent de voir les possibilités que nous pouvons exploiter lors de la persistance de données. Ainsi, la prise en charge de données historique et les capacités d'analyses sont précieuses pour l'observation de système. Nous notons aussi la structure du schéma conceptuel en étoile (ou flocon) séparant méta-données (données descriptives) et faits (archives de flux).
+
+Toutefois, le processus d'intégration est trop lent pour pouvoir gérer des alertes. De plus, il existe une ambiguïté sémantique sur les opérateurs disponibles dans les ETL qui dépendent de leur implémentation.
 
 \begin{table}[!ht]
 \criteretabDonnee
