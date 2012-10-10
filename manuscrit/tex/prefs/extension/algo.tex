@@ -2,19 +2,19 @@
 Cette section présente les algorithmes que nous avons développés pour les opérateurs \textbf{Best} et \textbf{KBest}. Ces opérateurs nécessitent de connaître la hiérarchie des n-uplets déduite d'un ensemble de préférences. Cette hiérarchie est déduite du \textit{graphe de préférence} \textit{GP}. Nous présentons ci-après deux algorithmes pour la gestion du graphe : l'un est calculé sur l'état courant de la relation temporelle d'entrée, l'autre travaille sur les différences de manière incrémentale.
 
 \subsection{Le graphe de préférence}
-L'ordre de préférence entre deux n-uplets $t_1$ et $t_2$ selon une règle $\varphi$ est construit à partir d'une fonction $Com\-pare(t_1,t_2,\varphi_k)$ qui retourne $\emptyset$ si $t_1$ et $t_2$ sont incomparables, 1 si $t_1$ est préféré à $t_2$ et $-1$ sinon. L'algorithme~\ref{algo:comparT} étend la comparaison à une théorie $\Gamma$. Cette dernière utilise un ensemble de règles pour calculer l'ordre de préférence mais ne calcule par la clôture transitive.
+L'ordre de préférence entre deux n-uplets $t_1$ et $t_2$ selon une règle $\varphi$ est construit à partir d'une fonction $Com\-pare(t_1,t_2,\varphi_k)$ qui retourne $\emptyset$ si $t_1$ et $t_2$ sont incomparables, 1 si $t_1$ est préféré à $t_2$ et $-1$ sinon. L'algorithme~\ref{algo:comparT} étend la comparaison à une théorie $\Gamma$. Cette dernière utilise un ensemble de règles pour calculer l'ordre de préférence, mais ne calcule pas la clôture transitive.
 
 \textbf{Graphe de préférence : }
 Les opérateurs \textbf{Best} et \textbf{KBest} sont appliqués sur un ensemble de n-uplets $TS$ et ont besoin du graphe de préférence relatif à $TS$.
-Pour son implémentation, nous avons adopté la structure $Graph(Next, Prec, Src)$ définie comme suit:
+Pour son implémentation, nous avons adopté la structure $Graph(Next, Prec, Src)$ défini comme suit:
  $Next$ associe chaque n-uplet à la liste des n-uplets \textbf{qu'il domine}.
  $Prec$ associe chaque n-uplet à la liste des n-uplets \textbf{qui le dominent}.
- $Src$ est l'ensemble des n-uplets non-dominés, représentant la source du graphe.
+ $Src$ est l'ensemble des n-uplets non dominés, représentant la source du graphe.
 Afin de fournir de bonnes performances, les implémentations de ces structures sont des \textit{hash-sets} ou \textit{hash-maps}.
 
-La construction et la mise à jour du graphe utilisent des méthodes \textit{Graph.Insert} et \textit{Graph.Delete}. Pour insérer un n-uplet dans un graphe, la méthode \textit{Graph.Insert} itère sur les nœuds du graphe pour mettre à jour \textit{Next}, \textit{Prec} et l'ensemble \textit{Src}. Comme le coût de l'insertion et de suppression dans une structure hachée peut être considéré comme $\mathcal O(1)$, le coût global de l'insertion d'un n-uplet dans le graphe est de $\mathcal O(\abs G)$. Pour la suppression d'un n-uplet $s$ du graphe, la méthode \textit{Graph.Delete} itère sur les nœuds connectés à $s$. Le coût est de $\mathcal O(\mathrm{deg}(s))$.
+La construction et la mise à jour du graphe utilisent des méthodes \textit{Graph.Insert} et \textit{Graph.Delete}. Pour insérer un n-uplet dans un graphe, la méthode \textit{Graph.Insert} itère sur les nœuds du graphe pour mettre à jour \textit{Next}, \textit{Prec} et l'ensemble \textit{Src}. Comme le coût de l'insertion et de suppression dans une structure hachée peut être considéré comme $\mathcal O(1)$, le coût global de l'insertion d'un n-uplet dans le graphe est de $\mathcal O(\abs G)$. Pour la suppression d'un n-uplet $s$ du graphe, la méthode \textit{Graph.Delete} itère sur les n?uds connectés à $s$. Le coût est de $\mathcal O(\mathrm{deg}(s))$.
 
-Pour une théorie de préférences $\Gamma$ donnée et un ensemble de n-uplets $TS$, la construction du graphe de préférences complet est réalisée par l'algorithme~\ref{algo:create}.
+Pour une théorie de préférences $\Gamma$ donnée et un ensemble de n-uplets $TS$, la construction du graphe de préférence complet est réalisée par l'algorithme~\ref{algo:create}.
 
 \subsection{Calcul de Best et KBest}
 Par définition, le graphe inclut l'ensemble $Src$ qui contient les n-uplets les plus préférés. L'ensemble $Src$ est le résultat de l'opérateur \textit{Best}. Toutefois, l'algorithme peut-être optimisé en évitant de construire complètement \textit{GP}. La méthode $Graphe.Insert$ peut être optimisée pour tenir compte de cela. 
@@ -22,8 +22,8 @@ La complexité est alors réduite à $\mathcal O(\abs{Src})$. La complexité de 
 
 L'algorithme principal utilisé pour calculer $KBest$ à partir du \textit{GP} est un tri topologique de Kahn limité aux $k$ premiers résultats. Voir l'algorithme~\ref{alg:kbest}.
 
-\subsection{Evaluation incrémentale du GP}
-Cette section présente un algorithme pour le calcul incrémental de \textit{GP}. Le fait que les requêtes avec préférences sur les flux s'expriment sur des séquences de fenêtres motive cette méthode. Il est nécessaire de construire le \textit{GP} pour l'ensemble des n-uplet de la fenêtre \textit{courante}. Comme deux fenêtres consécutives peuvent se superposer, le nouveau \textit{GP} peut être construit par mise à jour incrémentale du graphe \textit{courant}. 
+\subsection{Évaluation incrémentale du GP}
+Cette section présente un algorithme pour le calcul incrémental de \textit{GP}. Le fait que les requêtes avec préférences sur les flux s'expriment sur des séquences de fenêtres motive cette méthode. Il est nécessaire de construire le \textit{GP} pour l'ensemble des n-uplets de la fenêtre \textit{courante}. Comme deux fenêtres consécutives peuvent se superposer, le nouveau \textit{GP} peut être construit par mise à jour incrémentale du graphe \textit{courant}. 
 
 Supposons que $\delta_R^{-}$ contienne les n-uplets \textit{sortants} de la fenêtre et $\delta_R^{+}$ contienne ceux qui \textit{rentrent} dans la nouvelle fenêtre. Il n'y a pas d'intersection entre ces deux ensembles. Ces ensembles sont utilisés par l'algorithme~\ref{algo:update} pour construire le \textit{GP} de la nouvelle fenêtre à partir du \textit{GP} de la précédente. 
 
@@ -118,6 +118,6 @@ PrecCount $\gets $ \textbf{new HashMap}()\;
 Best \quad &\quad $\mathcal O(N.S)$\quad & $\mathcal O(\Delta.N)$ \\
 KBest \quad & $\mathcal O(N^2)$ & \quad $\mathcal O((\Delta+k)N)$ \quad\\ \noalign{\hrule height 1pt}
 \end{tabular}
-\caption{Best/KBest complexity}\label{tab:valid:perfs:prefs:complexity}
+\caption{Complexité de Best/KBest}\label{tab:valid:perfs:prefs:complexity}
 \end{minipage}
 \end{table}

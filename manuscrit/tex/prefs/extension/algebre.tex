@@ -1,8 +1,8 @@
 \section{Modélisation algébrique}\label{sec:ext:prefs:algebre}
-Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous appliquons ceci à notre cadre applicatif. Enfin, nous présentons comment l'intégration dans Astronef est faite.
+Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous appliquons ceci à notre cadre applicatif. Enfin, nous présentons, comment l'intégration dans Astronef est faite.
 
 \subsection{Préférences contextuelles}
-Dans cette section nous présentons les principaux concepts concernant le formalisme logique que nous employons pour spécifier et raisonner avec des préférences. Tout d'abord présentons le concept de préférence contextuelle. Une \textit{préférence contextuelle} est une manière d'exprimer la phrase suivante : \enquote{\it Lorsque $u$ est vrai, je préfère $Q_1$ à $Q_2$ à attributs $W$ égaux}. La définition~\ref{def:pref} définie formellement cette notion.
+Dans cette section nous présentons les principaux concepts concernant le formalisme logique que nous employons pour spécifier et raisonner avec des préférences. Tout d'abord, présentons le concept de préférence contextuelle. Une \textit{préférence contextuelle} est une manière d'exprimer la phrase suivante : \enquote{\it Lorsque $u$ est vrai, je préfère $Q_1$ à $Q_2$ à attributs $W$ égaux}. La définition~\ref{def:pref} définit formellement cette notion.
 
 \begin{defi}[Préférence Contextuelle]\label{def:pref}
 Soit $A$ un ensemble d'attribut,
@@ -10,18 +10,18 @@ Soit $A$ un ensemble d'attribut,
 Une \textit{règle de préférence contextuelle} (ou \textit{cp-règle}) sur $A$ est une formule $\varphi$ de la forme :
  $$\varphi: u \rightarrow Q_1(X) \succ Q_2(X)\ [W]$$
 \begin{itemize}
-	\item $X$ est un attribut non-temporel de $R$ tel que $W \subseteq A$, $X \not \in W$,
+	\item $X$ est un attribut non temporel de $R$ tel que $W \subseteq A$, $X \not \in W$,
 	\item $Q_i(X)$ est une condition exprimée sur $X$,
 	\item $\forall x$, $Q_1(x)$ et $Q_2(x)$ ne peuvent être satisfaites simultanément,
 	\item $u$ est une condition ne portant ni sur $X$ ni sur les attributs de $W$.
 	\end{itemize}
 \end{defi}
 
-La formule $u$ du côté gauche d'une cp-règle $\varphi$ est appelé son \textit{contexte}. L'expression $Q_1(X) \succ Q_2(X)$ du côté droit est appelé l' \textit{expression de préférence} et les attributs dans $W$ sont appelés des attributs \textit{ceteris paribus} (cf. ci-dessous). Un n-uplet $s$ est dit \textit{compatible} avec une cp-règle $\varphi$ si $s$ satisfait son contexte.
+La formule $u$ du côté gauche d'une cp-règle $\varphi$ est appelée \textit{contexte}. L'expression $Q_1(X) \succ Q_2(X)$ du côté droit est appelée \textit{expression de préférence} et les attributs dans $W$ sont appelés des attributs \textit{ceteris paribus} (cf. ci-dessous). Un n-uplet $s$ est dit \textit{compatible} avec une cp-règle $\varphi$ si $s$ satisfait son contexte.
 
 Une \textit{théorie de préférence contextuelle} (\textit{cp-théorie}) sur $A$ est un ensemble fini $\Gamma$ de cp-règles sur $R$. Nous notons par Attr($\Gamma$) l'ensemble d'attributs dans les cp-règles de $\Gamma$.
 
-Ainsi, une cp-règle $\varphi$ sur $A$ induit une \textit{relation binaire} (notée $\succ_\varphi$) sur une séquence de n-uplet d'attributs $A$, à savoir l'ensemble des paires ($s_1,s_2$) tels que $s_1$ est préféré à $s_2$ par rapport à $\varphi$. Cette relation binaire n'est pas nécessairement transitive, ce qui fait que ce n'est pas une \textit{relation d'ordre}. Nous définissons la notion de \textit{Relation de Préférence} inférée par une cp-théorie $\Gamma$.
+Ainsi, une cp-règle $\varphi$ sur $A$ induit une \textit{relation binaire} (notée $\succ_\varphi$) sur une séquence de n-uplet d'attributs $A$, à savoir l'ensemble des paires ($s_1,s_2$) telles que $s_1$ est préféré à $s_2$ par rapport à $\varphi$. Cette relation binaire n'est pas nécessairement transitive, ce qui fait que ce n'est pas une \textit{relation d'ordre}. Nous définissons la notion de \textit{Relation de Préférence} inférée par une cp-théorie $\Gamma$.
 
 \begin{defi}[Relation de Préférence]
 Soit $\Gamma$ cp-théorie sur $A$,
@@ -30,13 +30,13 @@ La \textit{Relation de Préférence} associée à $\Gamma$ (notée $\succ_\Gamma
 \begin{center} $\succ_\Gamma = (\cup_{\varphi \in \Gamma} \succ_\varphi)^*,$ o\`u $*$ dénote la \textit{fermeture transitive}.\end{center}
 \end{defi}
 
-Cette relation de préférence est dites \textit{consistante} si et seulement si elle est irréflexive. Si tel est le cas, elle devient ainsi une relation d'ordre partielle stricte. Des travaux existent pour vérifier si une cp-théorie est consistante~\cite{Wilson:cpnet}. Nous supposons pour la suite du document que nos relations le sont.
+Cette relation de préférence est dite \textit{consistante} si et seulement si elle est irréflexive. Si tel est le cas, elle devient ainsi une relation d'ordre partielle stricte. Des travaux existent pour vérifier si une cp-théorie est consistante~\cite{Wilson:cpnet}. Nous supposons pour la suite du document que nos relations le sont.
 
 \subsection{Opérateurs de Préférences}
 Les opérateurs de préférences calculent les données préférées par rapport à une cp-th\'eorie de référence. Chaque utilisateur donne au système ses préférences sous forme d'une cp-th\'eorie $\Gamma$ qui constitue ainsi une sorte de \textit{profil utilisateur} qui est évolutif. Concrètement, cette solution va permettre le support de requêtes 
 \enquote{les plus préférées} et \enquote{les top-k} par l'intégration de deux opérateurs: \textbf{Best} et \textbf{KBest}.
 
-L'opérateur \textbf{Best} sélectionne, dans relation temporelle ou non-temporelle, les n-uplets qui correspondent le mieux à l'ensemble des préférences représentés dans $\Gamma$. D'un point de vue mathématique, il s'agit des n-uplets qui ne sont pas dominés dans la hiérarchie des préférences.
+L'opérateur \textbf{Best} sélectionne, dans relation temporelle ou non temporelle, les n-uplets qui correspondent le mieux à l'ensemble des préférences représentées dans $\Gamma$. D'un point de vue mathématique, il s'agit des n-uplets qui ne sont pas dominés dans la hiérarchie des préférences.
 
 \begin{defi}[Best]\label{def:best}
 Soit $R$ une relation temporelle et $\Gamma$ une cp-th\'eorie sur le schéma de $R$. 
@@ -44,28 +44,28 @@ Soit $R$ une relation temporelle et $\Gamma$ une cp-th\'eorie sur le schéma de 
 \textbf{Best}$(R): b\mapsto \{u \in R(b) \mid \not\exists v \in r(t) \textrm{ tel que } v \succ_\Gamma u \}$
 \end{defi}
 
-L'opérateur \textbf{KBest} sélectionne les $k$ n-uplets qui correspondent au mieux à la hiérarchie des préférences énoncées dans $\Gamma$. Intuitivement \textbf{KBest}$_k(R)(b)$ retourne l'ensemble des $k$ n-uplets de $R(b)$ qui sont le moins dominés par d'autres n-uplets selon la hiérarchie de préférences. Pour définir sa sémantique nous introduisons la notion de \textit{niveau} d'un n-uplet (notée $l(u)$) par rapport à une cp-théorie $\Gamma$ dans la définition~\ref{def:niveau}. Le niveau reflète l'écart entre ce n-uplet et ceux qui répondent complètement aux préférences de l'utilisateur.
+L'opérateur \textbf{KBest} sélectionne les $k$ n-uplets qui correspondent au mieux à la hiérarchie des préférences énoncées dans $\Gamma$. Intuitivement \textbf{KBest}$_k(R)(b)$ retourne l'ensemble des $k$ n-uplets de $R(b)$ qui sont le moins dominés par d'autres n-uplets selon la hiérarchie de préférence. Pour définir sa sémantique, nous introduisons la notion de \textit{niveau} d'un n-uplet (noté $l(u)$) par rapport à une cp-théorie $\Gamma$ dans la définition~\ref{def:niveau}. Le niveau reflète l'écart entre ce n-uplet et ceux qui répondent complètement aux préférences de l'utilisateur.
 
 \begin{defi}[Niveau]\label{def:niveau}
 Soit $R$ une relation temporelle et $\Gamma$ une cp-th\'eorie sur le schéma de $R$.
 
-Le \textit{niveau} de $u$, $l(u)$, \textit{par rapport à} $\Gamma$ au \textit{batch} $b$ est définie de manière inductive comme suit:
+Le \textit{niveau} de $u$, $l(u)$, \textit{par rapport à} $\Gamma$ au \textit{batch} $b$ est défini de manière inductive comme suit:
  \begin{itemize}
  \item Si $\not\exists u' \in R(b)$ tel que $u' \succ_\Gamma$ $u$, alors $l(u) = 0$.
  \item sinon $l(u)$ = $1+max \{l(u') \mid u' \succ_\Gamma u\} $
  \end{itemize}
 \end{defi}
 
-Il est possible de montrer que si $u \succ u'$ alors $l(u) < l(u')$. La réciproque n'est pas vraie. La sémantique de l'opérateur \textbf{KBest}$_k$ est présenté dans la définition~\ref{def:kbest}.
+Il est possible de montrer que si $u \succ u'$ alors $l(u) < l(u')$. La réciproque n'est pas vraie. La sémantique de l'opérateur \textbf{KBest}$_k$ est présentée dans la définition~\ref{def:kbest}.
 
 \begin{defi}[KBest]\label{def:kbest}
 Soit $R$ une relation temporelle et $\Gamma$ une cp-th\'eorie sur le schéma de $R$. 
 
-Pour un batch donné $b$, \textbf{KBest}$_k(R)(b)$ est l'ensemble des $k$ tuples $\in R(b)$ ayant le plus petit niveau. L'ordre positionel est utilisé pour départager des n-uplets de même niveau.
+Pour un batch donné $b$, \textbf{KBest}$_k(R)(b)$ est l'ensemble des $k$ n-uplets $\in R(b)$ ayant le plus petit niveau. L'ordre positionnel est utilisé pour départager des n-uplets de même niveau.
 \end{defi}
 
 \subsection{Exemple de requête}
-Supposons l'existence d'un flux $V$ agrégeant l'ensemble des informations \textit{volatiles}. Son schéma est le suivant : $V$(id, concept, type, volatile, value, $\t$). La description de ce schéma est l'expression suivante : l'entité de nature \textit{concept}, d'identifiant \textit{id} et de catégorie \textit{type} a émit la donnée de type \textit{volatile} et de valeur \textit{value} au temps $\t$. La formation de ce flux est triviale selon les principes développés en section~\ref{sec:valid:domvision:requetes} et n'est pas détaillé.
+Supposons l'existence d'un flux $V$ agrégeant l'ensemble des informations \textit{volatiles}. Son schéma est le suivant : $V$(id, concept, type, volatile, value, $\t$). La description de ce schéma est l'expression suivante : l'entité de nature \textit{concept}, d'identifiant \textit{id} et de catégorie \textit{type} a émis la donnée de type \textit{volatile} et de valeur \textit{value} au temps $\t$. La formation de ce flux est triviale selon les principes développés en section~\ref{sec:valid:domvision:requetes} et n'est pas détaillé.
 
 Nous souhaitons utiliser ce flux en tant que flux d'information à afficher à l'utilisateur. Afin de rapidement analyser l'activité du réseau, il souhaite obtenir une sélection des meilleures informations le concernant.
 
@@ -101,13 +101,13 @@ $s_5$ & 5 & interface & ethernet & bwr & 1200 & 5\\ \toprule % 3 > 5
 \caption{Un jeu de données pour $V$ et son graphe de préférence correspondant}\label{fig:valid:domvision:architecture:pref}
 \end{figure}
 
-En supposant que nous appliquons une fenêtre sur $V$ et que nous obtenons les n-uplets présentés au batch $b$. Nous obtenons les résultats suivant : 
+En supposant que nous appliquons une fenêtre sur $V$ et que nous obtenons les n-uplets présentés au batch $b$. Nous obtenons les résultats suivants : 
 \begin{itemize}
 	\item \textbf{Best}$(R)(b) = \{s_2,s_3\}$, car ces deux n-uplets ne sont pas dominés.
 	\item \textbf{KBest}$_3(R)(b) = \{s_1,s_2,s_3\}$ par sélection du niveau 0 et 1.
 	\item \textbf{KBest}$_4(R)(b) = \{s_1,s_2,s_3,s_4\}$, car $s_5$ est arrivé après $s_4$ et l'ordre positionnel domine à niveau équivalent.
 \end{itemize}
 
-Dans la pratique nous pourrions appliquer cet opérateur sur tout type de fenêtre. Pour revenir à notre application, en supposant que $V$ est correctement formé, nous pouvons déployer une requête continue qui peut alimenter l'interface de l'utilisateur avec : les 25 événements les plus importants du dernier jour évalué toutes les minutes. Cette requête a l'expression $\textbf{KBest}_{25}(V[T\ 1j\ 1min])$.
+Dans la pratique nous pourrions appliquer cet opérateur sur tout type de fenêtre. Pour revenir à notre application, en supposant que $V$ est correctement formé, nous pouvons déployer une requête continue qui peut alimenter l'interface de l'utilisateur avec : les 25 événements les plus importants du dernier jour évaluée toutes les minutes. Cette requête a l'expression $\textbf{KBest}_{25}(V[T\ 1j\ 1min])$.
 
 Nous avons désormais présenté les deux opérateurs nous permettant la personnalisation de résultat. Dans la section suivante, nous détaillons leur implémentation.
