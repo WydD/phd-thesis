@@ -1,10 +1,18 @@
 \section{Rappel des objectifs}\label{sec:conclusion:objectifs}
-Nous rappelons brièvement ici les objectifs de cette thèse. Ils se résument en quatre points majeurs :
-\begin{itemize}
-	\item[$\bullet$] \textbf{Hétérogénéité des systèmes}. Nous souhaitons concevoir une solution générique d'observation de système. Ainsi, tout système, que ce soit un réseau de capteur, un \textit{data-center} ou une maison ubiquitaire, nous devons être capable de l'observer.
-	\item[$\bullet$] \textbf{Évolution des données}. Contrairement à la gestion de données persistants, le système en observation est dynamique et produit de nouvelles données au fur et à mesure du temps. Ces données sous forme de flux peuvent être stockées pour analyse a posteriori, traitées en temps réel ou croisés avec des données passés ou consolidés pour fournir de larges capacités d'interrogations.
-	\item[$\bullet$] \textbf{Hétérogénéité des données}. Les données qui émanent du système sont de tous types et représentent différents fragments du système. Le schéma de ces données diffère en fonction des sources de données. Ainsi, il est nécessaire d'avoir une intégration des données et une capacité de traitement puissante.
-	\item[$\bullet$] \textbf{Adaptabilité}. Le système d'observation doit être capable de s'adapter efficacement à son environnement. De plus, chaque utilisateur possède son interprétation du système, et nous devons pouvoir refléter cette personnalisation. Mais cela passe aussi par la rapidité à écrire les processus d'intégrations, et par l'extensibilité de la solution d'interrogation. Le support de l'ajout de fonctions tierces pour les utilisateurs experts permet de fournir des capacités d'interrogation plus spécialisées.
-\end{itemize}
+Nous rappelons brièvement ici les objectifs de cette thèse. Nous souhaitons concevoir une solution générique d'observation de système. Un système est défini comme tout ensemble d'équipements ou d'applications connectés. 
 
-Dans cette thèse, nous avons principalement mis en avant la gestion de l'évolution des données et l'adaptabilité grâce aux travaux sur les flux de données. La gestion de l'hétérogénéité des systèmes et des données est assurée par l'expressibilité que nous obtenons grâce au support relationnel et aux requêtes continues.
+\vspace{1ex}\noindent\textbf{Système observé : hétérogénéité des données}
+
+\vspace{1ex}
+Nous souhaitons pouvoir observer différents types de systèmes. Cela implique que la description des systèmes en terme de schéma conceptuel de données est hétérogène. Les données qui émanent du système sont de tous types et représentent différents fragments du système. Le schéma de ces données diffère en fonction des sources de données. Ainsi, il est nécessaire d'avoir une intégration des données et une capacité de traitement puissante.
+
+Le système en observation est dynamique et ses données évoluent au fur et à mesure du temps. Il existe deux catégories de données : les données persistantes et les données temps réel. Ces dernières peuvent être stockées pour analyse a posteriori, traitées en temps réel, croisées avec des données passées ou consolidées. Ainsi, il est important d'être capable de manipuler tout type d'interrogation sur les différentes données.
+
+\vspace{1ex}\noindent\textbf{Système d'observation : adaptabilité aux besoins}
+
+\vspace{1ex}
+Le système d'observation doit être capable de s'adapter efficacement à son environnement. Afin de fournir une solution flexible, il est préférable d'avoir un langage déclaratif. Ce langage doit toutefois avoir un pouvoir d'expression permettant de gérer l'hétérogénéité du dynamisme des données.
+
+De plus, chaque utilisateur possède son interprétation du système, et nous devons pouvoir refléter cette personnalisation. De façon similaire, il est important que le système d'observation soit extensible. Par exemple, le support de l'ajout de fonctions tierces pour les utilisateurs experts permet de fournir des capacités d'interrogation plus spécialisées.
+
+Dans cette thèse, nous avons principalement mis en avant la gestion de l'évolution des données et l'adaptabilité grâce aux travaux sur les flux de données. La gestion de l'hétérogénéité des schémas conceptuels est assurée par l'expressivité que nous obtenons grâce au support relationnel et aux requêtes continues.
