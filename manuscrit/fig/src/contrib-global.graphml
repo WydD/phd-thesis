@@ -81,7 +81,7 @@
           <data key="d5"/>
           <data key="d6">
             <y:GenericNode configuration="BevelNode">
-              <y:Geometry height="34.799999999999955" width="131.0" x="494.5" y="265.0"/>
+              <y:Geometry height="34.799999999999955" width="131.0" x="494.5" y="266.88400077819824"/>
               <y:Fill color="#99CCFF" transparent="false"/>
               <y:BorderStyle hasColor="false" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="32.265625" modelName="custom" textColor="#000000" visible="true" width="79.76171875" x="25.619140625" y="1.2671874999999773">Constructeur
