@@ -8,9 +8,9 @@
 \chapter{Évaluation de performances}\label{chap:valid:perfs}
 \chaptertoc
 
-Afin d'effectuer l'observation de systèmes, nous avons présenté dans les chapitres précédents un SGFD extensible capable de se coupler avec un SGBD. Pour permettre le déploiement de cette solution sur tout type de plateforme, nous devons nous assurer que notre système n'est pas trop lourd en terme de performance. Dans ce chapitre, nous analysons les capacités de notre système pour choisir le meilleur plan de requête en fonction de la requête \textit{Astral} que nous lui soumettons.
+Afin d'effectuer l'observation de systèmes, nous avons présenté dans les chapitres précédents un SGFD extensible capable de se coupler avec un SGBD. Pour permettre le déploiement de cette solution sur tout type de plateforme, nous devons nous assurer que notre système est efficace en terme de performance. Pour cela, nous mesurons différents plans d'exécution afin de montrer les capacités de notre système à optimiser les expressions algébriques.
 
-Tout d'abord, en section~\ref{sec:valid:perfs:cadre}, nous présentons notre cadre expérimental. Ensuite, en section~\ref{sec:valid:perfs:flux}, nous nous intéressons à l'optimisation de la gestion de flux de données en soit avec le support du \textit{benchmark} reconnu \textit{Linear Road}. Nous traitons l'efficacité du couplage avec le SGBD dans la section~\ref{sec:valid:perfs:flux}. Enfin, nous concluons en section~\ref{sec:valid:perfs:conclusion}.
+Tout d'abord, en section~\ref{sec:valid:perfs:cadre}, nous présentons notre cadre expérimental. Ensuite, en section~\ref{sec:valid:perfs:flux}, nous nous intéressons à l'optimisation de la gestion de flux de données en soit avec le support du \textit{benchmark} \textit{Linear Road}. Nous traitons l'efficacité du couplage avec le SGBD dans la section~\ref{sec:valid:perfs:couplage}. Enfin, nous concluons en section~\ref{sec:valid:perfs:conclusion}.
 
 \input{tex/validation/perfs/cadre}
 \input{tex/validation/perfs/flux}

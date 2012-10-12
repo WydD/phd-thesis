@@ -1,8 +1,10 @@
 \section{Conclusion}\label{sec:valid:expressivite:conclusion}
-L'algèbre Astral est plus expressive que les approches actuelles. Elle permet une réelle désambiguïsation des sémantiques des requêtes. Elle permet ainsi de mieux comprendre le résultat d'une requête sans pour autant être attaché à des concepts liés à une implémentation particulière. Ainsi, Astral est un bon candidat comme langage d'interrogation instantané et continu.
+Nous avons réussi à formaliser de nombreuses approches actuelles avec Astral. Cette algèbre permet une désambiguïsation des sémantiques des requêtes. De plus, l'expression d'une requête n'est pas attachée à des concepts liés à une implémentation particulière. Ainsi, Astral est un bon candidat comme langage d'interrogation instantané et continu.
 
 De plus, nous avons pu prouver certains résultats fondamentaux sur les équivalences de requêtes. Tout d'abord, nous avons montré que nos définitions de fenêtres et de \textit{streamers} étaient consistantes par le théorème de transmission temporelle. Ensuite, nous avons pu montrer des résultats exploitables pour l'optimisation logique d'une requête. Enfin, nous avons vu les résultats liés à la transposabilité qui sont exploitables pour le partage de sous-requêtes.
 
 Toutefois, nous ne sommes pas capables de qualifier formellement l'expressivité d'Astral. Dans le domaine relationnel, le théorème de Codd~\cite{Codd:theorem} permet de prouver l'algèbre relationnelle est équivalente au \textit{datalog non récursif avec négation}. Mais dans le domaine des requêtes continues et des flux de données, il n'existe pas de classe logique permettant de qualifier la puissance d'expression d'un langage.
+
+Astral a été présenté tout d'abord dans~\cite{Petit:window} en mettant en avant les sémantiques des fenêtres. Elle a aussi été présenté dans~\cite{Petit:revisiting} en relevant les problèmes d'ordres observés dans la gestion de flux.
 
 Nous avons présenté l'algèbre Astral et analysé ses points forts et limitations. Nous nous servons de ce modèle comme base fondamentale pour concevoir notre système d'évaluation de requête continue que nous présentons dans la partie suivante.
