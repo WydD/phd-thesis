@@ -1,5 +1,10 @@
 \section{Choix du plan de jointure dans Asteroid}\label{sec:valid:perfs:couplage}
-En section~\ref{sec:contrib:asteroid:reecriture:join}, nous avons présenté un opérateur capable de faire une jointure $\ssjoin$ entre une relation temporelle d'Astronef et une relation issue d'un SGBD. Deux plans ont été présentés : le plan \textbf{P1} applique la jointure dans Astronef en utilisant la relation temporelle issue du SGBD comme cache local ; le plan \textit{P2} quant à lui exécute l'opération de jointure à l'intérieur du SGBD pour exploiter ses capacités. Alors que l'optimisation poussant les opérateurs au plus proche du SGBD semble efficace dans la plupart des cas, nous voyons dans cette section que ce n'est pas toujours le cas pour cette opération.
+En section~\ref{sec:contrib:asteroid:reecriture:join}, nous avons présenté un opérateur capable de faire une jointure $\ssjoin$ entre une relation temporelle d'Astronef et une relation issue d'un SGBD. Deux plans ont été présentés : 
+\begin{itemize}
+	\item[\textbf{P1}] applique la jointure (hachée) dans Astronef en utilisant la relation temporelle issue de \textit{dbsource} comme cache local.
+	\item[\textbf{P2}] quant à lui exécute l'opération de jointure à l'intérieur du SGBD avec \textit{dbjoin} pour exploiter ses capacités.
+\end{itemize}
+Alors que l'optimisation poussant les opérateurs au plus proche du SGBD semble efficace dans la plupart des cas, nous voyons dans cette section que ce n'est pas toujours le cas pour cette opération.
 
 \subsection{Jointure sur une relation statique}
 Nous exécutons ici la requête $CPUMem$ présenté en section~\ref{sec:valid:domvision:requetes:historisation}. Pour rappel, cette requête implique une jointure avec $Application \Join Monitorable$ pour pouvoir identifier le flux de métriques processeurs et mémoires. Voici les paramètres d'expérimentations que nous fixons :
@@ -23,7 +28,7 @@ FROM Application NATURAL JOIN Monitorable
 	\caption{Performance d'une jointure sur catalogue statique}\label{fig:valid:perfs:asteroid:static}
 \end{figure}
 
-\textbf{Résultats} : La figure~\ref{fig:valid:perfs:asteroid:static} montre la latence des deux plans de requête \textbf{P1} et \textbf{P2}. Les expérimentations ont montré que le plan \textit{P1} est meilleur et plus stable sur $N$. Bien entendu, cela ne pourra pas être le cas pour des valeurs très larges de $N$. Dans notre cadre expérimental, le \textit{hash-join} ne semble pas être le facteur limitant à $100\mu s$, car cela consiste à interroger une table de hachage constituée une seule fois. Le coût du \textit{scheduling} et d'autres tâches de l'intergiciel deviennent des facteurs limitants. 
+\textbf{Résultats} : La figure~\ref{fig:valid:perfs:asteroid:static} montre la latence des deux plans de requête \textbf{P1} et \textbf{P2}. Les expérimentations ont montré que le plan \textit{P1} est meilleur et plus stable avec $N$ augmentant. Bien entendu, cela ne pourra pas être le cas pour des valeurs très larges de $N$. Dans notre cadre expérimental, le \textit{hash-join} ne semble pas être le goulot d'étranglement, car cela consiste à interroger une table de hachage constituée une seule fois. Le coût du \textit{scheduling} et d'autres tâches de l'intergiciel deviennent des facteurs limitants.
 
 Le plan \textbf{P2} est plus coûteux, car pour chaque n-uplet, le composant doit se connecter au SGBD et exécuter la requête. Bien que la requête soit préparée, cela introduit un coût supplémentaire. Ce plan utilise l'index stocké sur disque dur, mais ses performances sont moindres comparé à un accès direct à une table de hachage en mémoire.
 
@@ -32,7 +37,7 @@ Si les relations \textit{Monitorable} ou \textit{Applications} sont mis à jour,
 \subsection{Jointure sur un agrégat historique}
 Dans cette seconde expérimentation, nous exécutons la requête $HistAvgCPU$ vu dans la section~\ref{sec:valid:domvision:requetes:alerte}. Pour rappel, cette requête joint une relation temporelle avec un agrégat effectué sur historique. Voici les paramètres de notre expérience :
 \begin{itemize}
-	\item L'historique est mis à jour dès que possible par un processus de collecte extérieur ($CPUMem$ par exemple).
+	\item L'historique est mis à jour dès que possible par un processus extérieur (une requête dans Astronef par exemple).
 	\item Il existe $D$ identifiants d'équipement et $M$ valeurs historiques par identifiants.
 	\item Il y a un index sur \textit{HistCPU(monitorableId)}.
 \end{itemize}
@@ -48,11 +53,11 @@ SELECT monitorableId, AVG(cpu) as avg FROM HistCPU GROUP BY monitorableId
 \caption{Performance de la jointure avec agrégat en utilisant la sélection ou non}\label{fig:valid:perfs:asteroid:agg}
 \end{figure}
 
-\textbf{Résultats} : Dans cette expérience, nous avons pu remarquer que les performances de la requête \textit{SQL} de \textit{dbsource} ne dépend que de la taille de l'historique $(M.D)$. Toutefois, ce n'est pas le cas pour un agrégat utilisant une sélection sur l'identifiant avec \textit{dbjoin}, qui ne dépend principalement que de $M$. La figure~\ref{fig:valid:perfs:asteroid:aggregate} représente l'évolution de la latence de la requête d'agrégat avec et sans la sélection\footnote{La perte de performance massive observée après $4M$ de n-uplets est due au \textit{buffering} qui ne peut être fait en mémoire et le disque est utilisé. Ce fait a été confirmé par les développeurs d'\textit{H2}.}. La figure~\ref{fig:valid:perfs:asteroid:aggregate:select} représente l'évolution de la latence en variant $M$ pour l'agrégat avec sélection.
+\textbf{Résultats} : Dans cette expérience, nous avons pu remarquer que les performances de la requête \textit{SQL} de \textit{dbsource} ne dépend que de la taille de l'historique $(M.D)$. Toutefois, ce n'est pas le cas pour un agrégat utilisant une sélection sur l'identifiant avec \textit{dbjoin}, qui ne dépend principalement que de $M$. La figure~\ref{fig:valid:perfs:asteroid:aggregate} représente l'évolution de la latence de la requête d'agrégat avec et sans la jointure faite par \textit{dbjoin}\footnote{La perte de performance massive observée après $4M$ n-uplets est due au \textit{buffering} qui ne peut être fait en mémoire et le disque est utilisé. Ce fait a été confirmé par les développeurs d'\textit{H2}.}. La figure~\ref{fig:valid:perfs:asteroid:aggregate:select} représente l'évolution de la latence en variant $M$ pour l'agrégat avec sélection.
 
 La performance dépend des caractéristiques de l'historique. Plus nous avons un $M$ petit, plus nous avons une petite latence pour le plan \textbf{P2}. La latence de \textbf{P2} est bornée entre les deux courbes de la figure~\ref{fig:valid:perfs:asteroid:aggregate} comme le cas $M=10$ représente le minimum de latence et $D=1$ (équivalent à aucune sélection) est le pire cas. Le choix du plan est clairement en faveur du plan \textbf{P2} car son pire cas a des performances similaires à \textbf{P1}. Dans l'expérience précédente, nous avions supposé pouvoir absorber le coût de mise à jour. Ce n'est pas le cas ici, car l'historique est régulièrement mis à jour.
 
-\subsubsection{D'autres stratégies}
-Si le résultat de la requête peut être dégradé, il est possible d'utiliser \textit{dbsource} est mode périodique. Dans ce cas, nous pouvons évaluer la condition limite pour passer d'un plan à l'autre en regardant les coûts mesurés dans la figure~\ref{fig:valid:perfs:asteroid:agg}.
+\subsubsection{Stratégies alternatives}
+Si le résultat de la requête peut être dégradé, il est possible d'utiliser \textit{dbsource} en mode périodique. Dans ce cas, nous pouvons évaluer la condition limite pour passer d'un plan à l'autre en regardant les coûts mesurés dans la figure~\ref{fig:valid:perfs:asteroid:agg}.
 
-Nous pouvons toutefois trouver une autre réécriture exacte. Lorsque la requête est déployée, il est possible de faire une distinction entre le passé $(CPUMemHistory^{t_0})$ et le futur représenté par le flux $CPUMem$. En supposant que l'agrégat est séparable par les moyens décrits dans la section~\ref{sec:rw:sgfd:optim:fenetres}, alors nous pouvons séparer les calculs sur le passé et le futur. L'agrégat passé est un calcul instantané effectué par \textit{dbsource} est mode \textit{one-shot}. L'agrégat futur est calculé par les opérateurs $_{id}\G[\infty]$. Or, ces opérateurs peuvent être regroupés en un seul macrobloc capable de calculer l'agrégat avec un coût mémoire borné.
+Nous pouvons toutefois trouver une autre réécriture fournissant un résultat exact. Lorsque la requête est déployée, il y a une distinction entre le passé $(CPUMemHistory^{t_0})$ et le futur représenté par le flux $CPUMem$. En supposant que l'agrégat est séparable par les moyens décrits dans la section~\ref{sec:rw:sgfd:optim:fenetres}, alors nous pouvons séparer les calculs sur le passé et le futur. L'agrégat passé est un calcul instantané effectué par \textit{dbsource} est mode \textit{one-shot}. L'agrégat futur est calculé par les opérateurs $_{id}\G_{...}$ et $[\infty]$. Or, ces opérateurs peuvent être regroupés en un seul macrobloc capable de calculer l'agrégat avec un coût mémoire borné.
