@@ -195,7 +195,7 @@ Les tailles des fenêtres de ces requêtes sont différentes. Dans la seconde re
 Toutefois, dans le cadre particulier des fenêtres temporelles et de la fenêtre accumulative $[\infty]$ la propriété de commutativité est vraie\footnote{Car ces définitions de fenêtres ne dépendent pas de la fonction $\tau_S$}. De façon similaire, la commutativité avec $\RSu$ n'est pas autorisé. Les autres règles autorisant la commutativité sont pour la plupart issues de l'algèbre relationnelle. La table~\ref{tab:selection} liste l'ensemble des règles pour pousser les sélections.
 
 Enfin, une dernière commutativité est notable : la manipulation temporelle. Sa commutativité est intuitive à appréhender.
-\begin{prop}\label{prop:commut:manipulation}
+\begin{prop}[Commutativité de la manipulation temporelle]\label{prop:commut:manipulation}
 L'opérateur de manipulation temporelle est commutatif avec tous les opérateurs relationnels.
 \end{prop}
 En effet, la manipulation temporelle applique une fonction $f$ au \textit{batch} utilisé pour récupérer la relation instantanée d'une relation temporelle. Or, les opérateurs relationnels sont décomposables en $\nu (R)(b) = \nu' R(b)$. L'application d'une fonction $f$ donne : $\nu (R)(f(b)) = \nu' R(f(b))$, avec $R(f(b))$ correspondant à l'application de la manipulation temporelle.

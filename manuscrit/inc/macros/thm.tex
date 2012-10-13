@@ -1,5 +1,6 @@
 %\usepackage[nocut,thickness=1.5pt, hskip=-1.5em, vskip=0pt, leftmargin=.5em]{thmbox}
 \usepackage{caption}
+\usepackage[subfigure]{tocloft} 
 \usepackage{changepage}
 \usepackage{needspace}
 \newlength{\stdindent}
@@ -22,13 +23,18 @@
 \definecolorseries{#1colorsat}{hsb}{step}{#1color}{0,0.2,-0.2}
 \resetcolorseries{#1colorsat}
         \DeclareCaptionFormat*{#1label}{\makebox[\linewidth][s]{\hspace{1.5em}\ifx#3S\it\else\bf\fi ##1 \hfill{\bf \color{#1colorsat!![3]} ##3}\hfill\llap{\phantom{p}}}}\floatstyle{plaintop}
+        \expandafter\def\csname list#1floatname\endcsname{}
         \ifthenelse{\equal{#4}{}}{
+		\newlistof{#1float}{#1toc}{\expandafter\csname list#1floatname\endcsname}
         \newfloat{#1float}{htH}{#1toc}\floatname{#1float}{#2}
 	\expandafter\def\csname the#1float\endcsname{\arabic{#1float}}
         }{
+		\newlistof[#4]{#1float}{#1toc}{\expandafter\csname list#1floatname\endcsname}
         \newfloat{#1float}{htH}{#1toc}[#4]\floatname{#1float}{#2}
 	\expandafter\def\csname the#1float\endcsname{\csname #4arabic\endcsname{#1float}}
 	}
+		\setlength{\expandafter\csname cftafter#1toctitleskip\endcsname}{1em}
+		\setlength{\expandafter\csname cft#1floatnumwidth\endcsname}{1.5cm}
         \captionsetup[#1float]{position=top,aboveskip=0pt,format=#1label,textformat=spaced}
 	\newenvironment{#1}[1][]%
 {\begin{#1float}[!htb]%
