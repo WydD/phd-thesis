@@ -64,17 +64,17 @@ Il devient désormais possible de définir un opérateur permettant de générer
 \begin{defi}[Opérateur de Séquence de Fenêtres]\label{def:fenetre}
 	Soit $S$ un flux et $(\alpha, \beta, \gamma)$ une description de séquence,
 	
-	L'opérateur de séquence de fenêtres est défini par : $\forall b \in \TN$, 
+	L'opérateur de séquence de fenêtres est défini par : $\forall (t,i)\in \TN$, 
 	\begin{itemize}
-		\item Si $\gamma(b) \geq 0$, 
+		\item Si $\gamma(t,i) \geq 0$, 
 		\begin{itemize}
 			\item Si la description possède des bornes temporelles :
-			$$S[\alpha,\beta,\gamma](b) = \left\{s\in S, \ (\alpha(\gamma(b)),0)\leq \BS(s) \leq (\beta(\gamma(b)),i)\right\}$$
+			$$S[\alpha,\beta,\gamma](t,i) = \left\{s\in S, \ (\alpha(\gamma(t,i)),0)\leq \BS(s) \leq (\beta(\gamma(t,i)),i)\right\}$$
 			\item Si la description possède des bornes positions :
-			$$E(b) = \left\{s\in S, \ \tau_S(\alpha(\gamma(b)))\leq \BS(s) \leq \tau_S(\beta(\gamma(b)))\right\}$$
-			$$S[\alpha,\beta,\gamma](b) = \{s \in E(b) / (\#E(b) - \pos_{E(b)}(s)) \leq \beta(\gamma(b)) - \alpha(\gamma(b))$$
+			$$E(t,i) = \left\{s\in S, \ \tau_S(\alpha(\gamma(t,i)))\leq \BS(s) \leq \tau_S(\beta(\gamma(t,i)))\right\}$$
+			$$S[\alpha,\beta,\gamma](t,i) = \{s \in E(t,i) / (\#E(t,i) - \pos_{E(t,i)}(s)) \leq \beta(\gamma(t,i)) - \alpha(\gamma(t,i))\}$$
 		\end{itemize}
-		\item Si $\gamma(b) <0$ alors $S[\alpha,\beta,\gamma](b) = \emptyset$
+		\item Si $\gamma(t,i) <0$ alors $S[\alpha,\beta,\gamma](t,i) = \emptyset$
 	\end{itemize}
 \end{defi}
 

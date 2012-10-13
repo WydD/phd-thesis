@@ -1,0 +1,238 @@
+\chapter{Démonstrations}
+\chaptertoc
+
+Ce chapitre présente l'ensemble des démonstrations des propriétés et théorèmes non triviaux décrits dans ce manuscrit.
+\def\findemo{\begin{flushright} $\blacksquare$ \end{flushright}}
+\section{Proposition~\ref{prop:inclusionselect} : Inclusion de la sélection}
+Soit $b$ un \textit{batch} quelconque, alors $(\sigma_c(R))(b) = \Sigma_c(R(b))$. Par définition, $\Sigma_c$ filtre les n-uplets de l'ensemble fournit. Alors, nous obtenons naturellement $\Sigma_c(R(b)) \subset R(b)$. Comme l'inclusion ensembliste est trivialement un cas particulier de l'inclusion de séquence de n-uplets présenté en définition~\ref{def:inclusion}, alors, $(\sigma_c(R))(b) \subseteqq R(b)$. D'où le résultat.
+\findemo
+
+\section{Théorème~\ref{thm:transmission} : Transmission temporelle}
+\subsection{Lemme des propriétés de $\tau_S$}
+Avant de détailler cette démonstration, nous devons prouver le lemme~\ref{prop:tau}.
+
+\begin{lem}[Propriétés de $\tau_S$]\label{prop:tau}
+\begin{eqnarray*}
+   \forall n \in \N, \qquad \tau_S(n) &\geq&( t_0,0) \\
+   \forall b\in \TN, \qquad \tau_S(\tau_S^{-1}(b)) & \leq & (b)\\
+	\forall n \in \N, \qquad \tau_S^{-1}(\tau_S(n)) &\geq & n
+\end{eqnarray*}
+
+De plus, si $\exists s \in S, \mathcal B_S(s)=b$, alors $\tau_S\circ\tau_S^{-1}(b) = b$.
+\end{lem}
+
+Comme tout \textit{timestamp} d'un flux initialisé est au moins plus grand que $t_0$, alors, la première position a un timestamp plus grand que $t_0$. Sachant l'hypothèse~\ref{hyp:ordres}, $\tau_S$ est croissante, alors $\forall n \in \N$, $\tau_S(n) \geq (t_0,0)$.
+
+Soit $b\in \T\times\N\geq (t_0,0)$. Sachant la définition formelle de $\rtau_S$. 
+\begin{itemize}
+\item Si $|S| < +\infty\wedge b \geq \tau_S(|S|)$, alors nous pouvons écrire $\tau_S(\tau_S^{-1}(b)) = \tau_S(|S|) \leq b$.
+\item Sinon : $\tau_S^{-1}(b) =\sum_{n=0}^{|S|-1} n\ \mathbf 1_{[\tau_S(n), \tau_S(n+1)[}(b)$
+\end{itemize}
+
+Soit $j$ étant l'unique position telle que $b\in [\tau_S(j),\tau_S(j+1)[$. Alors, $\tau_S(\tau_S^{-1}(b)) = \tau_S(j) \leq b$. Alors $\exists s \in S$ tel que $\BS(s) = b$, alors $\exists j\in \N$ tel que $\tau_S(j) = b$.
+
+Enfin, soit $n\in \N$, comme $\tau_S$ est croissante non stricte, il peut y avoir des \textit{batchs} égaux. Soit $[x,y]$ le plus grand intervalle tel que $\forall j \in [\![x,y]\!]$, $\tau_S(j) = \tau_S(n)$, par définition $n\in [x,y]$.
+\begin{eqnarray*}
+\tau_S^{-1}(\tau_S(j)) &=& \sum_{n=0}^{|S|-1} n\ \mathbf 1_{[\tau_S(n), \tau_S(n+1)[}(\tau_S(j)) \\
+& = &  \sum_{n=x}^{y} n\ \mathbf 1_{[\tau_S(n), \tau_S(n+1)[}(\tau_S(j)) \\
+& = & y \indic_{[\tau_S(b), \tau_S(b+1)[}(\tau_S(j))\\
+& = & y
+\end{eqnarray*}
+Ainsi, $[\tau_S(n), \tau_S(n+1)[ = \emptyset$ pour $n\in[x,y[$. Comme $b \geq n$, nous obtenons le résultat.
+
+\subsection{La démonstration}
+\def\rpos{\mathop{\mathrm{rpos}}}
+La fonction d'attente pour une DSF positionnelle est la suivante : $$\gamma(b) = \left\lfloor \frac{\tau_S^{-1}(b) - \beta(0)}r\right\rfloor$$
+
+Avec la DSF fournie $[\alpha,j+k,1]$, $\gamma(b) = \tau_S^{-1}(b)-k$. 
+
+Soit $s\in E_{b}\equ s\in S$ et 
+$$\begin{array}{rcl} 
+\tau_S\circ\alpha\circ\gamma(b) & \leq \BS(s) \leq & \tau_S(\beta(\gamma(b)))\\ 
+\equ \ \tau_S\circ\alpha\circ\gamma(b) & \leq \BS(s) \leq & \tau_S(\gamma(b))\\ 
+\equ \ \tau_S\circ\alpha\circ\gamma(b) & \leq \BS(s) \leq & \tau_S(\tau_S^{-1}(b))
+ \end{array}$$
+
+La dernière inégalité est équivalente à $\tau_S\circ\alpha\circ\gamma(b) \leq \BS(s) \leq  b$. L'implication est simple dû à la propriété~\ref{prop:tau}. La réciproque doit être détaillée. Si $\BS(s) \leq b$, il évident que $\forall s\in S$, $\BS(s)\not\in]\tau_S(\tau_S^{-1}(b)), b[$, car s'il existait un tel n-uplet $\tau_S(\tau_S^{-1}(b))$ serait égal à $b$ ce qui est absurde. Ainsi, $\BS(s) \leq \tau_S(\tau_S^{-1}(b))$.
+
+Alors, $S[\alpha,i,1n](b) = F_{b}=s\in S, \begin{cases}\tau_S\circ\alpha\circ\gamma(b) \leq \BS(s) \leq b \\\rpos_{E_{t,i}}(s) \leq \tau_S^{-1}(b) - \alpha\circ\gamma(b) \end{cases}$
+
+$$\begin{array}{l}\Psi_{b}(s,t)\in S' \wedge \B{S'}(\Psi_{b}(s,t)) = b\\ \qquad
+ \equ  s\in F_{b} \wedge s\not\in F_{b^-} \\ \qquad
+ \equ  s\in S \wedge [...]_1 \leq \BS(s) \leq b \wedge \rpos_{E_{b}}(s) \leq [...]_2\wedge \\ \qquad
+ \qquad  ([...]_3 > \BS(s) \vee \BS(s) > b^- \vee \rpos_{E_{b^-}}(s) > [...]_4)\end{array}$$
+
+Comme $\tau_S\circ\alpha\circ\gamma(b) \leq \BS(s) \wedge \tau_S\circ\alpha\circ\gamma(b^-) > \BS(s)$ est impossible car $\tau_S\circ\alpha\circ\gamma$ est croissante. De plus, $\rpos_{E_{b}}(s) \leq \tau_S^{-1}(b) - \alpha\circ\gamma(b) \wedge \rpos_{E_{b^-}}(s) > \tau_S^{-1}(b^-) - \alpha\circ\gamma(b^-)$ est aussi impossible car le nombre de n-uplet avec une position plus grande que $s$ augmente en passant de $b^-$ à $b$. Nous obtenons finalement le résultat suivant :
+
+$\equ s\in F_{b} \wedge \BS(s) > b^-$
+
+Ainsi, $\BS(s) = b$.
+\findemo
+
+\section{Corollaire~\ref{cor:equivalence-winstr} : Équivalence de la composition fenêtre-\textit{streamer}}
+Sachant $S' = \IS(S[\alpha,i+k,1])$,
+
+En développant les expressions, nous voyons trivialement que le théorème de transmission temporelle nous démontre en substance que, $S' \subseteq S$. Or, si la fenêtre contient au moins le dernier \textit{batch}, alors, pour un \textit{batch} donné $(t,i)$, si $s\in S$ et $\BS(s)=(t,i)$ alors $s\in S[W](b)$ et $s\not\in S[W](b^-)$. Ainsi, $\Psi_{(t,i)}(s,t) \in S'$ et $\B{S'}(\Psi_{(t,i)}(s,t)) = (t,i)$. Donc, nous avons équivalence.
+
+Les autres expressions du corollaires sont des conséquences triviales de cette DSF.
+\findemo
+
+\section{Table~\ref{tab:windows} : Équivalences de DSF}
+\subsection{Fenêtre cumulative}
+En analysant la démonstration de la transmission temporelle, nous pouvons en extraire la propriété suivante :
+$$s\in E_{t,i} \equ s\in S \wedge (t_0,0) \leq \BS(s) \leq (t,i)$$
+
+Nous devons désormais prouver que $E_{t,i} = S[0,j,1](t,i)$. Comme, $\beta(\gamma(t,i)) - \alpha(\gamma(t,i)) = \tau_S^{-1}(t,i)$.
+
+Soit $s \in E_{t,i}$. Alors $\tau_S^{-1}(t,i)$ correspond à la position du n-uplet ayant le plus grand $\varphi$ dans $E_{t,i}$.
+$$\rpos_{E_{t,i}}(s) = \tau_S^{-1}(t,i) - \pos_{E_{t,i}}(s)$$
+
+Ainsi $\tau_S^{-1}(t,i) - \pos_{E_{t,i}}(s) \leq \tau_S^{-1}(t,i)$ ce qui est trivialement vrai.
+
+Étant donné que le raisonnement est réciproque, alors : $S[0,j,1n](t,i) = \{s\in S, \BS(s) \leq (t,i)\}$
+\findemo
+\subsection{Dernier batch}
+Ce résultat est démontré similairement à la démonstration précédente.
+
+Premièrement, nous remarquons grâce au lemme~\ref{prop:tau} que $\tau_S(\gamma(t,i)) = \tau_S(\tau_S^{-1}(t,i)) \leq (t,i)$. Par définition, $\exists s\in S$, $\BS(s)=\tau_S(\tau_S^{-1}(t,i)) = (t',i')$. Alors, $\tau_S^{-1}((t',i')^-)$ est la position maximale de tout n-uplet ayant un \textit{batch} strictement inférieur à $(t,i)$. D'où le résultat : $[B]=]\tau_S^{-1}(\tau_S(i)^-),i,1]$.
+\findemo
+
+\section{Table~\ref{tab:projection} et~\ref{tab:selection} de commutativité des projections et sélection}
+La plupart des équivalences présentée dans ce tableau sont issues des connaissances de l'algèbre relationnelle. Concernant la projection, il est important de remarquer que la commutativité ne perturbe pas l'aspect temporel des relations notamment parce que les n-uplets sont \textit{identifiés} par $\varphi$. Ainsi, soit $s$ et $s'$ deux n-uplets et $A$ un ensemble d'attributs, alors nous avons $s = s' \equ s[A] \equ s'[A]$. Donc, la projection n'a pas beaucoup d'influence et peut commuter facilement.
+
+Concernant la sélection, c'est un peu plus délicat car la sélection perturbe naturellement la \textit{position} d'un n-uplet. C'est pour cela qu'il n'est pas possible de permuter avec l'opérateur de séquence de fenêtres. Toutefois, les démonstrations sont triviales en suivant les définitions. Par exemple, pour un opérateur de séquence de fenêtres temporel :
+\begin{eqnarray*}
+s\in (\sigma_c S)[\alpha,\beta,\gamma](t,i) & \equ & s\in (\sigma_c S) \wedge (\alpha(\gamma(t,i)),0) \leq \B{(\sigma_c S)}(s) \leq (\beta(\gamma(t,i),i)\\
+& \equ & s\in S \wedge c(s) \wedge (\alpha(\gamma(t,i)),0) \leq \BS(s) \leq (\beta(\gamma(t,i),i)\\
+& \equ & c(s) \wedge s\in S[\alpha,\beta,\gamma](t,i)\\
+& \equ & s\in \sigma_c (S[\alpha,\beta,\gamma](t,i))
+\end{eqnarray*}
+\findemo
+
+\section{Propriété~\ref{prop:assoc-join-union} : Associativité des jointures et unions}
+Ces opérateurs sont associatifs dans l'algèbre relationnelle. Leurs expressions dans Astral est similaire à la notion d'identifiant physique près. Analysons l'effet de l'associativité sur $\Phi^\times$ et $\Phi^\union$.
+
+Soit $a,b,c,d,e,f \in \I^6$, 
+\begin{eqnarray*}
+\Phi^\times(a,\Phi^\times(b,c)) \leq \Phi^\times(d,\Phi^\times(e,f))& \equ & (a,(b,c)) \leq (d,(e,f)) \\
+& \equ &  a < d \vee a=d \wedge (b,c) \leq (e,f) \\
+& \equ &  a < d \vee a=d \wedge (b < e \vee b=e \wedge c \leq f)
+\end{eqnarray*}
+
+De même, nous obtenons le résultat similaire :
+\begin{eqnarray*}
+\Phi^\times(\Phi^\times(a,b),c) \leq \Phi^\times(\Phi^\times(d,e),f)& \equ & ((a,b),c) \leq ((d,e),f) \\
+& \equ & (a,b) < (d,e) \vee (a,b) = (d,e) \wedge c \leq f \\
+& \equ & (a < d \vee a = d \wedge b < e) \vee a = d \wedge b = e \wedge (b < e \vee b=e \wedge c \leq f) \\
+& \equ &  a < d \vee a=d \wedge (b < e \vee b=e \wedge c \leq f)
+\end{eqnarray*}
+
+Donc les deux ordres sont équivalents et nous obtenons l'associativité.
+
+La démonstration est similaire pour $\Phi^\union$.
+
+\section{Théorème~\ref{thm:transpwindow} : Transposabilité générale des DSF}
+Tout d'abord il est évident de voir que les taux d'évaluations $r$ doivent être nécessairement identiques. Soient $\gamma$ et $\gamma'$ les fonctions d'attentes des descriptions.
+\subsection{Le cas temporel}
+Soit $(t,i)\in \TN$ tel que $\gamma'(t,i)\geq 0$,
+
+La condition sur le flux de l'opérateur de séquence de fenêtre dans la première requête est :
+$$(\alpha(\gamma(t,i)),0) \leq \BS(s) \leq (\beta(\gamma(t,i)),i)$$
+
+Comme le flux d'entrée $S$ est naturellement transposable, nous avons $(\sigma_{t\geq t_1} S,t_0) = (S,t_1)$. Nous restreignons la précédente condition avec $t\geq t_1$
+$$(\max(\alpha(\gamma(t,i)),t_1),0) \leq \BS(s) \leq (\beta(\gamma(t,i)),i)$$
+
+Nous souhaitons que la condition impliquée par $[\alpha',\beta',r]$ soit équivalente. Nous pouvons déjà voir que 
+\begin{eqnarray*}
+\gamma'(t,i) &=& \left\lfloor\frac{t-\beta'(0)}{r}\right\rfloor \\
+& = & \left\lfloor\frac{t-\beta(0)+\beta(0)-\beta'(0)}{r}\right\rfloor\\
+& = & \left\lfloor\frac{t-\beta(0)}{r} - K\right\rfloor\\
+& = & \gamma(t,i) - K\qquad \textrm{comme\ } K \in \N
+\end{eqnarray*}
+
+Maintenant, nous avons dans la seconde requête les conditions suivantes :
+\begin{eqnarray*}
+(\alpha'(\gamma'(t,i)),0) & \leq \BS(s) \leq & (\beta'(\gamma'(t,i)),i)\\
+(\alpha'(\gamma(t,i)-K),0) & \leq \BS(s) \leq & (\beta'(\gamma(t,i)-K),i)
+\end{eqnarray*}
+
+Sachant les conditions sur $\alpha$ et $\beta$, les conditions sur le premier flux et le second sont exactement équivalentes. D'où le résultat.
+\findemo
+
+\subsection{Lemme de transposabilité de $\tau$}
+Avant de démontrer le cas positionnel, il nous faut vérifier les effets de la transposabilité sur $\tau$.
+\begin{lem}[Lemme de transposabilité de $\tau$]
+Soit $S$ un flux naturellement transposable de $t_0$ à $t_1$.
+
+Soit $D$ la constante égale au nombre d'n-uplets présents dans le flux avant le \textit{batch} $(t_1,0)$. Formellement $D=\tau_{(S,t_0)}^{-1} ((t_1,0)^-)$.
+
+Alors, les égalités suivantes sont vraies :
+$$\begin{array}{rrcl}
+\forall n \in \N, \quad &\tau_{(S,t_1)}(n) & = & \tau_{(S,t_0)}(n+D)\\
+\forall t,i \in T\times \N \geq (t_1,0), \quad &\tau_{(S,t_1)}^{-1}(t,i) & = & \tau_{(S,t_0)}^{-1}(t,i) - D
+\end{array}$$
+\end{lem}
+
+Nous avons naturellement, $(S,t_1) = (\sigma_{t\geq t_1} S,t_0)$. 
+
+Puis il devient simple d'impliquer que $\tau_{\sigma_{t\geq t_1} S}(n) = \tau_{S}(n+D)$ de par la nature de $D$.
+
+$$\begin{array}{rcl}\tau_{(S,t_1)}^{-1}(t,i) &=& \sum_{n=0}^{+\infty} n \mathbf 1_{[\tau_{(S,t_1)}(n),\tau_{(S,t_1)}(n+1)[}(t,i) \\
+& =& \displaystyle\sum_{n=0}^{+\infty} n \mathbf 1_{[\tau_{(S,t_0)}(n+D),\tau_{(S,t_0)}(n+1+D)[}(t,i)\\
+& =& \displaystyle\sum_{n=D}^{+\infty} (n-D) \mathbf 1_{[\tau_{(S,t_0)}(n),\tau_{(S,t_0)}(n+1)[}(t,i)\\
+& = & \tau_{(S,t_0)}^{-1}(t,i) - D - \displaystyle\sum_{n=0}^{D-1} (n-D) \mathbf 1_{[\tau_{(S,t_0)}(n),\tau_{(S,t_0)}(n+1)[}(t,i)\\
+\end{array}$$
+
+Comme nous prenons un \textit{batch} $(t,i) \geq (t_1,0)$, et $\tau_{(S,t_0)}(D-1) \leq (t_1,0)$, la dernière somme est nulle, d'où le résultat.
+\findemo
+
+\subsection{Le cas positionnel}
+Soit $j\in\N$, tel que $j \geq K$, 
+\begin{eqnarray*}
+\alpha'(j) &=& \max(0, \alpha(j+K)-D)\\
+\alpha'(j)+D &=& \max(D, \alpha(j+K))\\
+\alpha'(j-K)+D &=& \max(D, \alpha(j))\\
+\tau_{(S,t_0)}(\alpha'(j-K)+D) &=& \max(\tau_{(S,t_0)}(D), \tau_{(S,t_0)}(\alpha(j)))
+\end{eqnarray*}
+
+Cette dernière égalité est vraie grâce à la propriété de croissance de $\tau$. L'invocation des propriétés de la transposabilité de $\tau$ nous donnent,
+$$\tau_{(S,t_1)}(\alpha'(j-K)) = \max((t_1,0), \tau_{(S,t_0)}(\alpha(j)))$$.
+
+Nous devons maintenant vérifier la même condition sur $\gamma'$,
+\begin{eqnarray*}
+\gamma'(t,i) &=& \left\lfloor\frac{\tau_{(S,t_1)}(t)-\beta'(0)}{r}\right\rfloor \\
+&=& \left\lfloor\frac{\tau_{(S,t_0)}(t)-D-\beta'(0)}{r}\right\rfloor \\
+& = & \left\lfloor\frac{\tau_{(S,t_0)}(t)-D-\beta(0)+\beta(0)-\beta'(0)}{r}\right\rfloor\\
+& = & \left\lfloor\frac{\tau_{(S,t_0)}(t)-\beta(0)}{r}-K\right\rfloor\\
+& = & \left\lfloor\frac{\tau_{(S,t_0)}(t)-\beta(0)}{r}\right\rfloor-K\qquad \textrm{as\ } K \in \N\\
+& = & \gamma(t,i)-K
+\end{eqnarray*}
+ 
+Nous pouvons désormais conclure en disant que : $$\forall t,i \geq \gamma'(t,i) \geq 0, \tau_{(S,t_1)}(\alpha'(\gamma'(t,i)) = \max(\tau_{(S,t_0)}(\alpha(\gamma(t,i))),(t_1,0))$$
+
+La démonstration est similaire pour $\beta'$.
+\findemo
+
+\section{Proposition~\ref{prop:transplineaire} : Transposabilité des DSF linéaires}
+Comme $K = \frac{\beta'(0)-\beta(0)+D}{r} = \frac{d'-d+D}r$, la première condition est naturelle,
+
+Comme $\beta'(i) = \beta(i+K)-D \Leftrightarrow c'i + d' = ci+cK+d-D$. Cette condition est vraie si et seulement si $c' = c$. Ainsi, nous avons, $cK = d'-d+D$, si $K\neq 0$, alors $c = r$ (sinon, aucune condition n'est nécessaire).
+
+Comme $\alpha'(i) = \max(B_{t_1}, \alpha(i+K)-D) \Leftrightarrow \max(a'i+b',B_{t_1}) = \max(B_{t_1}, \max(B_{t_0}, ai+aK+b-D)) = \max(B_{t_1}, ai+aK+b-D)$. Sachant que $a\neq 0$, et $i$ suffisamment au dessus de $B_{t_1}$, nous pouvons déduire que $a=a'$ (cette égalité est aussi trivialement vraie pour $a=0$). Nous déduisons aussi simplement que $b' = aK+b-D$. Dans le cas $a=0$, pas d'autres simplifications ne peuvent être faites.
+\findemo
+
+\section{Corollaire~\ref{coro:transplineaire} : Transposabilité pseudo-naturelle des DSF linéaires}
+Cette démonstration utilise directement les résultats de la propriété~\ref{prop:transplineaire}.
+
+Nous avons $d+B_{t_1}-d-B_{t_0}+D \in r\N \Leftrightarrow B_{t_1}-B_{t_0}+D\in r\N$. Dans le cas temporel, $t_1-t_0\in r\N$ et dans le cas positionnel $\tau_{(S,t_0)}^{-1}(t_1) \in r\N$ (sachant les définitions de $B$ et de $D$).
+
+Nous avons $K \neq 0$ comme $t_1 \neq t_0$ par définition (de même en positionnel). Alors $c=r$. 
+
+Considérons $a\neq 0$, alors $B_{t_1} = B_{t_0} + aK - D \Leftrightarrow aK = B_{t_1} - B_{t_0} + D = rK$. Ainsi, $a=r$.
+
+Considérons $a = 0$, alors $\max(B_{t_1}, b+B_{t_1}) = \max(B_{t_1}, b+B_{t_0}-D)$. 
+\begin{itemize}
+\item Si $b>0$, alors $b+B_{t_1} = \max(B_{t_1}, b+ B_{t_0} - D) \Leftrightarrow b = \max(0, b - rK)$, donc $b =0$ ce qui est absurde.
+\item Si $b \geq 0$, alors $B_{t_1} = \max(B_{t_1}, b+B_{t_0}-D) \Leftrightarrow 0 = \max(0, b - rK)$ ce qui est vrai pour tout $b\geq 0$
+\end{itemize}
+\findemo
