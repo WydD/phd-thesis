@@ -1,7 +1,7 @@
 \section{Conclusion}
 Pour démontrer la flexibilité de l'architecture, et pour répondre au besoin d'introduire les points de vues utilisateurs dans l'observation, nous avons intégré un nouvel opérateur de préférences dans notre solution. Cet opérateur nous a permis de sélectionner les données les plus intéressantes selon le profil de l'utilisateur. Cette intégration s'est fait via la spécification de cinq courtes règles ce qui valide que l'ajout de composants soit simple.
 
-Dans les quelques approches qui existent dans la littérature~\ref{Kontaki:topk,Morse:skyline,Mouratidis:topk}, les préférences sont appliqués uniquement sur des fenêtres glissantes. Or, dans notre cas, grâce à l'expressivité de notre système d'interrogation, nous pouvons appliquer cette opération sur tout type de données, qu'elles proviennent d'une base de données relationnelles ou de flux.
+Dans les quelques approches qui existent dans la littérature~\cite{Kontaki:topk,Morse:skyline,Mouratidis:topk}, les préférences sont appliquées uniquement sur des fenêtres glissantes. Or, dans notre cas, grâce à l'expressivité de notre système d'interrogation, nous pouvons appliquer cette opération sur tout type de données, qu'elles proviennent d'une base de données relationnelle ou de flux.
 
 L'évaluation de performances nous a démontré que le choix incrémental est en général meilleur que sa version statique. Toutefois, pour le cas de l'opérateur \textbf{Best}, il peut être préférable de choisir la version statique si les variabilités de la relation temporelles sont trop fortes. De travaux futurs pourraient s'intéresser à la découverte de motifs plus précis pour affiner ce choix.
 
