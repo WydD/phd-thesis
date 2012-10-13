@@ -1,5 +1,5 @@
 \section{Réécriture du plan d'exécution}\label{sec:contrib:asteroid:reecriture}
-Notre objectif est de pouvoir interroger toute entité de façon unifiée grâce au langage Astral. Nous avons décrit dans la section précédente les composants \textit{dbsource} et \textit{dbjoin} permettant d'intégrer les relations persistantes dans Astronef. Nous souhaitons indiquer à Astronef la manière de réécrire une requête Astral pour sélectionner un plan de requête efficace pouvant mêler relations persistantes et requêtes continues. Ainsi, l'objectif est de distribuer l'exécution de la requête entre Astronef et le SGBD.
+Notre objectif est de pouvoir interroger tout flux ou relation de façon unifiée grâce au langage Astral. Nous avons décrit dans la section précédente les composants \textit{dbsource} et \textit{dbjoin} permettant d'intégrer les relations persistantes dans Astronef. Nous devons indiquer à Astronef la manière de réécrire une requête Astral pour sélectionner un plan de requête efficace pouvant mêler relations persistantes et requêtes continues. Ainsi, l'objectif est de distribuer l'exécution de la requête entre Astronef et le SGBD.
 
 \subsection{Approche de la distribution de l'exécution}
 Notre heuristique de distribution que nous choisissons est que pour une requête relationnelle le SGBD sait calculer de façon plus efficace une requête.
@@ -78,7 +78,7 @@ En écrivant une règle pour chaque sémantique d'exécution spécifiée par la 
 
 Une application de cet ensemble de règles est la capacité à traduire une requête Astral relationnelle pure en \textit{SQL}. Notamment, si toutes les sources issues du SGBD sont utilisés sous forme de requêtes instantanées (ou si l'opérateur $\D^{(t_0,0)}$ est appliqué en tête de la requête) : nous sommes capables d'exécuter une requête instantanée Astral par le SGBD. Ainsi, même pour faire une analyse a posteriori avec des requêtes instantanées, il reste possible d'écrire ses requêtes uniquement en Astral. Malheureusement, le surcoût induit par la réécriture fait que du point de vue des performances, il n'est pas intéressant de faire ainsi.
 
-\subsection{Cas de la jointure mixte flux-SGBD}\label{sec:contrib:asteroid:reecriture:join}
+\subsection{Cas de la jointure hybride SGFD-SGBD}\label{sec:contrib:asteroid:reecriture:join}
 Grâce à la flexibilité de \textit{dbsource}, nous avons pu réécrire le plan de requête pour placer au plus les opérateurs relationnels sur le SGBD. Toutefois, nous sommes aussi en possession d'un composant opérateur que nous pouvons exploiter : \textit{dbjoin}. Nous avons défini la sémantique de l'opérateur comme capable de supporter toute requête $R_1\ssjoin R_2$ avec $R_1$ relation temporelle quelconque et $R_2$ exprimée en algèbre relationnelle sur les relations de la base de données. Ce composant est un macrobloc que nous pouvons former grâce à une règle. Afin d'illustrer l'application successive des règles, voici l'ensemble des résultats intermédiaires appliqués lors du raisonnement :
 \begin{align*} 
 R_1\ssjoin_c R_2 &= \sigma_c \left(R_1 \Join \D^{\mathrm{change}}_{R_1} R_2\right) & \text{(via \textbf{sugar})}\\

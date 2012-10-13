@@ -1,13 +1,13 @@
 \section{Optimisation physique}\label{sec:contrib:astronef:physique}
-Comme présentée dans la figure~\ref{fig:contrib:astronef:optimisation}, l'optimisation physique travaille sur l'arbre produit par l'optimisation logique. Les composants opérateurs suivant leur configuration implémentent différentes sémantiques. Cette sémantique peut-être traduite grâce à Astral. Une fois ces liens entre théorie et implémentation établis, il est nécessaire de sélectionner les meilleurs composants.
+Comme présentée dans la figure~\ref{fig:contrib:astronef:optimisation}, l'optimisation physique travaille sur l'arbre produit par l'optimisation logique. Les composants opérateurs implémentent différentes sémantiques d'exécution. Cette sémantique peut être traduite avec Astral. Une fois ces liens entre théorie et implémentation établis, nous avons plusieurs plans d'exécutions envisageables. Dans cette section, nous présentons les règles permettant de sélectionner les composants les plus efficaces.
 
 \subsection{Macroblocs}
-Afin d'exécuter des sous-parties de la requête de façon plus optimale, nous utilisons le concept de macroblocs. Un macrobloc est une composition d'opérateurs pouvant être réunis en un seul bloc, considéré plus efficace. Par exemple, la combinaison agrégation-fenêtre $\G S[W]$ largement étudié dans la littérature est un macrobloc. Sachant que des composants sont capables d'exécuter cet opérateur composite, nous pouvons effectuer cette transformation. Nous supposons ici l'hypothèse~\ref{hyp:macro} permettant d'appliquer des macroblocs dès que possible.
+Afin d'exécuter des sous-parties de la requête de façon plus optimale, nous utilisons le concept de macroblocs. Un macrobloc est une composition d'opérateurs pouvant être réunis en un seul bloc, considéré plus efficace. Par exemple, la combinaison agrégation-fenêtre $\G S[W]$ largement étudié dans la littérature est un macrobloc. Sachant que des composants sont capables d'exécuter cet opérateur composite, nous pouvons effectuer cette transformation. Ici, l'hypothèse~\ref{hyp:macro} permet d'appliquer des macroblocs dès que possible.
 \begin{hyp}[Heuristique des macros-blocs]\label{hyp:macro}
     Plus le nombre de composants opérateurs utilisés pour exécuter une requête est petit, plus son exécution est efficace.
 \end{hyp}
 
-Cette hypothèse est basée sur l'idée qu'un opérateur composite restreint ses capacités en terme de puissance d'expression. Ainsi, il devient plus spécialisé et efficace pour l'exécution de sa tâche plutôt que deux (ou plus) opérateurs génériques. De plus, moins il y a d'opérateurs, plus les travaux de planifications du \textit{Scheduler} sont minimes.
+Cette hypothèse est basée sur l'idée qu'un opérateur composite restreint ses capacités en terme de puissance d'expression. Ainsi, il devient plus spécialisé et efficace pour l'exécution de sa tâche plutôt que deux (ou plus) opérateurs génériques. De plus, moins il y a d'opérateurs, plus les travaux de planifications du \textit{Scheduler} sont allégés.
 
 La mise en œuvre des macroblocs se fait via l'utilisation d'un prédicat spécifique pour réécrire un arbre ou un sous-arbre en un nouveau bloc. Il est important de voir que la nature du nœud peut se changer en un opérateur non standard de l'algèbre.
 \begin{regle}[Regroupement de macroblocs]
@@ -31,7 +31,7 @@ macrobloc(
 Si un bloc est créé, il doit exister un composant capable de l'implémenter tel qu'il a été formé. Ainsi, il est nécessaire de vérifier des conditions supplémentaires si les capacités des composants sont limitées. En reprenant notre exemple, si nous ne possédons qu'un composant capable d'exécuter le nœud \textbf{windowaggregate} avec une description temporelle. Alors, nous devons le vérifier au moment de la formation du bloc.
 
 \subsection{Encapsulation d'opérations de n-uplets}
-Les opérateurs de n-uplets sont ceux capables de réduire leur opération à un traitement n-uplet par n-uplet.
+Les opérateurs de n-uplets tels que présentés dans la définition~\ref{def:operateurtuple} sont des opérateurs dont l'évaluation peut se faire de manière indépendante, n-uplet par n-uplet. Plusieurs opérateurs de ce type peuvent regroupés dans un seul macrobloc.
 \begin{defi}[Opérateurs de n-uplets]\label{def:operateurtuple}
     Soit $TS$ une séquence de n-uplets,
 
@@ -39,7 +39,7 @@ Les opérateurs de n-uplets sont ceux capables de réduire leur opération à un
     $$\Lambda(TS) = \{\lambda(s) / s \in TS \}$$
 \end{defi}
 
-Ces opérateurs ont pour propriété de vérifier le corollaire~\ref{cor:defunary} permettant de s'appliquer sur des flux ou relations. De plus, ces opérateurs sont composables. La proposition~\ref{prop:composition:operateurtuple} montre que l'évaluation de celle-ci est égale à la composition des traitements n-uplet par n-uplet.
+Ces opérateurs ont la particularité de vérifier le corollaire~\ref{cor:defunary} ce qui fait qu'ils sont applicables sur des flux ou des relations. De plus, ces opérateurs sont composables. La proposition~\ref{prop:composition:operateurtuple} montre que l'évaluation de celle-ci est égale à la composition des traitements n-uplet par n-uplet. La démonstration de cette proposition se fait trivialement par récurrence en composant les fonctions $\lambda$.
 \begin{prop}[Composition d'opérateurs de n-uplets]\label{prop:composition:operateurtuple}
     La composition d'opérateurs de n-uplet est égale à l'opérateur de n-uplet défini par la composition de leurs fonctions partielles.
 \end{prop}
@@ -83,15 +83,15 @@ Nous obtenons après encapsulation, le résultat suivant :
 
 
 \subsection{Sélection des composants}
-Nous en venons désormais à la dernière règle : la sélection du meilleur composant pour exécuter un nœud. Nous avons un arbre structuré de manière efficace. Il nous faut trouver la meilleure implémentation pour exécuter au mieux la requête. Ce choix pourra être seulement basé sur la nature du nœud dans le cas où il n'existe pas d'autres alternatives. Mais dans la plupart des cas, il est nécessaire de sélectionner selon sa configuration.
+Nous avons maintenant un arbre dont la structure est jugée comme efficace. Nous en venons désormais à la dernière règle : la sélection du meilleur composant pour exécuter chaque nœud. Ce choix pourra être seulement basé sur la nature du nœud dans le cas où il n'existe pas d'autres alternatives. Mais dans la plupart des cas, il est nécessaire de sélectionner selon sa configuration.
 
 \subsubsection{Calcul incrémental}
 Dans la section~\ref{sec:rw:sgfd:optimisation:flux}, nous avons présenté le calcul incrémental et son intérêt dans l'optimisation du traitement des flux. Ce principe reste applicable naturellement dans Astral, il est toujours possible de définir à partir d'une relation temporelle $R$ les deux $\Delta_R^+$ et $\Delta_R^-$. Ces deux objets indiquent les différences de $R$ à chaque \textit{batch} (resp. ajout et suppression). 
 
-Certains composants sont capables de traiter une relation en utilisant uniquement ces $\Delta_R$. Et certains opérateurs sont capables de fournir nativement les $\Delta_R$. Ainsi, il devient nécessaire de sélectionner les composants les plus capables d'exploiter ce mode.
+Certains composants implémentant un opérateur particulier sont capables de traiter une relation en utilisant uniquement ces $\Delta_R$. Et certains opérateurs fournissent sans coût supplémentaire ces $\Delta_R$. Ainsi, il devient important de sélectionner les composants les plus capables d'exploiter ce mode. Il est important que garder à l'esprit que dans certains cas, les tailles des $\Delta_R$ sont similaires aux tailles des états de $R$ (quand les $R$ états de $R$ n'ont pas d'éléments en commun). Dans ce cas, il n'est peut-être pas optimal d'utiliser le mode incrémental\footnote{Mais ce choix est difficile à mettre en œuvre car il est souvent nécessaire d'évaluer les cardinalités, ce qui nécessite des modèles statistiques.}.
 
 \subsubsection{Le prédicat de sélection}
-La sélection du meilleur composant est importante, car les performances peuvent être différentes en fonction des implémentations. Par exemple, les opérateurs de séquences de fenêtres $[L]$ (dernier n-uplet) et $[B]$ (dernier batch) peuvent se définir avec une description de séquence de fenêtre générique. Toutefois, leur implémentation ne nécessite pas d'utiliser un opérateur générique, car leur calcul est très simple. Utiliser un composant qui calcule une description de fenêtre linéaire générique serait inutile.
+La sélection du meilleur composant est importante, car les performances peuvent être différentes en fonction des implémentations. Par exemple, les opérateurs de séquences de fenêtres $[L]$ (dernier n-uplet) et $[B]$ (dernier batch) peuvent se définir avec une description de séquence de fenêtre générique. Toutefois, leur implémentation ne nécessite pas d'utiliser un opérateur générique, car leur calcul est très simple. Utiliser un composant qui calcule une description de fenêtre linéaire générique serait inutile et contre performant. 
 
 \begin{regle}[Sélection d'implémentations]
 La sélection du composant nommé $Impl$ pour le nœud $[A,B,C]$ auxquels sont ajoutées les propriétés optionnelles $Props$ est décidé par le prédicat :
@@ -99,7 +99,7 @@ La sélection du composant nommé $Impl$ pour le nœud $[A,B,C]$ auxquels sont a
 L'application de ce prédicat est faite de manière récursive.
 \end{regle}
 
-Les propriétés optionnelles permettent d'indiquer certaines informations au composant qui utilise ce nœud. Par exemple, il est possible d'indiquer que cette implémentation fournit une relation incrémentale.
+Les propriétés optionnelles permettent d'indiquer certaines informations au composant qui utilise ce nœud. Par exemple, il est possible d'indiquer que cette implémentation fournit une vue incrémentale des modifications.
 \begin{example}
 	Nous souhaitons implémenter les règles pour choisir les meilleures fenêtres. Nous utilisons un prédicat capable d'identifier les fenêtres particulières $[L]$ et $[B]$. Si la description correspond à ces fenêtres, alors \textit{LastBatchWindow} est sélectionnée, sinon \textit{WindowImpl} est utilisé par défaut.
 \begin{lstlisting}
@@ -111,7 +111,7 @@ implrules([window,_,_], "WindowImpl", {incremental: 1}):- !.
 \end{example}
 
 \begin{example}
-Par la suite, le streamer $\IS$ lui est capable de supporter les deux modes. Il est important de noter que le calcul incrémental pour les streamers $\IS$ et $\DS$ est très important, car leur coût devient quasi nul en utilisant directement les $\Delta_R$. Ces deux modes sont gérés par deux implémentations différentes, ce qui se traduit par :
+Le streamer $\IS$ est capable de supporter les deux modes. Il est important de noter que le calcul incrémental pour les streamers $\IS$ et $\DS$ est très important, car leur coût devient quasi nul en utilisant directement les $\Delta_R$. Ces deux modes sont gérés par deux implémentations différentes, ce qui se traduit par :
 \begin{lstlisting}
 implrules([streamer,{stype: "Is"}, [[_,{incremental:1},_]]], 
     "DynamicIsImpl"):- !. % Si Is et incremental

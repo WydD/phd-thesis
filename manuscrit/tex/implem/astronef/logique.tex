@@ -1,12 +1,13 @@
 \section{Optimisation logique}\label{sec:contrib:astronef:logique}
-Cette première application de règles permet de restructurer l'expression de la requête pour avoir la structure la plus adéquate. Dans cette section, nous exploitons les connaissances accumulées grâce aux théorèmes d'Astral que nous pouvons retrouver dans le chapitre~\ref{chap:validation:expressivite}.
+La section~\ref{sec:contrib:astronef:preparation} a présenté la phase de préparation de la requête et produit une représentation sous forme d'arbre. Cette section présente la phase d'optimisation logique qui s'appuie sur les travaux présentés au chapitre~\ref{chap:validation:expressivite}.
 
 \subsection{Projection et sélection}
 Nous faisons l'hypothèse~\ref{hyp:optimpush} qui permet d'intégrer des projections et sélections à tout endroit de l'arbre de requête. Les conséquences de cela sont de pouvoir placer des sélections et projections au plus près des sources. 
 \begin{hyp}[Heuristique du coût de sélection et projection]\label{hyp:optimpush}
     Le coût processeur de la sélection et de la projection peuvent être considérés comme négligeables.
 \end{hyp}
-Cette optimisation permet de réduire l'empreinte mémoire des résultats intermédiaires ce qui de plus réduit les temps de calculs des opérateurs. Pour atteindre ce résultat, il est nécessaire d'appliquer les résultats que nous donne Astral. Ces résultats ont été présentés dans le chapitre~\ref{chap:validation:expressivite}. Voici les deux prédicats permettant une telle optimisation :
+
+Cette optimisation permet de réduire l'empreinte mémoire des résultats intermédiaires. Par conséquence, il y a moins de données à traiter ce qui implique un gain de calcul. Pour atteindre ce résultat, il est nécessaire d'appliquer les résultats que nous donne Astral. Ces résultats ont été présentés dans le chapitre~\ref{chap:validation:expressivite}. Voici les deux prédicats permettant une telle optimisation :
 \begin{regle}[Optimisation des projections]
 La transformation d'un nœud contenant une projection afin de l'appliquer sur ses nœuds fils est gérée par le prédicat suivant :
 \begin{center} \textbf{pushprojectionrule}($[pi,BPi,[[A,B,C]]],[AOut,BOut,COut]$).\end{center}
@@ -28,13 +29,11 @@ pushprojectionrule(
     [streamer, ArgStreamerFinal, [
         [pi, ArgPiFinal, [C]]
     ]]
-):- 
-    map_get(ArgPi, "attributes", A),
+):- map_get(ArgPi, "attributes", A),
     remove(A,"T",Attr), % Attr contient les nouveaux attributs
 	% Les types et attributs des deux noeuds ont change...
     map_put(ArgStreamer, ['attributes', AttrA], ArgStreamerFinal),
-    relation(RType), % RType = "relation"
-    map_merge(ArgPi, {type: RType, attributes: Attr}, ArgPiFinal).
+    map_merge(ArgPi, {type: "relation", attributes: Attr}, ArgPiFinal).
 	\end{lstlisting}
 	
 	Maintenant, pour la sélection, voyons comment nous pouvons appliquer la règle de l'algèbre relationnelle $\sigma_c (R_1 \cup R_2) = (\sigma_c R_1 \cup \sigma_c R_2)$.
@@ -52,7 +51,7 @@ pushselectionrule(
 \end{example}
 
 \subsection{Optimisations annexes}
-Il peut devenir nécessaire d'introduire d'autres règles d'optimisations. Une des plus efficaces serait l'introduction de règles pour appliquer les propriétés de commutativité sur l'opérateur $\D_c^f$. En effet, cet opérateur est en effet très souple puisqu'il peut commuter très facilement avec les opérateurs relationnels. Ainsi, le rapprocher au plus prêt des sources permettrait d'éviter de mettre à jour trop souvent les résultats intermédiaires. 
+Il peut devenir nécessaire d'introduire d'autres règles d'optimisations. Une des plus efficaces serait l'introduction de règles pour appliquer les propriétés de commutativité sur l'opérateur $\D_c^f$. En effet, cet opérateur est très souple puisqu'il peut commuter très facilement avec les opérateurs relationnels. Ainsi, le rapprocher au plus prêt des sources permet d'éviter de mettre à jour trop souvent les résultats intermédiaires. 
 
 De plus, du fait de l'extensibilité d'Astronef, il est possible d'introduire de nouveaux opérateurs. Si ceux-ci peuvent subir des réécritures pour optimiser structurellement la requête, l'utilisateur d'Astronef doit pouvoir soumettre de nouvelles règles.
 

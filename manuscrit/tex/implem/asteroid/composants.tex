@@ -1,12 +1,12 @@
 \section{Extension d'Astronef pour l'intégration d'un SGBD}\label{sec:contrib:asteroid:composants}
-Dans cette section, nous présentons les différents composants développés pour permettre le couplage entre Astronef et un SGBD relationnel quelconque supportant \textit{SQL}. Nous présentons trois types de composants :
+Dans cette section, nous présentons les composants développés pour permettre le couplage entre Astronef et un SGBD relationnel. Nous présentons trois types de composants :
 \begin{itemize}
 	\item Une source capable de représenter une relation temporelle à partir d'une relation issue d'un SGBD relationnel. 
-	\item Un opérateur permettant de faire une opération de jointure Astronef par le SGBD pour exploiter ses capacités. 
+	\item Un opérateur permettant de faire une opération de jointure Astronef par le SGBD pour exploiter ses capacités (macroopération de jointure).
 	\item Les puits en charge de la persistance des données.
 \end{itemize}
 
-\subsection{Source d'interrogation}
+\subsection{Le SGBD comme source d'interrogation}
 Comme présentée dans la section~\ref{sec:contrib:asteroid:theorie:astral}, une relation persistante peut être présentée comme une relation temporelle Astral. Pour cela nous introduisons un composant source de données \textit{dbsource} capable de représenter une telle relation temporelle. Cette source doit suivre l'évolution de la relation suivant différents modes. Son implémentation est décrite par la séquence suivante : lorsque la relation temporelle doit être mise à jour, le composant interroge le SGBD avec une requête \textit{SQL} telle que \sql{SELECT * FROM Relation}.
 
 Afin de pouvoir réutiliser \textit{dbsource}, nous pouvons le rendre configurable en permettant la spécification de paramètres. Ainsi, la source est capable de supporter la représentation Astral de toute requête du type $\D^f Q$ où $Q$ désigne une relation temporelle exprimable en algèbre relationnelle sur toute relation persistante. Notons que $\D^f$ permet de refléter une dynamique de mise à jour comme présentée dans la section précédente. De ce fait, nous pouvons produire une relation temporelle avec une dynamique statique, stable, périodique ou imprévisible (mise à jour suite à un événement extérieur).
