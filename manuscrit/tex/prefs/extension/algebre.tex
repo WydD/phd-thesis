@@ -1,8 +1,8 @@
 \section{Modélisation algébrique}\label{sec:ext:prefs:algebre}
-Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous appliquons ceci à notre cadre applicatif. Enfin, nous présentons, comment l'intégration dans Astronef est faite.
+Dans cette section, nous introduisons dans le cadre d'Astral-Astronef les opérateurs de \textit{CPref-SQL}~\cite{DeAmo:cprefsql}. Tout d'abord, nous présentons les notions théoriques nécessaires pour appréhender les préférences contextuelles. Puis, nous présentons les deux opérateurs permettant de sélectionner les n-uplets préférés sur une relation temporelle. Ensuite, nous utilisons ceci à notre cadre applicatif. Enfin, nous présentons, comment l'intégration dans Astronef est réalisée.
 
 \subsection{Préférences contextuelles}
-Dans cette section nous présentons les principaux concepts concernant le formalisme logique que nous employons pour spécifier et raisonner avec des préférences. Tout d'abord, présentons le concept de préférence contextuelle. Une \textit{préférence contextuelle} est une manière d'exprimer la phrase suivante : \enquote{\it Lorsque $u$ est vrai, je préfère $Q_1$ à $Q_2$ à attributs $W$ égaux}. La définition~\ref{def:pref} définit formellement cette notion.
+Dans cette section nous présentons les principaux concepts concernant le formalisme logique que nous employons pour spécifier et raisonner avec des préférences. Tout d'abord, présentons le concept de préférence contextuelle. Une \textit{préférence contextuelle} est une manière d'exprimer la phrase suivante : \enquote{\it Lorsque $u$ est vrai, je préfère $Q_1$ à $Q_2$ à attributs $W$ égaux}. Par exemple, \enquote{\it pour des films de Woody Allen, je préfère les comédies aux drames à décennie égale}. La définition~\ref{def:pref} définit formellement cette notion.
 
 \begin{defi}[Préférence Contextuelle]\label{def:pref}
 Soit $A$ un ensemble d'attribut,
@@ -34,9 +34,9 @@ Cette relation de préférence est dite \textit{consistante} si et seulement si 
 
 \subsection{Opérateurs de Préférences}
 Les opérateurs de préférences calculent les données préférées par rapport à une cp-th\'eorie de référence. Chaque utilisateur donne au système ses préférences sous forme d'une cp-th\'eorie $\Gamma$ qui constitue ainsi une sorte de \textit{profil utilisateur} qui est évolutif. Concrètement, cette solution va permettre le support de requêtes 
-\enquote{les plus préférées} et \enquote{les top-k} par l'intégration de deux opérateurs: \textbf{Best} et \textbf{KBest}.
+permettant de retourner les données \enquote{les plus préférées} et \enquote{les top-k} par l'intégration de deux opérateurs: \textbf{Best} et \textbf{KBest}.
 
-L'opérateur \textbf{Best} sélectionne, dans relation temporelle ou non temporelle, les n-uplets qui correspondent le mieux à l'ensemble des préférences représentées dans $\Gamma$. D'un point de vue mathématique, il s'agit des n-uplets qui ne sont pas dominés dans la hiérarchie des préférences.
+L'opérateur \textbf{Best} sélectionne, dans une relation temporelle ou non temporelle, les n-uplets qui correspondent le mieux à l'ensemble des préférences représentées dans $\Gamma$. D'un point de vue mathématique, il s'agit des n-uplets qui ne sont pas dominés dans la hiérarchie des préférences.
 
 \begin{defi}[Best]\label{def:best}
 Soit $R$ une relation temporelle et $\Gamma$ une cp-th\'eorie sur le schéma de $R$. 
@@ -65,15 +65,21 @@ Pour un batch donné $b$, \textbf{KBest}$_k(R)(b)$ est l'ensemble des $k$ n-uple
 \end{defi}
 
 \subsection{Exemple de requête}
-Supposons l'existence d'un flux $V$ agrégeant l'ensemble des informations \textit{volatiles}. Son schéma est le suivant : $V$(id, concept, type, volatile, value, $\t$). La description de ce schéma est l'expression suivante : l'entité de nature \textit{concept}, d'identifiant \textit{id} et de catégorie \textit{type} a émis la donnée de type \textit{volatile} et de valeur \textit{value} au temps $\t$. La formation de ce flux est triviale selon les principes développés en section~\ref{sec:valid:domvision:requetes} et n'est pas détaillé.
+Supposons l'existence d'un flux $V$ agrégeant l'ensemble des informations \textit{volatiles} d'un système observé. Son schéma est le suivant : $V$(id, concept, type, volatile, value, $\t$). La description de ce schéma est l'expression suivante : l'entité de nature \textit{concept}, d'identifiant \textit{id} et de catégorie \textit{type} a émis la donnée de type \textit{volatile} et de valeur \textit{value} au temps $\t$. La formation de ce flux est triviale selon les principes développés en section~\ref{sec:valid:domvision:requetes} et n'est pas détaillé.
 
 Nous souhaitons utiliser ce flux en tant que flux d'information à afficher à l'utilisateur. Afin de rapidement analyser l'activité du réseau, il souhaite obtenir une sélection des meilleures informations le concernant.
 
 Soit $\Gamma$ la cp-théorie comportant les préférences contextuelles suivantes :
 \begin{itemize}
-	\item $\varphi_1 : $ volatile = cpu $\mapsto ($value $ \geq 90) \succ ($value $ < 90)$ [id]
-	\item $\varphi_2 : $ $($volatile = status$) \succ ($volatile = cpu $ \vee $ volatile = mem$)$ [type]
-	\item $\varphi_3 : $ concept = interface $\mapsto ($type = wifi$) \succ ($type = ethernet$)$
+	\item Pour les données \textit{cpu}, je préfère les valeurs $\geq 90$ à identifiants égaux.
+	
+	\qquad $\varphi_1 : $ volatile = cpu $\mapsto ($value $ \geq 90) \succ ($value $ < 90)$ [id]
+	\item Je préfère les données de \textit{status} plutôt que de \textit{cpu} ou \textit{mémoire} à \textit{timestamps} égaux.
+	
+	\qquad $\varphi_2 : $ $($volatile = status$) \succ ($volatile = cpu $ \vee $ volatile = mem$)$ [$\tau$]
+	\item Pour les interfaces réseaux, je préfère les types \textit{wifi} plutôt qu'\textit{ethernet}.
+	
+	\qquad $\varphi_3 : $ concept = interface $\mapsto ($type = wifi$) \succ ($type = ethernet$)$
 \end{itemize}
 
 La figure~\ref{fig:valid:domvision:architecture:pref} représente un ensemble de données pour $V$. Si nous appliquons la relation d'ordre sur cet ensemble de n-uplet, nous pouvons remarquer que par la règle $\varphi_1$, nous obtenons que $s_1 > s_4$. Par $\varphi_2$ nous obtenons que $s_2 > s_1$. Et enfin, nous avons $s_3 > s_5$ par $\varphi_3$. La relation d'ordre $\succ_\Gamma$ est transitive, ainsi $s_2 > s_4$. Le graphe de la figure représente ces relations d'ordres.
@@ -81,10 +87,10 @@ La figure~\ref{fig:valid:domvision:architecture:pref} représente un ensemble de
 \begin{tabular}{|c|c|c|c|c|c|c|} \bottomrule
 \rowcolor{hypcolor} $V$ & id & concept & type & volatile & value & $\t$\\ \hline
 $s_1$ & 1 & equipement & gateway & cpu & 95 & 1\\ \hline % 1 > 4
-$s_2$ & 2 & equipement & stb & status & 1 & 2\\ \hline % 2 > 1 > 4
+$s_2$ & 2 & equipement & stb & status & 1 & 1\\ \hline % 2 > 1 > 4
 $s_3$ & 3 & interface & wifi & bws & 150 & 3\\ \hline %
 $s_4$ & 1 & equipement & gateway & cpu & 20 & 4\\ \hline
-$s_5$ & 5 & interface & ethernet & bwr & 1200 & 5\\ \toprule % 3 > 5
+$s_5$ & 5 & interface & ethernet & bwr & 1200 & 7\\ \toprule % 3 > 5
 \end{tabular}\hspace{1cm}
 \begin{minipage}{3cm}
 \begin{tikzpicture}[<-]

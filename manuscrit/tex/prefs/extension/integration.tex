@@ -1,10 +1,10 @@
 \section{Intégration et Expérimentations}\label{sec:ext:prefs:integration}
-Dans cette section, nous présentons l'intégration de l'implémentation des opérateurs \textbf{Best/KBest} dans notre système Astronef-Asteroid. Tout d'abord, nous détaillons les règles qu'il est nécessaire de fournir à Astronef pour prendre en compte ces opérateurs. Puis, nous expérimentons les versions statiques et incrémentales de nos algorithmes afin de sélectionner le meilleur.
+Dans cette section, nous présentons l'intégration de l'implémentation des opérateurs \textbf{Best/KBest} dans notre système Astronef-Asteroid. Tout d'abord, nous détaillons les règles qu'il est nécessaire de fournir à Astronef pour prendre en compte ces opérateurs. Puis, nous expérimentons les versions statiques et incrémentales de nos algorithmes afin de déterminer une \textit{heuristique} permettant de sélectionner le meilleur.
 
 \subsection{Intégration dans Astronef}
 Nous avons désormais des définitions Astral correctement posées. Nous pouvons maintenant intégrer ces opérateurs à Astronef. En premier lieu, nous avons conçu un composant opérateur capable de calculer les sémantiques de \textbf{Best} et \textbf{KBest} de manière statique en calculant à partir de l'état de $R(b)$. Ce composant prend évidemment en paramètre $k$ qui peut être égal à $-1$ pour indiquer une sémantique de \textbf{Best}.
 
-L'intégration du composant se fait en deux parties. Tout d'abord, il est nécessaire d'enregistrer le composant en tant qu'opérateur, ceci est fait automatiquement lorsque le binaire est installé. Ensuite, il faut renseigner ses définitions Astral dans le moteur de règle. Dans notre cas, quatre règles sont suffisantes :
+L'intégration du composant se fait en deux parties. Tout d'abord, il est nécessaire d'enregistrer le composant en tant qu'opérateur\footnote{Cette opération est faite au moment de l'installation de l'extension dans Astronef.}. Ensuite, il faut renseigner ses définitions Astral dans le moteur de règle. Dans notre cas, quatre règles sont suffisantes :
 \begin{lstlisting}
 sugar([best,Config,C],[kbest,NewConfig,C]):-
     map_put(Config,['k',-1],NewConfig), !. % best = kbest avec k=-1
@@ -15,12 +15,12 @@ attribrules([kbest,_,_,[A]], A):- !.
 implrules([kbest,_,_,_], "KBest"):- !.
 \end{lstlisting}
 
-Une fois ce code renseigné dans le service de connaissance d'Astronef, nous pouvons librement utiliser les opérateurs \textbf{Best} et \textbf{KBest} sur toutes relations temporelles. Nous verrons dans le chapitre suivant, les possibilités d'amélioration de cette approche en terme de performances. Il est intéressant de voir que si le SGBD supporte le langage \textit{CPref-SQL}, nous pouvons pousser les opérateurs \textbf{Best} et \textbf{KBest} sur le SGBD via une règle Asteroid. 
+Une fois ce code renseigné dans le service \textit{KnowledgeBase} d'Astronef (présenté en~\ref{sec:contrib:astronef:integration}), nous pouvons librement utiliser les opérateurs \textbf{Best} et \textbf{KBest} sur toutes relations temporelles. Il est intéressant de voir que si le SGBD supporte le langage \textit{CPref-SQL}, nous pouvons pousser les opérateurs \textbf{Best} et \textbf{KBest} sur le SGBD via une règle Asteroid. 
 
 \subsection{Expérimentations pour la sélection du plan de requête}
-Nous avons à notre disposition deux composants capables de calculer de manière incrémentale ou non les opérateurs de préférences contextuelles. Dans cette section, nous expérimentons pour sélectionner l'un ou l'autre choix.
+Nous avons à notre disposition deux composants capables de calculer de manière incrémentale ou non les opérateurs de préférences contextuelles. Dans cette section, nous expérimentons pour déterminer les cas où il est préférable de sélectionner l'un ou l'autre choix.
 
-L'expérience a été réalisée dans un cadre applicatif financier. Ainsi, $30,000$ n-uplets ont été collectés depuis des flux de cours d'actions\footnote{Fournit par le service Dukascopy's Data Export. Disponible à \url{http://www.dukascopy.com/swiss/english/data_feed/csv_data_export}}. Les préférences utilisées sont de la même complexité que celles présentées en section~\ref{sec:ext:prefs:algo}. Soit $S$ un flux, la requête que nous analysons est la suivante : $${\bf KBest}_k(S[N \textrm{ slide } \Delta])$$
+L'expérience a été réalisée dans un cadre applicatif financier. Ainsi, $30,000$ n-uplets ont été collectés depuis des flux de cours d'actions\footnote{Fournit par le service Dukascopy's Data Export. Disponible à \url{http://www.dukascopy.com/swiss/english/data_feed/csv_data_export}}. Les préférences utilisées sont de la même complexité que celles présentées en section~\ref{sec:ext:prefs:algo}, les détails sont présents dans notre papier~\cite{Petit:topk}. Soit $S$ un flux, la requête que nous analysons est la suivante : $${\bf KBest}_k(S[N \textrm{ slide } \Delta])$$
 
 \begin{figure}[ht]
 \subfigure[En variant $\Delta$ sur KBest (pour $N=500$)]{\includegraphics[width=0.48\linewidth]{valid-perfs-prefs-slide}\label{fig:prefxp-slide}}
