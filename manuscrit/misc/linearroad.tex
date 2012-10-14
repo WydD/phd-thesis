@@ -1,0 +1,81 @@
+\chapter{\textit{Linear Road} : expression de \textit{Toll} en Astral}\label{chap:misc:lrb}
+\mtcaddchapter
+\chaptertoc
+
+\def\result#1#2#3#4#5{
+\def\arraystretch{1.5}
+\begin{tabular}{|p{0.2\textwidth}|p{0.75\textwidth}|}\bottomrule
+ \multicolumn{2}{|c|}{\cellcolor{hypcolor}#1} \\ \hline
+#2 & #3 \\ \hline
+\multicolumn{2}{|c|}{$\displaystyle #4$}\\ \hline
+\multicolumn{2}{|l|}{#5}\\ \toprule
+\end{tabular}
+\def\arraystretch{1}
+}
+
+Dans ce chapitre, nous indiquons l'expression Astral de la requête $Toll$ du \textit{Linear Road Benchmark} (LRB). Les expressions présentées dans ce chapitre sont celles déployées dans Astronef à la traduction en \textit{XML} près.
+
+\section{Le flux d'entrée}
+Nous supposons que $S$ est le flux fournit par le \textit{LRB}. Ce flux contient les données de tous les flux disponibles dans le \textit{LRB}. Il est nécessaire de filtrer sur son type ainsi que ne garder que les bons attributs correspondant au flux de positions.
+
+%Position Reports
+\result{PositionReports}{Flux}{vid, speed, xway, lane, dir, seg, pos, $\t$}
+	{\Pi_{vid,speed,xway,lane,dir,seg,pos,\t}\sigma_{type=0} S}
+	{Flux entrant des positions venant des voitures}
+
+\section{Détection d'accident}
+Tout d'abord, nous formons la relation permettant de détecter les voitures qui sont arrêtées (la position n'a pas bougé pendant au moins 4 relevés). Puis, nous calculons l'accident qui résulte de l'arrêt de deux voitures au même endroit. Nous utilisons l'agrégat $countd$ équivalent au \sql|COUNT DISTINCT| de SQL pour compter le nombre de positions différentes pour une voiture.
+
+%StoppedCar
+\result{StoppedCar}{Relation}{vid, pos, dir, xway}
+	{\begin{array}{l}\Pi_{vid,pos,dir,xway}\sigma_{cpos \geq 4 \wedge npos = 1 \wedge ndir = 1}\\ \qquad\null_{vid,pos,dir,xway}G_{countd(pos), count(pos), countd(dir)}^{npos, cpos, ndir}\sigma_{lane \in [1,3]} PositionReports]T\ 120s\ 60s]\end{array}}
+	{Indique les identifiants de voitures qui sont arrêtées}
+
+%AccidentInSeg
+\result{AccidentInSeg}{Relation}{seg, xway}
+	{\Pi_{seg,xway} e_{\left\lfloor \frac{pos}{5280} \right\rfloor}^{seg}(StoppedCar \Join \rho_{vid2/vid} StoppedCar)}
+	{Liste les segments qui ont actuellement un accident}
+
+\section{Calcul de statistiques des segments}
+Le calcul des statistiques sont des agrégats calculés à la volée concernant le nombre total et la vitesse moyenne des voitures sur un segment. Cela a été analysé dans la section~\ref{sec:valid:perfs:flux:avg}.
+
+%CarDensity
+\result{CarDensity}{Relation}{xway, seg, dir, cars}
+	{\null_{xway,seg,dir} G_{countd(vid)}^{cars} PositionReports]T\ 60s\ 60s]}
+	{Indique le nombre de voitures dans chaque segment et pour chaque direction}
+
+%AverageVelocity
+\result{AverageVelocity}{Relation}{xway, seg, dir, avgspeed}
+	{\null_{xway, seg,dir}\G_{avg(m/avg(vid/avg(speed)))}^{avgspeed}(e_{\lfloor \t/60 \rfloor}^{m} PositionReports]T\ 5min\ 1min])}
+	{Indique la vitesse moyenne des voitures pour chaque segment et chaque direction}
+
+\section{Calcul de $Toll$}
+Tout d'abord, nous calculons les changements de segments tel que nous l'avons analysé dans la section~\ref{sec:valid:perfs:flux:segchange}.
+
+%SegChange
+\result{SegChange}{Relation}{vid, speed, xway, lane, dir, seg, pos, $\t$}
+	{\Pi_{\backslash seg2} PositionReports[B] \mathop{\Join}_{seg\neq seg2} \rho_{seg2/seg} \Pi_{xway,vid,seg} PositionReports[T\ 30s\ 30s[}
+	{Donne les derniers n-uplets qui indiquent un changement de segment}
+
+Maintenant, nous pouvons procéder au calcul de $Toll$. L'expression étant complexe, nous l'avons séparé en 4. D'abord, nous ajoutons les informations statistiques dans $T_a$, ensuite nous ajoutons les informations des accidents dans $T_b$, nous calculons le prix du péage avec les informations que nous avons et enfin, nous formons le flux $Toll$. Nous utilisons l'opérateur $\lojoin^v$ étant équivalent au \textit{LEFT OUTER JOIN}, la valeur nulle n'existant pas dans notre formalisme, la valeur $v$ est utilisé à cet effet.
+
+%Toll
+%T_a
+\result{Résultat intermédiaire $T_a$}{Relation}{vid, speed, xway, lane, dir, seg, pos, avgspeed, cars, $\t$}
+	{(\sigma_{lane \neq 4} SegChange) \lojoin^{0} ((\sigma_{avgspeed \leq 40} AverageVelocity)\Join (\sigma_{cars \geq 50} CarDensity))}
+	{Ajout des données statistiques à $SegChange$ nécessaires au calcul du péage}
+
+%T_b
+\result{Résultat intermédiaire $T_b$}{Relation}{vid, speed, xway, lane, dir, seg, pos, avgspeed, cars, seg2, $\t$}
+	{T_a \lojoin^{-1}_{\substack{dir=0 \wedge seg2-seg \in [0,4] \vee \\ dir=1 \wedge seg-seg2 \in [0,4]}} (\rho_{seg2/seg} AccidentInSeg)}
+	{Ajoute l'information d'accident dans les segments environnant}
+
+%T_c
+\result{Résultat intermédiaire $T_c$}{Relation}{dir, seg, xway, toll, vid}
+	{\Pi_{dir,seg,xway,toll,vid} e_{(seg2 = -1 \wedge avgspeed \leq 40 \wedge cars \geq 50)\ ?\ 2(cars-50)^2\ :\ 0}^{toll}\ T_b}
+	{Calcul du prix du péage selon les spécifications de LinearRoad}
+
+%Toll
+\result{Toll}{Flux}{vid, toll, avgspeed}
+	{\RSu(\Pi_{avgspeed,toll,vid}\ T_c \lojoin^{0} AverageVelocity)}
+	{Flux indiquant à la voiture $vid$ roulant à $avgspeed$ doit payer $toll$}

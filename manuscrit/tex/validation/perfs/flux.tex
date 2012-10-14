@@ -6,14 +6,14 @@ Le \textit{Linear Road Benchmark}~\cite{Arasu:lrb} (\textit{LRB}) est un \textit
 
 Pour pouvoir calculer les notifications en quasi-temps réel\footnote{Contrainte de délai de 5 secondes maximum}, il est nécessaire de calculer aussi les vitesses moyennes des véhicules ainsi que les densités des segments. Le \textit{benchmark} permet de voir si le SGFD peut supporter la charge de $L$ autoroutes pendant trois heures. Le score du benchmark est le $L$ maximal tout en respectant les critères.
 
-Dans cette section, nous nous intéressons avant tout à la requête de péage $T(vid,avgspeed,toll,\t)$. Son expression est grande et n'est pas présentée ici. Nous analysons ici des fragments de cette requête qui sont problématiques en terme de performances. Les autres requêtes sont des requêtes faisant intervenir des historiques que nous explorons en détail avec notre cas d'application dans la section suivante.
+Dans cette section, nous nous intéressons avant tout à la requête de péage $Toll(vid,avgspeed,toll,\t)$. Son expression est complexé et est présentée dans l'annexe~\ref{chap:misc:lrb}. Nous analysons ici des fragments de cette requête qui sont problématiques en terme de performances. Les autres requêtes sont des requêtes faisant intervenir des historiques que nous explorons en détail avec notre cas d'application dans la section suivante.
 
 \subsection{L'exploitation des commutativités et associativités}
 L'avantage concret de l'optimisation logique à base de commutation prend tout son sens lorsqu'un langage déclaratif est utilisé. En effet, en \textit{SQL}, il est possible d'exprimer une requête Sélection-Projection-Jointure. Chaque partie est clairement défini dans les clauses du \sql{SELECT ... FROM ... WHERE}. Sa traduction en algèbre relationnelle nécessite plusieurs transformations pour obtenir une expression efficace.
 
 A contrario, si l'expert écrit lui même sa requête en algèbre, celle-ci est déjà efficace. C'est pour cela que l'algèbre est considérée comme un langage impératif. Ainsi, nous n'avons pas pu observer de grandes optimisations avec ou sans l'optimisation logique. Toutefois, lorsqu'un langage déclaratif sera défini, cet aspect prendra de l'importance.
 
-\subsection{Changement de segment : jointure massive et manipulation temporelle}
+\subsection{Changement de segment : jointure massive et manipulation temporelle}\label{sec:valid:perfs:flux:segchange}
 Dans cette partie, nous analysons la requête permettant de sélectionner les n-uplets de $P$ indiquant un changement de segment du véhicule. Cette requête peut s'écrire de cette façon : 
 \begin{equation}
   \tag{Q1}
@@ -66,7 +66,7 @@ $B\ =$ & Taille d'un \textit{batch}
 
 La figure~\ref{fig:valid:perfs:segchange} trace les médianes (sur $100s$) des mesures de latences (ordonnées) que nous obtenons au cours du temps (abscisses). La stratégie Q2 évolue en fonction de la charge du benchmark alors que Q1 évolue selon le nombre de voitures passé (linéaire dans notre cas). Au final, nous obtenons une latence égale à $60ms$ pour $\DS$ et $210ms$ pour Q1. Enfin, la stratégie utilisant une fenêtre temporelle (Q3) a une meilleure performance la plupart du temps, toutefois pour les moments où la fenêtre s'évalue ($\t\in 30\N$) alors la latence est quasiment décuplée pour passer à $350-400ms$. Néanmoins, la charge mémoire dépend uniquement de la taille des \textit{batchs}.
 
-\subsection{Calcul de vitesse d'un segment : fenêtre et agrégat}
+\subsection{Calcul de vitesse d'un segment : fenêtre et agrégat}\label{sec:valid:perfs:flux:avg}
 Dans cette partie, nous analysons la requête permettant de calculer la vitesse moyenne pour un triplet \textit{(xway,dir,seg)}. Le calcul de l'agrégation telle que la spécification le présente est en trois parties comme la requête suivante le démontre :
 $$\null_{\substack{xway,\\ seg,dir}}\G_{avg(tmp)}^{avgspeed}(\null_{\substack{m,xway,\\ seg,dir}}\G_{avg(tmp)}^{tmp}(\null_{\substack{vid,m,xway,\\ seg,dir}}\G_{avg(speed)}^{tmp} (e_{\lfloor T/60 \rfloor}^{m})]T\ 5min\ 1min]))$$
 
