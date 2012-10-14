@@ -55,7 +55,7 @@ $$\begin{array}{rcl}
 
 La dernière inégalité est équivalente à $\tau_S\circ\alpha\circ\gamma(b) \leq \BS(s) \leq  b$. L'implication est simple dû à la propriété~\ref{prop:tau}. La réciproque doit être détaillée. Si $\BS(s) \leq b$, il évident que $\forall s\in S$, $\BS(s)\not\in]\tau_S(\tau_S^{-1}(b)), b[$, car s'il existait un tel n-uplet $\tau_S(\tau_S^{-1}(b))$ serait égal à $b$ ce qui est absurde. Ainsi, $\BS(s) \leq \tau_S(\tau_S^{-1}(b))$.
 
-Alors, $S[\alpha,i,1n](b) = F_{b}=s\in S, \begin{cases}\tau_S\circ\alpha\circ\gamma(b) \leq \BS(s) \leq b \\\rpos_{E_{t,i}}(s) \leq \tau_S^{-1}(b) - \alpha\circ\gamma(b) \end{cases}$
+Alors, $S[\alpha,j,1](b) = F_{b}=s\in S, \begin{cases}\tau_S\circ\alpha\circ\gamma(b) \leq \BS(s) \leq b \\\rpos_{E_{t,i}}(s) \leq \tau_S^{-1}(b) - \alpha\circ\gamma(b) \end{cases}$
 
 $$\begin{array}{l}\Psi_{b}(s,t)\in S' \wedge \B{S'}(\Psi_{b}(s,t)) = b\\ \qquad
  \equ  s\in F_{b} \wedge s\not\in F_{b^-} \\ \qquad
@@ -89,7 +89,7 @@ $$\rpos_{E_{t,i}}(s) = \tau_S^{-1}(t,i) - \pos_{E_{t,i}}(s)$$
 
 Ainsi $\tau_S^{-1}(t,i) - \pos_{E_{t,i}}(s) \leq \tau_S^{-1}(t,i)$ ce qui est trivialement vrai.
 
-Étant donné que le raisonnement est réciproque, alors : $S[0,j,1n](t,i) = \{s\in S, \BS(s) \leq (t,i)\}$
+Étant donné que le raisonnement est réciproque, alors : $S[0,j,1](t,i) = \{s\in S, \BS(s) \leq (t,i)\}$
 \findemo
 \subsection{Dernier batch}
 Ce résultat est démontré similairement à la démonstration précédente.
@@ -102,8 +102,8 @@ La plupart des équivalences présentée dans ce tableau sont issues des connais
 
 Concernant la sélection, c'est un peu plus délicat car la sélection perturbe naturellement la \textit{position} d'un n-uplet. C'est pour cela qu'il n'est pas possible de permuter avec l'opérateur de séquence de fenêtres. Toutefois, les démonstrations sont triviales en suivant les définitions. Par exemple, pour un opérateur de séquence de fenêtres temporel :
 \begin{eqnarray*}
-s\in (\sigma_c S)[\alpha,\beta,\gamma](t,i) & \equ & s\in (\sigma_c S) \wedge (\alpha(\gamma(t,i)),0) \leq \B{(\sigma_c S)}(s) \leq (\beta(\gamma(t,i),i)\\
-& \equ & s\in S \wedge c(s) \wedge (\alpha(\gamma(t,i)),0) \leq \BS(s) \leq (\beta(\gamma(t,i),i)\\
+s\in (\sigma_c S)[\alpha,\beta,\gamma](t,i) & \equ & s\in (\sigma_c S) \wedge (\alpha(\gamma(t,i)),0) \leq \B{(\sigma_c S)}(s) \leq (\beta(\gamma(t,i)),i)\\
+& \equ & s\in S \wedge c(s) \wedge (\alpha(\gamma(t,i)),0) \leq \BS(s) \leq (\beta(\gamma(t,i)),i)\\
 & \equ & c(s) \wedge s\in S[\alpha,\beta,\gamma](t,i)\\
 & \equ & s\in \sigma_c (S[\alpha,\beta,\gamma](t,i))
 \end{eqnarray*}
@@ -123,7 +123,7 @@ De même, nous obtenons le résultat similaire :
 \begin{eqnarray*}
 \Phi^\times(\Phi^\times(a,b),c) \leq \Phi^\times(\Phi^\times(d,e),f)& \equ & ((a,b),c) \leq ((d,e),f) \\
 & \equ & (a,b) < (d,e) \vee (a,b) = (d,e) \wedge c \leq f \\
-& \equ & (a < d \vee a = d \wedge b < e) \vee a = d \wedge b = e \wedge (b < e \vee b=e \wedge c \leq f) \\
+& \equ & (a < d \vee a = d \wedge b < e) \vee \\ &  & \qquad a = d \wedge b = e \wedge (b < e \vee b=e \wedge c \leq f) \\
 & \equ &  a < d \vee a=d \wedge (b < e \vee b=e \wedge c \leq f)
 \end{eqnarray*}
 

@@ -1,21 +1,15 @@
 % Couverture
 \MakeUGthesePDG
 
-{\Large Commit log}
-
-\IfFileExists{git.log}{\input{git.log}}{}
 % Remerciements...
 
 % TOC
 \cleardoublepage
 \dominitoc
+\makeatletter
+\renewcommand{\tableofcontents}[1][\contentsname]{%
+  \chapter*{#1}
+  \@starttoc{toc}
+}
+\makeatother
 \tableofcontents
-
-\newpage
-\listofdefifloat
-\listofthmfloat
-\listofpropfloat
-\listofcorofloat
-
-\newpage
-\listofreglefloat

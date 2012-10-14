@@ -5,11 +5,13 @@ set pointsize 0.5
 
 set xlabel "temps (s)"
 set ylabel "latence (ms)" 
-set label "pour T=30n" at first 8000, first 280
-set arrow from 7900,280 to 6600, 290
+set label "pour T multiple de 30" at first 5900, first 250
+set label "pour T non multiple de 30" at first 5000, first 80
+set arrow from 7900,260 to 6600, 290
+set arrow from 7000,70 to 8100, 45
 plot \
-	"SegChangePartWinMedian" w steps ls 1 ti "[xway,vid/L]", \
-	"SegChangeDSMedian" w steps ls 2 ti "D_S", \
-	"SegChangeTWindowMedian" w steps ls 3 ti "[T 30s 30s[", \
+	"SegChangePartWinMedian" w steps ls 1 ti "Q1", \
+	"SegChangeDSMedian" w steps ls 2 ti "Q2", \
+	"SegChangeTWindowMedian" w steps ls 3 ti "Q3", \
 	"SegChangeTWindow30s" w p ls 3 notitle
 

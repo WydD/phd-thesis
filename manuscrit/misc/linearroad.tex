@@ -4,7 +4,7 @@
 
 \def\result#1#2#3#4#5{
 \def\arraystretch{1.5}
-\begin{tabular}{|p{0.2\textwidth}|p{0.75\textwidth}|}\bottomrule
+\noindent\begin{tabular}{|p{0.2\textwidth}|p{0.74\textwidth}|}\bottomrule
  \multicolumn{2}{|c|}{\cellcolor{hypcolor}#1} \\ \hline
 #2 & #3 \\ \hline
 \multicolumn{2}{|c|}{$\displaystyle #4$}\\ \hline
@@ -57,7 +57,7 @@ Tout d'abord, nous calculons les changements de segments tel que nous l'avons an
 	{\Pi_{\backslash seg2} PositionReports[B] \mathop{\Join}_{seg\neq seg2} \rho_{seg2/seg} \Pi_{xway,vid,seg} PositionReports[T\ 30s\ 30s[}
 	{Donne les derniers n-uplets qui indiquent un changement de segment}
 
-Maintenant, nous pouvons procéder au calcul de $Toll$. L'expression étant complexe, nous l'avons séparé en 4. D'abord, nous ajoutons les informations statistiques dans $T_a$, ensuite nous ajoutons les informations des accidents dans $T_b$, nous calculons le prix du péage avec les informations que nous avons et enfin, nous formons le flux $Toll$. Nous utilisons l'opérateur $\lojoin^v$ étant équivalent au \textit{LEFT OUTER JOIN}, la valeur nulle n'existant pas dans notre formalisme, la valeur $v$ est utilisé à cet effet.
+Maintenant, nous pouvons procéder au calcul de $Toll$. L'expression étant complexe, nous l'avons séparé en 4. D'abord, nous ajoutons les informations statistiques dans $T_a$, ensuite nous ajoutons les informations des accidents dans $T_b$, nous calculons le prix du péage avec les informations que nous avons et enfin, nous formons le flux $Toll$. Nous utilisons l'opérateur $\lojoin^v$ étant équivalent au \textit{LEFT OUTER JOIN}, la valeur nulle n'existant pas dans notre formalisme, la valeur $v$ est utilisé à cet effet. Nous utilisons aussi la syntaxe de l'opérateur ternaire \textit{condition ? vrai : faux} pour calculer le coût du péage.
 
 %Toll
 %T_a
