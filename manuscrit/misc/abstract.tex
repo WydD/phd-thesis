@@ -1,0 +1,40 @@
+\closed
+\clearpage
+\ifodd\value{page}\hbox{}\newpage\fi
+  
+\begin{center}\textbf{\large Gestion de flux de données pour l'observation de systèmes}
+
+\quad
+
+\textbf{Résumé}
+\end{center}
+
+La popularisation de la technologie a permis d'implanter des dispositifs et des applications de plus en plus développés à la portée d'utilisateurs non experts. Ces systèmes produisent des flux ainsi que des données persistantes dont les schémas et les dynamiques sont hétérogènes. Cette thèse s'intéresse à pouvoir observer les données de ces systèmes pour aider à les comprendre et à les diagnostiquer.
+
+Nous proposons tout d'abord un modèle algébrique Astral capable de traiter sans ambiguïtés sémantiques des données provenant de flux ou relations. Le moteur d'exécution Astronef a été développé sur l'architecture à composants orientés services pour permettre une grande adaptabilité. Il est doté d'un constructeur de requête permettant de choisir un plan d'exécution efficace. Son extension Asteroid permet de s'interfacer avec un SGBD pour gérer des données persistantes de manière intégrée.
+
+Nos contributions sont confrontées à la pratique par la mise en œuvre d'un système d'observation du réseau domestique ainsi que par l'étude des performances. Enfin, nous nous sommes intéressés à la mise en place de la personnalisation des résultats dans notre système par l'introduction d'un modèle de préférences top-k.
+
+\quad
+
+\textbf{Mots-clés} : flux de données, observation, algèbre, optimisation de requête, équivalence de requêtes, base de données, données dynamiques
+
+\begin{center}\textbf{\large Data Stream Management for Systems Monitoring}
+
+\quad
+
+\textbf{Abstract}
+\end{center}
+
+%La popularisation de la technologie a permis d'implanter des dispositifs et des applications de plus en plus développés à la portée d'utilisateurs non experts. Ces systèmes produisent des flux ainsi que des données persistantes dont les schémas et les dynamiques sont hétérogènes. Cette thèse s'intéresse à pouvoir observer les données de ces systèmes pour aider à les comprendre et à les diagnostiquer.
+Due to the popularization of technology, non-expert people can now use more and more advanced devices and applications. Such systems produce data streams as well as persistent data with heterogeneous schemas and dynamics. This thesis is focused on monitoring data coming from those systems to help users to understand and to perform diagnosis on them.
+
+%Nous proposons tout d'abord un modèle algébrique Astral capable de traiter sans ambiguïtés sémantiques des données provenant de flux ou relations. Le moteur d'exécution Astronef a été développé sur l'architecture à composants orientés services pour permettre une grande adaptabilité. Il est doté d'un constructeur de requête permettant de choisir un plan d'exécution efficace. Son extension Asteroid permet de s'interfacer avec un SGBD pour gérer des données persistantes de manière intégrée.
+We propose an algebraic model Astral able to treat data coming from streams or relations without semantic ambiguity. The engine Astronef has been developed on top of a service-oriented component framework to enable a large adaptability. It embeds a query builder which can select a composition of components to provide an efficient query plan. Its extension Asteroid interfaces with a DBMS in order to manage persistent data in an integrated manner.
+
+%Nos contributions ont pu être confrontées à la pratique par la mise en œuvre d'un système d'observation du réseau domestique ainsi que par l'étude des performances. Enfin, nous nous sommes intéressés à la mise en place de la personnalisation des résultats dans notre système par l'introduction d'un modèle de préférences top-k.
+Our contributions have been confronted to practice with the deployment of a monitoring system for the digital home and with a performance study. Finally, we extend our approach with an operator to personalize the results by introducing a top-k preference model.
+
+\quad
+
+\textbf{Keywords} : data stream, monitoring, algebra, query optimization, query equivalence, databases, dynamic data
