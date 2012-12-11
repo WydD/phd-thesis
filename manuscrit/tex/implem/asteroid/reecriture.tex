@@ -34,7 +34,7 @@ Nous souhaitons transformer un bloc \lstinline|[A,B,[[dbsource,Config,[]],...]]|
 \subsubsection{Réécriture de la requête}
 Voyons tout d'abord la modification de requête dans \textit{dbsource}. Nous définissons un prédicat capable de transformer les requêtes des sources en une nouvelle. Naturellement, la règle \textbf{macrobloc} doit transmettre les attributs et conserver les anciens paramètres de configuration.
 \begin{regle}[Modification de la requête de dbsource]
-    Soit $[A,B,C]$ un n?ud dont tous les fils sont de type \textit{dbsource} avec pour requêtes \textit{Queries},
+    Soit $[A,B,C]$ un nœud dont tous les fils sont de type \textit{dbsource} avec pour requêtes \textit{Queries},
 
     La transformation du macrobloc $[A,B,C]$ en $[dbsource,Config,[]]$ est assuré par le prédicat suivant :
     \begin{center} \textbf{dboperator}($[A,B,C], Queries, NewQuery$). \end{center}
